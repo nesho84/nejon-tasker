@@ -16,6 +16,10 @@ export default {
       light: colors.dodgerblue,
       dark: colors.dark,
     },
+    textColor: {
+      light: colors.dark,
+      dark: colors.light,
+    },
   },
   drawerNavigator: {
     drawerContentOptions: {
@@ -75,6 +79,10 @@ export default {
     container: {
       light: colors.white,
       dark: colors.dark,
+    },
+    textColor: {
+      light: colors.dark,
+      dark: colors.light,
     },
     menuBorder: {
       light: colors.lightSkyBlue,

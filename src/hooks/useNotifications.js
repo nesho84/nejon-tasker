@@ -1,12 +1,13 @@
 import { useEffect, useContext } from 'react';
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { LanguageContext } from "@/context/LanguageContext";
 
 // Notification handler
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
+        shouldShowList: true,
+        shouldShowBanner: true,
         shouldPlaySound: true,
         shouldSetBadge: true,
     }),

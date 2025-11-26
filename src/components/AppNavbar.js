@@ -16,15 +16,15 @@ export default function AppNavbar() {
   return (
     <View>
       <Header
-        // leftComponent={
-        //   <Icon
-        //     name="menu"
-        //     type="material-community"
-        //     color="#fff"
-        //     size={30}
-        //     onPress={() => navigation.openDrawer()}
-        //   />
-        // }
+        leftComponent={
+          <Icon
+            name="menu"
+            type="material-community"
+            color="#fff"
+            size={30}
+            onPress={() => navigation.openDrawer()}
+          />
+        }
         centerComponent={{
           text: "SIMPLE TASKLIST",
           style: styles.title,

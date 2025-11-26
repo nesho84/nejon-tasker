@@ -260,8 +260,8 @@ export default function TasksContextProvider(props) {
     let mounted = true;
 
     if (mounted) {
-      // // Temp Labels for testing...
-      saveInStorage(tempLabels);
+      // Temp Labels for testing...
+      // saveInStorage(tempLabels);
 
       loadLabels().then(() => {
         // Timeout for loading...

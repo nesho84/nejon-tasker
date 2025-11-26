@@ -66,7 +66,10 @@ export default function ThemeContextProvider(props) {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme: { themes, current }, changeTheme }}>
+    <ThemeContext.Provider value={{
+      theme: { themes, current },
+      changeTheme
+    }}>
       {props.children}
     </ThemeContext.Provider>
   );

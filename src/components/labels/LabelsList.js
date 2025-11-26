@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
@@ -14,8 +14,6 @@ export default function LabelsList({
   handleEditModal,
   lang,
 }) {
-  const navigation = useNavigation();
-
   const lastItem = labels[labels.length - 1];
 
   // Render Single Label template
@@ -39,9 +37,7 @@ export default function LabelsList({
     return (
       <ScaleDecorator>
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("LabelDetails", { labelKey: item.key })
-          }
+          onPress={() => router.push(`/label-details?labelKey=${item.key}`)}
           onLongPress={drag}
         >
           <View
@@ -138,6 +134,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   draggableFlatListContainer: {
+    flex: 1,
     paddingHorizontal: 5,
   },
   labelBox: {

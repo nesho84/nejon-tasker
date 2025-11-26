@@ -1,23 +1,28 @@
-import React, { useContext, useCallback, useState } from "react";
+import { useContext, useCallback, useState, useLayoutEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 // Contexts
+import { ThemeContext } from "@/context/ThemeContext";
 import { TasksContext } from "@/context/TasksContext";
 import { LanguageContext } from "@/context/LanguageContext";
 // Custom Hooks
 import useAppUpdate from "@/hooks/useAppUpdate";
 // Custom Components
 import AppScreen from "@/components/AppScreen";
-import AppNavbar from "@/components/AppNavbar";
 import AppLoading from "@/components/AppLoading";
 import AppModal from "@/components/AppModal";
 import LabelsList from "@/components/labels/LabelsList";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
 import AddLabelButton from "@/components/labels/AddLabelButton";
+import AppNavbar from "@/components/AppNavbar";
+import { router, Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function LabelsScreen() {
+    const { theme } = useContext(ThemeContext);
     const { lang } = useContext(LanguageContext);
+
     const {
         labels,
         isLoading,
@@ -70,10 +75,8 @@ export default function LabelsScreen() {
 
     return (
         <AppScreen>
-            <AppNavbar />
 
-            {/* // -----Main View START----- */}
-            <View style={styles.container}>
+            <View style={[styles.container, { backgroundColor: theme.themes.appScreen.screen[theme.current] }]}>
                 {/* -----Labels List----- */}
                 <LabelsList
                     labels={labels}
@@ -83,7 +86,7 @@ export default function LabelsScreen() {
                 />
 
                 {/* Add Label Button -> Footer */}
-                <AddLabelButton setModalVisible={setAddModalVisible} />
+                {/* <AddLabelButton setModalVisible={setAddModalVisible} /> */}
 
                 {/* Add Label Modal */}
                 <AppModal
@@ -105,7 +108,7 @@ export default function LabelsScreen() {
                     />
                 </AppModal>
             </View>
-            {/* // -----Main View END----- */}
+
         </AppScreen>
     );
 }

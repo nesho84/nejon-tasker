@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ThemeContext } from "../context/ThemeContext";
+import { ThemeContext } from "@/context/ThemeContext";
 import colors from "@/constants/colors";
 import {
   StyleSheet,
@@ -47,13 +47,14 @@ export default function AppModal(props) {
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: "red",
   },
   closeIcon: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 36,
+    right: 26,
     zIndex: 2
   },
 });

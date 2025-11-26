@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+import { useContext } from 'react';
 import {
     Image,
     Linking,
@@ -7,16 +7,25 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import Constants from 'expo-constants';
+import { ThemeContext } from "@/context/ThemeContext";
 
 export default function AboutScreen() {
+    const { theme } = useContext(ThemeContext);
 
     const date = new Date();
 
     return (
         <View
-            style={[styles.container]}>
+            style={[
+                styles.container,
+                {
+                    backgroundColor: theme.themes.settingsScreen.container[theme.current],
+                },
+            ]}
+        >
             <Image style={styles.logo} source={require("../../../assets/images/icon.png")} />
-            <Text style={styles.title}>nejon-tasker</Text>
+            <Text style={styles.title}>{Constants?.expoConfig?.name}</Text>
             <Text style={styles.versionText}>Version {Constants?.expoConfig?.version}</Text>
             <TouchableOpacity
                 onPress={async () => await Linking.openURL("https://nejon.net")}

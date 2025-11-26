@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,10 +12,10 @@ import Hyperlink from 'react-native-hyperlink'
 import Checkbox from "expo-checkbox";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { Ionicons } from "@expo/vector-icons";
-import TasksDivider from "./TasksDivider";
-import AppNoItems from "../AppNoItems";
+import TasksDivider from "@/components/tasks/TasksDivider";
+import AppNoItems from "@/components/AppNoItems";
 import colors from "@/constants/colors";
-import { ThemeContext } from "../../context/ThemeContext";
+import { ThemeContext } from "@/context/ThemeContext";
 import moment from "moment";
 
 export default function TasksList(props) {
@@ -172,7 +172,7 @@ export default function TasksList(props) {
           )}
           {/* -----Share icon----- */}
           <TouchableOpacity activeOpacity={0.7} onPress={() => shareTask(item.name)}>
-            <Ionicons name="md-share-social" size={16} color={colors.dark} style={{}} />
+            <Ionicons name="share-social" size={16} color={colors.dark} style={{}} />
           </TouchableOpacity>
           {/* -----Task dateTime----- */}
           <Text
