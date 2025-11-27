@@ -61,10 +61,10 @@ export default function EditLabel({ labelToEdit, handleEditLabel, lang }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: "80%",
+    width: "100%",
   },
   title: {
-    marginBottom: 25,
+    marginBottom: 16,
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     color: LIGHT.dark,
     fontSize: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: LIGHT.light,
+    borderColor: LIGHT.lightMuted,
     borderBottomColor: "#DEE9F3",
     borderRadius: 5,
     paddingHorizontal: 15,

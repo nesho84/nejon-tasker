@@ -1,6 +1,7 @@
 import DrawerContent from '@/components/DrawerContent';
+import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Stack } from "expo-router";
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -8,6 +9,7 @@ import { Drawer } from 'react-native-drawer-layout';
 
 export default function StackLayout() {
     const { theme } = useThemeStore();
+    const { tr } = useLanguageStore();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -17,7 +19,7 @@ export default function StackLayout() {
             onOpen={() => setDrawerOpen(true)}
             onClose={() => setDrawerOpen(false)}
             drawerStyle={{ width: "70%" }}
-            renderDrawerContent={() => <DrawerContent close={() => setDrawerOpen(false)} />}
+            renderDrawerContent={() => <DrawerContent close={() => setDrawerOpen(false)} />} // Drawer content and links
         >
             <Stack
                 screenOptions={{
@@ -29,25 +31,13 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="index"
                     options={{
-                        title: "Home",
+                        title: tr.labels.labels,
                         headerShadowVisible: true,
-                        contentStyle: {
-                            borderTopWidth: 1,
-                            borderTopColor: theme.active,
-                            elevation: 10,
-                        },
                         headerLeft: () => (
                             <TouchableOpacity
                                 style={{ top: 1, paddingRight: 15 }}
                                 onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}>
                                 <Ionicons name="menu" size={28} color={theme.text} />
-                            </TouchableOpacity>
-                        ),
-                        headerRight: () => (
-                            <TouchableOpacity
-                                style={{ top: 1 }}
-                                onPress={() => { }}>
-                                <MaterialIcons name="add" size={28} color={theme.text} />
                             </TouchableOpacity>
                         ),
                     }}
@@ -56,29 +46,28 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="reminders"
                     options={{
-                        title: "Reminders",
+                        title: tr.labels.reminders
                     }}
                 />
 
                 <Stack.Screen
                     name="settings"
                     options={{
-                        title: "Settings",
+                        title: tr.labels.settings
                     }}
                 />
 
                 <Stack.Screen
                     name="about"
                     options={{
-                        title: "About",
+                        title: tr.labels.settings
                     }}
                 />
 
                 <Stack.Screen
                     name="label-details"
                     options={{
-                        title: "Label Details",
-                        animation: "slide_from_right",
+                        title: tr.forms.editTask, animation: "slide_from_right"
                     }}
                 />
 

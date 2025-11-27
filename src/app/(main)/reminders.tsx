@@ -1,24 +1,20 @@
-import { ThemeContext } from "@/context/ThemeContext";
-import { useContext } from 'react';
+import { useLanguageStore } from '@/store/languageStore';
+import { useThemeStore } from '@/store/themeStore';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ReimndersScreen() {
-    const { theme, changeTheme } = useContext(ThemeContext);
+export default function RemindersScreen() {
+    const { theme } = useThemeStore();
+    const { tr } = useLanguageStore();
 
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    backgroundColor: theme.themes.settingsScreen.container[theme.current],
-                },
-            ]}
-        >
-            <Text style={{ color: theme.themes.settingsScreen.textColor[theme.current] }}>
-                ReimndersScreen
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+
+            <Text style={{ color: theme.text }}>
+                {tr.labels.reminders}
             </Text>
+
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

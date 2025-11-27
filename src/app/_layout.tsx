@@ -3,7 +3,7 @@ import TasksContextProvider from "@/context/TasksContext";
 import ThemeContextProvider from "@/context/ThemeContext";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, initialWindowMetrics } from "react-native-safe-area-context";
 
 const RootStack = () => {
   const seen = true;

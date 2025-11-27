@@ -212,30 +212,6 @@ export default {
         shqip: "Po",
       },
     },
-    appUpdate: {
-      title: {
-        english: "Update Success",
-        deutsch: "Erfolgreich aktualisiert",
-        shqip: "Aktualizimi me sukses",
-      },
-      message: {
-        english: "Update was successful.",
-        deutsch: "Update war erfolgreich.",
-        shqip: "Aktualizimi ishte i suksesshëm.",
-      },
-    },
-    appUpdateAvailable: {
-      title: {
-        english: "App Update",
-        deutsch: "App aktualisieren",
-        shqip: "App Update",
-      },
-      message: {
-        english: "Update available.",
-        deutsch: "Update verfügbar.",
-        shqip: "Update available.",
-      },
-    },
     deleteLabel: {
       title: {
         english: "Delete Label and all of its tasks!",

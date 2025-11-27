@@ -1,16 +1,19 @@
 import useAppExit from "@/hooks/useAppExit";
+import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from '@/store/themeStore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from "expo-router";
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type Props = {
+interface Props {
     close: () => void;
 }
 
 export default function DrawerContent({ close }: Props) {
     const { theme } = useThemeStore();
+    const { tr } = useLanguageStore();
+
     const { backAction } = useAppExit();
     const insets = useSafeAreaInsets();
 
@@ -39,7 +42,7 @@ export default function DrawerContent({ close }: Props) {
 
             <TouchableOpacity style={styles.menuItem} onPress={close}>
                 <MaterialCommunityIcons name={"home-outline"} color={theme.text} size={22} />
-                <Text style={{ color: theme.text, fontSize: 20 }}>Labels</Text>
+                <Text style={{ color: theme.text, fontSize: 20 }}>{tr.labels.labels}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -50,7 +53,7 @@ export default function DrawerContent({ close }: Props) {
                 }}
             >
                 <MaterialCommunityIcons name={"bell-outline"} color={theme.text} size={22} />
-                <Text style={{ color: theme.text, fontSize: 20 }}>Reminders</Text>
+                <Text style={{ color: theme.text, fontSize: 20 }}>{tr.labels.reminders}</Text>
             </TouchableOpacity>
 
             <View style={[styles.divider, { backgroundColor: theme.muted }]} />
@@ -63,7 +66,7 @@ export default function DrawerContent({ close }: Props) {
                 }}
             >
                 <MaterialCommunityIcons name={"cog-outline"} color={theme.text} size={22} />
-                <Text style={{ color: theme.text, fontSize: 20 }}>Settings</Text>
+                <Text style={{ color: theme.text, fontSize: 20 }}>{tr.labels.settings}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -74,7 +77,7 @@ export default function DrawerContent({ close }: Props) {
                 }}
             >
                 <MaterialCommunityIcons name={"information-outline"} color={theme.text} size={22} />
-                <Text style={{ color: theme.text, fontSize: 20 }}>About</Text>
+                <Text style={{ color: theme.text, fontSize: 20 }}>{tr.labels.about}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -82,7 +85,7 @@ export default function DrawerContent({ close }: Props) {
                 onPress={() => backAction()}
             >
                 <MaterialCommunityIcons name={"exit-to-app"} color={theme.text} size={22} />
-                <Text style={{ color: theme.text, fontSize: 20 }}>Exit</Text>
+                <Text style={{ color: theme.text, fontSize: 20 }}>{tr.buttons.exit}</Text>
             </TouchableOpacity>
 
             {/* Footer */}

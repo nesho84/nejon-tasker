@@ -1,26 +1,20 @@
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useContext, useState } from "react";
-import { StyleSheet, View } from "react-native";
-// Contexts
-import { LanguageContext } from "@/context/LanguageContext";
-import { TasksContext } from "@/context/TasksContext";
-// Custom Hooks
-import useAppUpdate from "@/hooks/useAppUpdate";
-// Custom Components
 import AppLoading from "@/components/AppLoading";
 import AppModal from "@/components/AppModal";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
-import AddLabelButton from "@/components/labels/AddLabelButton";
 import EditLabel from "@/components/labels/EditLabel";
 import LabelsList from "@/components/labels/LabelsList";
+import { LanguageContext } from "@/context/LanguageContext";
+import { TasksContext } from "@/context/TasksContext";
+import { useContext, useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { useThemeStore } from '@/store/themeStore';
+import { MaterialIcons } from "@expo/vector-icons";
+import { Stack } from "expo-router";
 
 export default function LabelsScreen() {
     const { theme } = useThemeStore();
-
-    // const { theme } = useContext(ThemeContext);
     const { lang } = useContext(LanguageContext);
 
     const {
@@ -31,24 +25,9 @@ export default function LabelsScreen() {
         orderLabels,
     } = useContext(TasksContext);
 
-    const { checkForUpdates } = useAppUpdate(lang);
-
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [labelToEdit, setLabelToEdit] = useState(null);
-
-    // Check for app Update on screen focus
-    useFocusEffect(
-        useCallback(() => {
-            let mounted = true;
-            if (mounted) {
-                checkForUpdates();
-            }
-            return () => {
-                mounted = false;
-            };
-        }, [])
-    );
 
     // Handle Add Label
     const handleAddLabel = (text: string, color: string) => {
@@ -70,13 +49,25 @@ export default function LabelsScreen() {
 
     // Show a loading spinner
     if (isLoading) {
-        return <AppLoading lang={lang} />;
+        return <AppLoading />;
     }
 
     return (
         <AppScreen>
 
-            {/* <View style={[styles.container, { backgroundColor: theme.themes.appScreen.screen[theme.current] }]}> */}
+            {/* Add Label -> Navigation bar icon */}
+            <Stack.Screen
+                options={{
+                    headerRight: () => (
+                        <TouchableOpacity
+                            style={{ top: 1 }}
+                            onPress={() => setAddModalVisible(true)}>
+                            <MaterialIcons name="add" size={28} color={theme.text} />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 {/* -----Labels List----- */}
                 <LabelsList
@@ -86,15 +77,15 @@ export default function LabelsScreen() {
                     lang={lang}
                 />
 
-                {/* Add Label Button -> Footer */}
-                <AddLabelButton setModalVisible={setAddModalVisible} />
-
                 {/* Add Label Modal */}
                 <AppModal
                     modalVisible={addModalVisible}
                     setModalVisible={setAddModalVisible}
                 >
-                    <AddLabel handleAddLabel={handleAddLabel} lang={lang} />
+                    <AddLabel
+                        handleAddLabel={handleAddLabel}
+                        lang={lang}
+                    />
                 </AppModal>
 
                 {/* Edit Label Modal */}
