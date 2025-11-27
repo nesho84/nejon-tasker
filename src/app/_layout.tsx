@@ -1,11 +1,9 @@
-import { Stack } from "expo-router";
-import { Drawer } from 'react-native-drawer-layout';
-import { StatusBar } from "expo-status-bar";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
-import ThemeContextProvider from "@/context/ThemeContext";
 import LanguageContextProvider from "@/context/LanguageContext";
 import TasksContextProvider from "@/context/TasksContext";
+import ThemeContextProvider from "@/context/ThemeContext";
+import { Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
 
 const RootStack = () => {
   const seen = true;
@@ -23,7 +21,6 @@ const RootStack = () => {
           <Stack.Screen name="(main)" />
         </Stack.Protected>
       </Stack>
-      <StatusBar style="auto" />
     </GestureHandlerRootView>
   );
 }

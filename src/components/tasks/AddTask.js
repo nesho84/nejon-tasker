@@ -7,7 +7,7 @@ import {
   Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import colors from "@/constants/colors";
+import { LIGHT } from "@/constants/colors";
 
 export default function AddTask({ lang, ...props }) {
   const [task, setTask] = useState("");
@@ -42,7 +42,7 @@ export default function AddTask({ lang, ...props }) {
         style={{ backgroundColor: props.currentLabelColor }}
         onPress={handleAdd}
       >
-        <MaterialIcons name="add" size={45} color={colors.light} />
+        <MaterialIcons name="add" size={45} color={LIGHT.light} />
       </TouchableOpacity>
     </View>
   );
@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
   addTaskInput: {
     flex: 1,
     height: 46,
-    backgroundColor: colors.light,
-    color: colors.dark,
+    backgroundColor: LIGHT.light,
+    color: LIGHT.dark,
     fontSize: 16,
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 15,

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
-import colors from "@/constants/colors";
+import { LIGHT } from "@/constants/colors";
 import {
   StyleSheet,
   View,
@@ -34,7 +34,7 @@ export default function AppModal(props) {
             style={styles.closeIcon}
             name="close"
             size={35}
-            color={colors.light}
+            color={LIGHT.light}
             onPress={() => props.setModalVisible(false)}
           />
           {props.children}

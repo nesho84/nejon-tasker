@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import Hyperlink from 'react-native-hyperlink'
 import moment from "moment";
-import colors from "@/constants/colors";
+import { LIGHT } from "@/constants/colors";
 import { Ionicons } from '@expo/vector-icons';
 
 export default function EditTask({ handleEditTask, taskToEdit, lang }) {
@@ -98,7 +98,7 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
         {/* Show as TaskText or TaskInput */}
         <View style={[
           styles.textInputContainer,
-          { backgroundColor: taskInputActive ? colors.lighterDark : colors.lightDark }
+          { backgroundColor: taskInputActive ? LIGHT.lighterDark : LIGHT.lightDark }
         ]}>
           <ScrollView ref={scrollViewRef}>
             {taskInputActive === false ? (
@@ -109,7 +109,7 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
                     linkDefault={true}
                     linkStyle={{ color: '#2980b9' }}
                   >
-                    <Text style={{ color: colors.light, fontSize: 15 }}>{taskInput}</Text>
+                    <Text style={{ color: LIGHT.light, fontSize: 15 }}>{taskInput}</Text>
                   </Hyperlink>
                 </View>
               </TouchableWithoutFeedback>
@@ -117,7 +117,7 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
               // Active Input
               <View style={styles.textInputActive}>
                 <TextInput
-                  style={{ color: colors.light, fontSize: 15 }}
+                  style={{ color: LIGHT.light, fontSize: 15 }}
                   onFocus={handleTextInputFocus}
                   multiline={true}
                   autoFocus={true}
@@ -138,7 +138,7 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
           onPress={() => setDatePickerVisible(true)}>
           <TextInput
             style={{
-              color: hasActiveReminder() || inputRActive ? colors.success : colors.muted,
+              color: hasActiveReminder() || inputRActive ? LIGHT.success : LIGHT.muted,
             }}
             placeholder={lang.languages.setReminder[lang.current]}
             value={inputReminder}
@@ -147,7 +147,7 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
           <Ionicons
             name={hasActiveReminder() || inputRActive ? "notifications" : "notifications-off"}
             size={20}
-            color={hasActiveReminder() || inputRActive ? colors.success : colors.muted}
+            color={hasActiveReminder() || inputRActive ? LIGHT.success : LIGHT.muted}
           />
         </TouchableOpacity>
         <DateTimePickerModal
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.uncheckedItemDark,
+    borderColor: LIGHT.uncheckedItemDark,
     borderRadius: 5,
     marginTop: 50,
     marginBottom: 10,
@@ -201,16 +201,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: 35,
     marginBottom: 10,
-    backgroundColor: colors.lightDark,
+    backgroundColor: LIGHT.lightDark,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.uncheckedItemDark,
+    borderColor: LIGHT.uncheckedItemDark,
     borderRadius: 5,
     paddingHorizontal: 10
   },
   btnEdit: {
     height: 50,
     marginBottom: 10,
-    backgroundColor: colors.success,
+    backgroundColor: LIGHT.success,
     justifyContent: "center",
     padding: 11,
     borderRadius: 5,

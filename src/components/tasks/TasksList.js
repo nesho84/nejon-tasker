@@ -14,7 +14,7 @@ import DraggableFlatList from "react-native-draggable-flatlist";
 import { Ionicons } from "@expo/vector-icons";
 import TasksDivider from "@/components/tasks/TasksDivider";
 import AppNoItems from "@/components/AppNoItems";
-import colors from "@/constants/colors";
+import { LIGHT } from "@/constants/colors";
 import { ThemeContext } from "@/context/ThemeContext";
 import moment from "moment";
 
@@ -57,16 +57,16 @@ export default function TasksList(props) {
           theme.current === "light"
             ? {
               backgroundColor: item.checked
-                ? colors.checkedItem
-                : colors.uncheckedItem,
+                ? LIGHT.checkedItem
+                : LIGHT.uncheckedItem,
             }
             : {
               borderColor: item.checked
-                ? colors.checkedItemDark
-                : colors.uncheckedItemDark,
+                ? LIGHT.checkedItemDark
+                : LIGHT.uncheckedItemDark,
               borderWidth: 1,
             },
-          isActive && { backgroundColor: colors.muted },
+          isActive && { backgroundColor: LIGHT.muted },
         ]}
       >
 
@@ -78,9 +78,9 @@ export default function TasksList(props) {
               color={
                 item.checked
                   ? theme.current === "light"
-                    ? colors.successLight
-                    : colors.darkGrey
-                  : colors.light
+                    ? LIGHT.successLight
+                    : LIGHT.darkGrey
+                  : LIGHT.light
               }
               value={item.checked}
               onValueChange={(newValue) =>
@@ -102,13 +102,13 @@ export default function TasksList(props) {
                   theme.current === "light"
                     ? {
                       color: item.checked
-                        ? colors.checkedItemText
-                        : colors.light,
+                        ? LIGHT.checkedItemText
+                        : LIGHT.light,
                     }
                     : {
                       color: item.checked
-                        ? colors.checkedItemTextDark
-                        : colors.light,
+                        ? LIGHT.checkedItemTextDark
+                        : LIGHT.light,
                     },
                   { fontSize: 15 },
                 ]}
@@ -145,7 +145,7 @@ export default function TasksList(props) {
               )
             }
           >
-            <Ionicons name="close" size={24} color={colors.lightMuted} style={{ marginRight: 3 }} />
+            <Ionicons name="close" size={24} color={LIGHT.lightMuted} style={{ marginRight: 3 }} />
           </TouchableOpacity>
         </View>
 
@@ -155,7 +155,7 @@ export default function TasksList(props) {
           <Ionicons
             name={hasActiveReminder() ? "notifications" : "notifications-off"}
             size={16}
-            color={hasActiveReminder() ? colors.success : colors.dark}
+            color={hasActiveReminder() ? LIGHT.success : LIGHT.dark}
             style={{}}
           />
           {/* Reminder dateTime */}
@@ -164,7 +164,7 @@ export default function TasksList(props) {
               style={{
                 marginLeft: -80,
                 fontSize: 11,
-                color: hasActiveReminder() ? colors.success : colors.dark
+                color: hasActiveReminder() ? LIGHT.success : LIGHT.dark
               }}
             >
               {moment(item.reminder.dateTime).format('DD.MM.YYYY HH:mm')}
@@ -172,7 +172,7 @@ export default function TasksList(props) {
           )}
           {/* -----Share icon----- */}
           <TouchableOpacity activeOpacity={0.7} onPress={() => shareTask(item.name)}>
-            <Ionicons name="share-social" size={16} color={colors.dark} style={{}} />
+            <Ionicons name="share-social" size={16} color={LIGHT.dark} style={{}} />
           </TouchableOpacity>
           {/* -----Task dateTime----- */}
           <Text
@@ -180,13 +180,13 @@ export default function TasksList(props) {
               theme.current === "light"
                 ? {
                   color: item.checked
-                    ? colors.checkedItemText
-                    : colors.light,
+                    ? LIGHT.checkedItemText
+                    : LIGHT.light,
                 }
                 : {
                   color: item.checked
-                    ? colors.dark
-                    : colors.dark,
+                    ? LIGHT.dark
+                    : LIGHT.dark,
                 },
               { fontSize: 11 },
             ]}
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: colors.lightDark,
+    backgroundColor: LIGHT.lightDark,
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
     paddingHorizontal: 10,

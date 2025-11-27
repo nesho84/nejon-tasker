@@ -1,29 +1,14 @@
-import { useContext } from 'react';
-import {
-    Image,
-    Linking,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { useThemeStore } from '@/store/themeStore';
 import Constants from 'expo-constants';
-import { ThemeContext } from "@/context/ThemeContext";
+import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function AboutScreen() {
-    const { theme } = useContext(ThemeContext);
+    const { theme } = useThemeStore();
 
     const date = new Date();
 
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    backgroundColor: theme.themes.settingsScreen.container[theme.current],
-                },
-            ]}
-        >
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Image style={styles.logo} source={require("../../../assets/images/icon.png")} />
             <Text style={styles.title}>{Constants?.expoConfig?.name}</Text>
             <Text style={styles.versionText}>Version {Constants?.expoConfig?.version}</Text>

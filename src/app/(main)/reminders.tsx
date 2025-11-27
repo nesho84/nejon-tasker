@@ -1,9 +1,8 @@
+import { ThemeContext } from "@/context/ThemeContext";
 import { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ThemeContext } from "@/context/ThemeContext";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function SettingsScreen() {
+export default function ReimndersScreen() {
     const { theme, changeTheme } = useContext(ThemeContext);
 
     return (
@@ -16,17 +15,7 @@ export default function SettingsScreen() {
             ]}
         >
             <Text style={{ color: theme.themes.settingsScreen.textColor[theme.current] }}>
-                SettingsScreen
-
-                <MaterialCommunityIcons
-                    color={theme.themes.settingsScreen.switchColor[theme.current]}
-                    type="FontAwesome5"
-                    size={40}
-                    name={
-                        theme.current === "light" ? "toggle-switch-off" : "toggle-switch"
-                    }
-                    onPress={changeTheme}
-                />
+                ReimndersScreen
             </Text>
         </View>
     )

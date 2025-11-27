@@ -7,12 +7,12 @@ import {
   View,
   Alert,
 } from "react-native";
-import colors from "@/constants/colors";
-import AppColorPicker from "../AppColorPicker";
+import AppColorPicker from "@/components/AppColorPicker";
+import { LIGHT, labelBgColors } from "@/constants/colors";
 
 export default function AddLabel({ handleAddLabel, lang }) {
   const [label, setLabel] = useState("");
-  const [labelColor, setLabelColor] = useState(colors.labelBgColors[0]);
+  const [labelColor, setLabelColor] = useState(labelBgColors[0]);
 
   const handleAdd = () => {
     if (label.length < 1) {
@@ -71,10 +71,10 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 50,
     backgroundColor: "#fff",
-    color: colors.dark,
+    color: LIGHT.dark,
     fontSize: 20,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.light,
+    borderColor: LIGHT.light,
     borderBottomColor: "#DEE9F3",
     borderRadius: 5,
     paddingHorizontal: 15,

@@ -1,116 +1,116 @@
-import colors from "./colors";
+import { LIGHT } from "@/constants/colors";
 
 export default {
   appScreen: {
     screen: {
-      light: colors.light,
-      dark: colors.dark,
+      light: LIGHT.light,
+      dark: LIGHT.dark,
     },
     statusBar: {
-      light: colors.dodgerblue,
-      dark: colors.dark,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.dark,
     },
   },
   appNavbar: {
     header: {
-      light: colors.dodgerblue,
-      dark: colors.dark,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.dark,
     },
     textColor: {
-      light: colors.dark,
-      dark: colors.light,
+      light: LIGHT.dark,
+      dark: LIGHT.light,
     },
   },
   drawerNavigator: {
     drawerContentOptions: {
-      light: colors.dodgerblue,
-      dark: colors.dark,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.dark,
     },
   },
   mainNavHeaderStyle: {
     background: {
-      light: colors.dodgerblue,
-      dark: colors.dark,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.dark,
     },
   },
   appModal: {
     modalContainer: {
-      light: colors.dodgerblue,
-      dark: colors.dark,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.dark,
     },
   },
   addLabelButton: {
     container: {
-      light: colors.dodgerblue,
-      dark: colors.dark,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.dark,
     },
     addButton: {
-      light: colors.successLight,
-      dark: colors.darkGrey,
+      light: LIGHT.successLight,
+      dark: LIGHT.darkGrey,
     },
   },
   labelsList: {
     labelBoxTitleContainer: {
-      light: colors.dodgerblue,
-      dark: colors.darkGrey,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.darkGrey,
     },
   },
   appBox: {
     borderColor: {
-      light: colors.dodgerblue,
-      dark: colors.muted,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.muted,
     },
     textColor: {
-      light: colors.dodgerblue,
-      dark: colors.muted,
+      light: LIGHT.dodgerblue,
+      dark: LIGHT.muted,
     },
   },
   tasksDivider: {
     borderColor: {
-      light: colors.lightSkyBlue,
-      dark: colors.muted,
+      light: LIGHT.lightSkyBlue,
+      dark: LIGHT.muted,
     },
     textColor: {
-      light: colors.checkedItemText,
-      dark: colors.muted,
+      light: LIGHT.checkedItemText,
+      dark: LIGHT.muted,
     },
   },
   settingsScreen: {
     container: {
-      light: colors.white,
-      dark: colors.dark,
+      light: LIGHT.white,
+      dark: LIGHT.dark,
     },
     textColor: {
-      light: colors.dark,
-      dark: colors.light,
+      light: LIGHT.dark,
+      dark: LIGHT.light,
     },
     menuBorder: {
-      light: colors.lightSkyBlue,
-      dark: colors.muted,
+      light: LIGHT.lightSkyBlue,
+      dark: LIGHT.muted,
     },
     switchColor: {
-      light: colors.dark,
-      dark: colors.lightDodgerBlue,
+      light: LIGHT.dark,
+      dark: LIGHT.lightDodgerBlue,
     },
   },
   aboutScreen: {
     container: {
-      light: colors.white,
-      dark: colors.dark,
+      light: LIGHT.white,
+      dark: LIGHT.dark,
     },
   },
   appLoading: {
     loadingContainer: {
-      light: colors.light,
-      dark: colors.dark,
+      light: LIGHT.light,
+      dark: LIGHT.dark,
     },
     textColor: {
-      light: colors.muted,
-      dark: colors.muted,
+      light: LIGHT.muted,
+      dark: LIGHT.muted,
     },
     indicator: {
-      light: colors.muted,
-      dark: colors.light,
+      light: LIGHT.muted,
+      dark: LIGHT.light,
     },
   },
 };

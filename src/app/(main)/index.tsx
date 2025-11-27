@@ -1,26 +1,26 @@
-import { useContext, useCallback, useState, useLayoutEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useCallback, useContext, useState } from "react";
+import { StyleSheet, View } from "react-native";
 // Contexts
-import { ThemeContext } from "@/context/ThemeContext";
-import { TasksContext } from "@/context/TasksContext";
 import { LanguageContext } from "@/context/LanguageContext";
+import { TasksContext } from "@/context/TasksContext";
 // Custom Hooks
 import useAppUpdate from "@/hooks/useAppUpdate";
 // Custom Components
-import AppScreen from "@/components/AppScreen";
 import AppLoading from "@/components/AppLoading";
 import AppModal from "@/components/AppModal";
-import LabelsList from "@/components/labels/LabelsList";
+import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
-import EditLabel from "@/components/labels/EditLabel";
 import AddLabelButton from "@/components/labels/AddLabelButton";
-import AppNavbar from "@/components/AppNavbar";
-import { router, Stack } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import EditLabel from "@/components/labels/EditLabel";
+import LabelsList from "@/components/labels/LabelsList";
+
+import { useThemeStore } from '@/store/themeStore';
 
 export default function LabelsScreen() {
-    const { theme } = useContext(ThemeContext);
+    const { theme } = useThemeStore();
+
+    // const { theme } = useContext(ThemeContext);
     const { lang } = useContext(LanguageContext);
 
     const {
@@ -51,19 +51,19 @@ export default function LabelsScreen() {
     );
 
     // Handle Add Label
-    const handleAddLabel = (text, color) => {
+    const handleAddLabel = (text: string, color: string) => {
         addLabel(text, color);
         setAddModalVisible(false);
     };
 
     // Open modal for editing Label
-    const handleEditModal = (item) => {
+    const handleEditModal = (item: any) => {
         setLabelToEdit(item);
         setEditModalVisible(true);
     };
 
     // Handle Edit Label
-    const handleEditLabel = (labelKey, input, color) => {
+    const handleEditLabel = (labelKey: string, input: string, color: string) => {
         editLabel(labelKey, input, color);
         setEditModalVisible(false);
     };
@@ -76,7 +76,8 @@ export default function LabelsScreen() {
     return (
         <AppScreen>
 
-            <View style={[styles.container, { backgroundColor: theme.themes.appScreen.screen[theme.current] }]}>
+            {/* <View style={[styles.container, { backgroundColor: theme.themes.appScreen.screen[theme.current] }]}> */}
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
                 {/* -----Labels List----- */}
                 <LabelsList
                     labels={labels}
@@ -86,7 +87,7 @@ export default function LabelsScreen() {
                 />
 
                 {/* Add Label Button -> Footer */}
-                {/* <AddLabelButton setModalVisible={setAddModalVisible} /> */}
+                <AddLabelButton setModalVisible={setAddModalVisible} />
 
                 {/* Add Label Modal */}
                 <AppModal

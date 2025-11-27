@@ -1,12 +1,12 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, } from "react-native";
-import colors from "@/constants/colors";
+import { LIGHT, labelBgColors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function AppColorPicker({ labelColor, handleLabelColor }) {
     return (
         <View style={styles.selectColorContainer}>
-            {colors.labelBgColors.map((color) => {
+            {labelBgColors.map((color) => {
                 return (
                     <TouchableOpacity
                         key={color}
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         justifyContent: "space-between",
         marginVertical: 12,
-        borderColor: colors.lightMuted,
+        borderColor: LIGHT.lightMuted,
         borderWidth: 2,
         borderRadius: 5,
         padding: 2,

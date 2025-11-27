@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
-import colors from "@/constants/colors";
+import { LIGHT } from "@/constants/colors";
 import AppNoItems from "../AppNoItems";
 
 export default function LabelsList({
@@ -43,7 +43,7 @@ export default function LabelsList({
           <View
             style={[
               styles.labelBox,
-              { backgroundColor: isActive ? colors.muted : item.color },
+              { backgroundColor: isActive ? LIGHT.muted : item.color },
               { marginBottom: lastItem === item ? 6 : 0 },
             ]}
           >
@@ -51,26 +51,28 @@ export default function LabelsList({
             <View style={styles.labelBoxHeaderContainer}>
               {/* Icon before Label title */}
               <MaterialCommunityIcons
-                style={{ marginRight: 5 }}
+                style={{ marginTop: 2, marginRight: 6 }}
                 name="label-outline"
                 size={26}
-                color={colors.light}
-                onPress={() => { }}
+                color={LIGHT.light}
               />
+
               {/* Label title */}
               <Text style={styles.labelBoxTitle}>
                 {item.title}
               </Text>
+
               {/* EditLabel Icon */}
               <TouchableOpacity onPress={() => handleEditModal(item)}>
                 <MaterialCommunityIcons
-                  style={{ marginRight: -1 }}
+                  style={{ marginTop: 2 }}
                   name="playlist-edit"
                   size={31}
-                  color={colors.light}
+                  color={LIGHT.light}
                 />
               </TouchableOpacity>
             </View>
+
             {/* Tasks summary*/}
             <View style={styles.summaryContainer}>
               {/* Remaining count */}
@@ -80,6 +82,7 @@ export default function LabelsList({
                   {lang.languages.labels.remaining[lang.current]}
                 </Text>
               </View>
+
               {/* Reminders count */}
               <View style={{ alignItems: "center" }}>
                 <Text style={styles.count}>{taskActiveRemindersCount}</Text>
@@ -87,6 +90,7 @@ export default function LabelsList({
                   {lang.languages.labels.reminders[lang.current]}
                 </Text>
               </View>
+
               {/* Completed count */}
               <View style={{ alignItems: "center" }}>
                 <Text style={styles.count}>{checkedTasksCount}</Text>
@@ -95,6 +99,7 @@ export default function LabelsList({
                 </Text>
               </View>
             </View>
+
           </View>
         </TouchableOpacity>
       </ScaleDecorator>
@@ -142,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingBottom: 10,
     borderRadius: 5,
-    borderColor: colors.lightMuted,
+    borderColor: LIGHT.lightMuted,
     borderWidth: 0.3,
     elevation: 2,
     marginTop: 6,
@@ -166,19 +171,18 @@ const styles = StyleSheet.create({
   labelBoxTitle: {
     flexShrink: 1,
     paddingVertical: 5,
-    color: colors.light,
+    color: LIGHT.light,
     fontSize: 21,
     fontWeight: "bold",
-    marginBottom: 1,
     marginRight: "auto"
   },
   count: {
     fontSize: 24,
-    color: colors.light,
+    color: LIGHT.light,
   },
   subtitle: {
     fontSize: 12,
     fontWeight: "700",
-    color: colors.light,
+    color: LIGHT.light,
   },
 });
