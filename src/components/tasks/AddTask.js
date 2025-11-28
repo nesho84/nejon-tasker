@@ -1,22 +1,20 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Alert,
-} from "react-native";
+import { useState } from "react";
+import { StyleSheet, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { LIGHT } from "@/constants/colors";
+import { useThemeStore } from "@/store/themeStore";
+import { useLanguageStore } from "@/store/languageStore";
 
-export default function AddTask({ lang, ...props }) {
+export default function AddTask({ ...props }) {
+  const { theme } = useThemeStore();
+  const { tr } = useLanguageStore();
+
   const [task, setTask] = useState("");
 
   const handleAdd = () => {
     if (task.length < 1) {
       Alert.alert(
-        `${lang.languages.alerts.requiredInputField.title[lang.current]}`,
-        `${lang.languages.alerts.requiredInputField.message[lang.current]}`,
+        tr.alerts.requiredField.title,
+        tr.alerts.requiredField.message,
         [{ task: "OK" }],
         { cancelable: false }
       );
@@ -30,7 +28,7 @@ export default function AddTask({ lang, ...props }) {
   return (
     <View style={styles.addTaskContainer}>
       <TextInput
-        style={styles.addTaskInput}
+        style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.dark }]}
         multiline
         autoCapitalize="none"
         autoCorrect={false}
@@ -42,7 +40,7 @@ export default function AddTask({ lang, ...props }) {
         style={{ backgroundColor: props.currentLabelColor }}
         onPress={handleAdd}
       >
-        <MaterialIcons name="add" size={45} color={LIGHT.light} />
+        <MaterialIcons name="add" size={45} color={theme.light} />
       </TouchableOpacity>
     </View>
   );
@@ -61,8 +59,6 @@ const styles = StyleSheet.create({
   addTaskInput: {
     flex: 1,
     height: 46,
-    backgroundColor: LIGHT.light,
-    color: LIGHT.dark,
     fontSize: 16,
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 15,

@@ -1,6 +1,5 @@
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
-import React from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 export default function AppLoading() {

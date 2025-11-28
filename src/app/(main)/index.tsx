@@ -3,19 +3,19 @@ import AppModal from "@/components/AppModal";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
-import LabelsList from "@/components/labels/LabelsList";
-import { LanguageContext } from "@/context/LanguageContext";
 import { TasksContext } from "@/context/TasksContext";
 import { useContext, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 
+import LabelsList from "@/components/labels/LabelsList";
+import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from '@/store/themeStore';
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 
 export default function HomeScreen() {
     const { theme } = useThemeStore();
-    const { lang } = useContext(LanguageContext);
+    const { language, tr } = useLanguageStore();
 
     const {
         labels,
@@ -55,27 +55,26 @@ export default function HomeScreen() {
     return (
         <AppScreen>
 
-            {/* Add Label -> Navigation bar icon */}
+            {/* Navigation bar icons right */}
             <Stack.Screen
                 options={{
                     headerRight: () => (
                         <>
                             {/* Add Label */}
                             <TouchableOpacity
-                                style={{ top: 1, marginRight: 16 }}
-                                onPress={() => setAddModalVisible(true)}>
-                                <MaterialIcons name="add" size={28} color={theme.text} />
+                                style={{ top: 1, marginRight: 26 }}
+                                onPress={() => setAddModalVisible(true)}
+                            >
+                                <MaterialCommunityIcons name="folder-plus-outline" size={26} color={theme.text} />
                             </TouchableOpacity>
 
                             {/* Refresh */}
-                            <MaterialCommunityIcons
-                                name="dots-vertical"
-                                type="material-community"
-                                color={theme.text}
-                                size={28}
-                                style={{ marginRight: -3 }}
+                            <TouchableOpacity
+                                style={{ top: 1, marginRight: -3 }}
                                 onPress={() => { Alert.alert('warning', 'Not implemented!') }}
-                            />
+                            >
+                                <MaterialCommunityIcons name="refresh" size={26} color={theme.text} />
+                            </TouchableOpacity>
                         </>
                     ),
                 }}
@@ -87,7 +86,6 @@ export default function HomeScreen() {
                     labels={labels}
                     orderLabels={orderLabels}
                     handleEditModal={handleEditModal}
-                    lang={lang}
                 />
 
                 {/* Add Label Modal */}
@@ -97,7 +95,6 @@ export default function HomeScreen() {
                 >
                     <AddLabel
                         handleAddLabel={handleAddLabel}
-                        lang={lang}
                     />
                 </AppModal>
 
@@ -109,7 +106,6 @@ export default function HomeScreen() {
                     <EditLabel
                         labelToEdit={labelToEdit}
                         handleEditLabel={handleEditLabel}
-                        lang={lang}
                     />
                 </AppModal>
             </View>

@@ -1,28 +1,19 @@
-import { useContext, useState, useLayoutEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Keyboard,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { ThemeContext } from "@/context/ThemeContext";
-import { LanguageContext } from "@/context/LanguageContext";
-import { TasksContext } from "@/context/TasksContext";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import colors from "@/constants/colors";
-import AppScreen from "@/components/AppScreen";
 import AppModal from "@/components/AppModal";
+import AppScreen from "@/components/AppScreen";
+import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
 import TasksList from "@/components/tasks/TasksList";
-import AddTask from "@/components/tasks/AddTask";
-import { color } from "react-native-elements/dist/helpers";
+import { TasksContext } from "@/context/TasksContext";
+import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { useContext, useLayoutEffect, useState } from "react";
+import { Alert, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 
 export default function LabelDetailsScreen() {
-  const { theme } = useContext(ThemeContext);
-  const { lang } = useContext(LanguageContext);
+  const { theme } = useThemeStore();
+  const { language, tr } = useLanguageStore();
 
   const navigation = useNavigation();
   const { labelKey } = useLocalSearchParams();
@@ -40,13 +31,13 @@ export default function LabelDetailsScreen() {
 
   // Get the current Label
   const currentLabel = labels.find(
-    (label) => label.key === labelKey
+    (label: any) => label.key === labelKey
   );
 
   // Filter Tasks unchecked and checked
-  const filterTasks = (isChecked) => {
+  const filterTasks = (isChecked: any) => {
     return currentLabel && currentLabel.tasks
-      ? currentLabel.tasks.filter((task) => task.checked === isChecked)
+      ? currentLabel.tasks.filter((task: any) => task.checked === isChecked)
       : [];
   };
 
@@ -55,44 +46,44 @@ export default function LabelDetailsScreen() {
   const [taskToEdit, setTaskToEdit] = useState(null);
 
   // Add Task to Storage
-  const handleAddTask = (text) => {
+  const handleAddTask = (text: string) => {
     addTask(currentLabel.key, text);
     inputRef.current.clear();
     Keyboard.dismiss();
   };
 
   // Open modal for editing Task
-  const handleEditModal = (item) => {
+  const handleEditModal = (item: any) => {
     setTaskToEdit(item);
     setEditModalVisible(true);
   };
 
   // Edit Task in Storage
-  const handleEditTask = (taskObj) => {
+  const handleEditTask = (taskObj: any) => {
     editTask(taskObj);
     setEditModalVisible(false);
   };
 
   // Delete task from the Storage
-  const handleDeleteTask = (taskKey) => {
+  const handleDeleteTask = (taskKey: string) => {
     deleteTask(taskKey);
   };
 
   // Delete the entire label from the Storage
-  const handleDeleteLabel = (labelKey) => {
+  const handleDeleteLabel = (labelKey: string) => {
     Alert.alert(
-      `${lang.languages.alerts.deleteLabel.title[lang.current]}`,
-      `${lang.languages.alerts.deleteLabel.message[lang.current]}`,
+      `${tr.alerts.deleteLabel.title}`,
+      `${tr.alerts.deleteLabel.message}`,
       [
         {
-          text: `${lang.languages.alerts.yes[lang.current]}`,
+          text: `${tr.buttons.yes}`,
           onPress: () => {
             deleteLabel(labelKey);
             router.back();
           },
         },
         {
-          text: `${lang.languages.alerts.no[lang.current]}`,
+          text: `${tr.buttons.no}`,
         },
       ],
       { cancelable: false }
@@ -100,13 +91,13 @@ export default function LabelDetailsScreen() {
   };
 
   // Toggle task to checked or unchecked
-  const handleCheckbox = (newValue, itemKey) => {
+  const handleCheckbox = (newValue: boolean, itemKey: string) => {
     checkUncheckTask(itemKey);
     setToggleCheckBox(newValue);
   };
 
   // Order Tasks
-  const handleOrderTasks = (orderedTasks) => {
+  const handleOrderTasks = (orderedTasks: any) => {
     orderTasks(currentLabel.key, orderedTasks);
   };
 
@@ -121,8 +112,8 @@ export default function LabelDetailsScreen() {
           <MaterialCommunityIcons
             name="delete-alert-outline"
             size={24}
-            color={colors.danger}
-            style={{ marginRight: 12 }}
+            color={theme.danger}
+            style={{ marginRight: 6 }}
           />
         </TouchableOpacity>
       ),
@@ -137,7 +128,7 @@ export default function LabelDetailsScreen() {
           style={[
             styles.container,
             {
-              backgroundColor: theme.themes.settingsScreen.container[theme.current],
+              backgroundColor: theme.background,
             },
           ]}
         >
@@ -159,16 +150,8 @@ export default function LabelDetailsScreen() {
               {currentLabel.title}
             </Text>
             {/* Header subtitle */}
-            <Text
-              style={{
-                fontSize: 14,
-                color: colors.muted,
-                paddingHorizontal: 10,
-              }}
-            >
-              {`${filterTasks(true).length} ${lang.languages.labels.of[lang.current]
-                } ${currentLabel.tasks ? currentLabel.tasks.length : "0"} ${lang.languages.labels.tasks[lang.current]
-                }`}
+            <Text style={{ fontSize: 14, color: theme.muted, paddingHorizontal: 10 }}>
+              {`${filterTasks(true).length} ${tr.labels.of} ${currentLabel.tasks ? currentLabel.tasks.length : "0"} ${tr.labels.tasks}`}
             </Text>
           </View>
 
@@ -180,7 +163,6 @@ export default function LabelDetailsScreen() {
             handleCheckbox={handleCheckbox}
             handleOrderTasks={handleOrderTasks}
             handleDeleteTask={handleDeleteTask}
-            lang={lang}
           />
 
           {/* Add Task Input */}
@@ -188,8 +170,7 @@ export default function LabelDetailsScreen() {
             inputRef={inputRef}
             handleAddTask={handleAddTask}
             currentLabelColor={currentLabel.color}
-            placeholder={lang.languages.inputPlaceholder[lang.current]}
-            lang={lang}
+            placeholder={tr.forms.inputPlaceholder}
           />
 
           {/* -----Edit Task Modal----- */}
@@ -200,7 +181,6 @@ export default function LabelDetailsScreen() {
             <EditTask
               taskToEdit={taskToEdit}
               handleEditTask={handleEditTask}
-              lang={lang}
             />
           </AppModal>
         </View>

@@ -1,7 +1,7 @@
 import DrawerContent from '@/components/DrawerContent';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack } from "expo-router";
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -15,11 +15,15 @@ export default function StackLayout() {
 
     return (
         <Drawer
+            drawerType='front'
             open={drawerOpen}
             onOpen={() => setDrawerOpen(true)}
             onClose={() => setDrawerOpen(false)}
             drawerStyle={{ width: "77%" }}
-            renderDrawerContent={() => <DrawerContent close={() => setDrawerOpen(false)} />} // Drawer content and links
+            // Drawer content and menu links
+            renderDrawerContent={() => {
+                return <DrawerContent close={() => setDrawerOpen(false)} />
+            }}
         >
             <Stack
                 screenOptions={{
@@ -37,7 +41,7 @@ export default function StackLayout() {
                             <TouchableOpacity
                                 style={{ top: 1, paddingRight: 15 }}
                                 onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}>
-                                <Ionicons name="menu" size={28} color={theme.text} />
+                                <MaterialCommunityIcons name="menu" size={28} color={theme.text} />
                             </TouchableOpacity>
                         ),
                     }}

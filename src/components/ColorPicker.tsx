@@ -1,16 +1,20 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity, View, } from "react-native";
 import { LIGHT, labelBgColors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import { StyleSheet, TouchableOpacity, View, } from "react-native";
 
-export default function AppColorPicker({ labelColor, handleLabelColor }) {
+interface Props {
+    labelColor: string,
+    handleLabelColor: (value: string) => void;
+}
+
+export default function ColorPicker({ labelColor, handleLabelColor }: Props) {
     return (
-        <View style={styles.selectColorContainer}>
+        <View style={styles.container}>
             {labelBgColors.map((color) => {
                 return (
                     <TouchableOpacity
                         key={color}
-                        style={[styles.selectColor, { backgroundColor: color }]}
+                        style={[styles.selectedColor, { backgroundColor: color }]}
                         onPress={() => handleLabelColor(color)}
                     >
                         {labelColor === color && (
@@ -24,7 +28,7 @@ export default function AppColorPicker({ labelColor, handleLabelColor }) {
 }
 
 const styles = StyleSheet.create({
-    selectColorContainer: {
+    container: {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
@@ -34,7 +38,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 2,
     },
-    selectColor: {
+    selectedColor: {
         width: 30,
         height: 30,
         borderRadius: 5,

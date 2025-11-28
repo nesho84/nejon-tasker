@@ -1,24 +1,22 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Alert,
-} from "react-native";
-import AppColorPicker from "@/components/AppColorPicker";
-import { LIGHT, labelBgColors } from "@/constants/colors";
+import { useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
+import ColorPicker from "@/components/ColorPicker";
+import { labelBgColors } from "@/constants/colors";
+import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
 
-export default function AddLabel({ handleAddLabel, lang }) {
+export default function AddLabel({ handleAddLabel }) {
+  const { theme } = useThemeStore();
+  const { tr } = useLanguageStore();
+
   const [label, setLabel] = useState("");
   const [labelColor, setLabelColor] = useState(labelBgColors[0]);
 
   const handleAdd = () => {
     if (label.length < 1) {
       Alert.alert(
-        `${lang.languages.alerts.requiredInputField.title[lang.current]}`,
-        `${lang.languages.alerts.requiredInputField.message[lang.current]}`,
+        tr.alerts.requiredField.title,
+        tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
@@ -32,7 +30,7 @@ export default function AddLabel({ handleAddLabel, lang }) {
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: labelColor }]}>
-        {lang.languages.labels.newLabel[lang.current]}
+        {tr.forms.newLabel}
       </Text>
 
       <TextInput
@@ -40,18 +38,18 @@ export default function AddLabel({ handleAddLabel, lang }) {
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={(text) => setLabel(text)}
-        style={styles.input}
-        placeholder={lang.languages.inputPlaceholder[lang.current]}
+        style={[styles.input, { color: theme.dark, borderColor: theme.lightMuted }]}
+        placeholder={tr.forms.inputPlaceholder}
       />
 
-      <AppColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
+      <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
 
       <TouchableOpacity
         style={[styles.btnAdd, { backgroundColor: labelColor }]}
         onPress={handleAdd}
       >
         <Text style={styles.btnAddText}>
-          {lang.languages.saveButton[lang.current]}
+          {tr.buttons.save}
         </Text>
       </TouchableOpacity>
     </View>
@@ -71,10 +69,8 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 50,
     backgroundColor: "#fff",
-    color: LIGHT.dark,
     fontSize: 20,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: LIGHT.lightMuted,
     borderBottomColor: "#DEE9F3",
     borderRadius: 5,
     paddingHorizontal: 15,

@@ -1,25 +1,19 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Alert,
-  TouchableWithoutFeedback,
-  ScrollView,
-  Platform,
-} from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, TouchableWithoutFeedback, ScrollView, Platform } from "react-native";
 import Hyperlink from 'react-native-hyperlink'
 import moment from "moment";
-import { LIGHT } from "@/constants/colors";
 import { Ionicons } from '@expo/vector-icons';
+import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
 
-export default function EditTask({ handleEditTask, taskToEdit, lang }) {
+export default function EditTask({ handleEditTask, taskToEdit }) {
+  const { theme } = useThemeStore();
+  const { tr } = useLanguageStore();
+
   const taskToEditDateTime = taskToEdit.reminder?.dateTime ?? null;
   const dateTimeToString = (date) => {
-    return date ? moment(date).format("DD.MM.YYYY HH:mm") : lang.languages.setReminder[lang.current];
+    return date ? moment(date).format("DD.MM.YYYY HH:mm") : tr.forms.setReminder;
   }
   const [taskInput, setTaskInput] = useState(taskToEdit.name.toString());
   const [taskInputActive, setTaskInputActive] = useState(false);
@@ -47,8 +41,8 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
     const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
     if (timeDifferenceInSeconds <= 0) {
       Alert.alert(
-        `${lang.languages.alerts.reminderDateTime.title[lang.current]}`,
-        `${lang.languages.alerts.reminderDateTime.message[lang.current]}`,
+        tr.alerts.invalidDate.title,
+        tr.alerts.invalidDate.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
@@ -65,8 +59,8 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
   const handleEdit = () => {
     if (taskInput.length < 1) {
       Alert.alert(
-        `${lang.languages.alerts.requiredInputField.title[lang.current]}`,
-        `${lang.languages.alerts.requiredInputField.message[lang.current]}`,
+        tr.alerts.requiredField.title,
+        tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
@@ -98,7 +92,10 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
         {/* Show as TaskText or TaskInput */}
         <View style={[
           styles.textInputContainer,
-          { backgroundColor: taskInputActive ? LIGHT.lighterDark : LIGHT.lightDark }
+          {
+            backgroundColor: taskInputActive ? theme.lighterDark : theme.lightDark,
+            borderColor: theme.uncheckedItemDark,
+          }
         ]}>
           <ScrollView ref={scrollViewRef}>
             {taskInputActive === false ? (
@@ -109,7 +106,7 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
                     linkDefault={true}
                     linkStyle={{ color: '#2980b9' }}
                   >
-                    <Text style={{ color: LIGHT.light, fontSize: 15 }}>{taskInput}</Text>
+                    <Text style={{ color: theme.light, fontSize: 15 }}>{taskInput}</Text>
                   </Hyperlink>
                 </View>
               </TouchableWithoutFeedback>
@@ -117,14 +114,14 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
               // Active Input
               <View style={styles.textInputActive}>
                 <TextInput
-                  style={{ color: LIGHT.light, fontSize: 15 }}
+                  style={{ color: theme.light, fontSize: 15 }}
                   onFocus={handleTextInputFocus}
                   multiline={true}
                   autoFocus={true}
                   autoCapitalize="none"
                   autoCorrect={false}
                   onChangeText={(text) => setTaskInput(text)}
-                  placeholder={lang.languages.inputPlaceholder[lang.current]}
+                  placeholder={tr.forms.inputPlaceholder}
                   value={taskInput}
                 />
               </View>
@@ -134,22 +131,23 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
 
         {/* Custom DateTime picker input */}
         <TouchableOpacity
-          style={styles.inputDateContainer}
+          style={[styles.inputDateContainer, { backgroundColor: theme.lightDark, borderColor: theme.uncheckedItemDark }]}
           onPress={() => setDatePickerVisible(true)}>
           <TextInput
             style={{
-              color: hasActiveReminder() || inputRActive ? LIGHT.success : LIGHT.muted,
+              color: hasActiveReminder() || inputRActive ? theme.success : theme.muted,
             }}
-            placeholder={lang.languages.setReminder[lang.current]}
+            placeholder={tr.forms.setReminder}
             value={inputReminder}
             editable={false}
           />
           <Ionicons
             name={hasActiveReminder() || inputRActive ? "notifications" : "notifications-off"}
             size={20}
-            color={hasActiveReminder() || inputRActive ? LIGHT.success : LIGHT.muted}
+            color={hasActiveReminder() || inputRActive ? theme.success : theme.muted}
           />
         </TouchableOpacity>
+
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="datetime"
@@ -160,9 +158,9 @@ export default function EditTask({ handleEditTask, taskToEdit, lang }) {
         />
 
         {/* Save button */}
-        <TouchableOpacity style={styles.btnEdit} onPress={handleEdit}>
+        <TouchableOpacity style={[styles.btnEdit, { backgroundColor: theme.success }]} onPress={handleEdit}>
           <Text style={styles.btnEditText}>
-            {lang.languages.saveButton[lang.current]}
+            {tr.buttons.save}
           </Text>
         </TouchableOpacity>
       </View>
@@ -181,7 +179,6 @@ const styles = StyleSheet.create({
   textInputContainer: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: LIGHT.uncheckedItemDark,
     borderRadius: 5,
     marginTop: 50,
     marginBottom: 10,
@@ -201,16 +198,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: 35,
     marginBottom: 10,
-    backgroundColor: LIGHT.lightDark,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: LIGHT.uncheckedItemDark,
     borderRadius: 5,
     paddingHorizontal: 10
   },
   btnEdit: {
     height: 50,
     marginBottom: 10,
-    backgroundColor: LIGHT.success,
     justifyContent: "center",
     padding: 11,
     borderRadius: 5,

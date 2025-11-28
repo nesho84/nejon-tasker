@@ -1,7 +1,7 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { LanguageContext } from "@/context/LanguageContext";
+import { useLanguageStore } from '@/store/languageStore';
 
 // Notification handler
 Notifications.setNotificationHandler({
@@ -14,7 +14,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function useNotifications(refreshContext) {
-    const { lang } = useContext(LanguageContext);
+    const { language, tr } = useLanguageStore();
 
     // Function to schedule a notification
     const scheduleNotification = async (taskObj) => {
@@ -33,7 +33,7 @@ export default function useNotifications(refreshContext) {
             if (timeDifferenceInSeconds > 0) {
                 notificationId = await Notifications.scheduleNotificationAsync({
                     content: {
-                        title: lang.current ? lang.languages.notifications.title[lang.current] : "Task Reminder",
+                        title: tr.notifications.taskReminder,
                         body: `${taskObj.name.substring(0, 40)}...`,
                         data: { taskKey: taskObj.key },
                     },
@@ -63,12 +63,8 @@ export default function useNotifications(refreshContext) {
             const { status } = await Notifications.requestPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert(
-                    lang.current
-                        ? lang.languages.alerts.notificationPermission.title[lang.current]
-                        : "Notification Permission",
-                    lang.current
-                        ? lang.languages.alerts.notificationPermission.message[lang.current]
-                        : "You have denied notification permission. Please enable it in your device settings to receive notifications.",
+                    tr.alerts.notificationPermission.title,
+                    tr.alerts.notificationPermission.message,
                     [
                         {
                             text: "OK",

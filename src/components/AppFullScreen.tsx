@@ -1,28 +1,35 @@
-import { useContext } from "react";
-import {
-  StyleSheet,
-  View,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard
-} from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useThemeStore } from "@/store/themeStore";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { ThemeContext } from "@/context/ThemeContext";
+import { StatusBar } from "expo-status-bar";
+import { ReactNode } from "react";
+import {
+  Keyboard,
+  Platform,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function Screen({ children }) {
-  const { theme } = useContext(ThemeContext);
+type ScreenProps = {
+  children: ReactNode;
+};
+
+export default function Screen({ children }: ScreenProps) {
+  const { mode, theme } = useThemeStore();
+
+  const barStyle = mode === "dark" ? "light" : "dark";
+
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight(); // 0 if headerShown: false
-  const barStyle = theme.current === "dark" ? "light" : "dark";
 
   // Fix for Android 14+ safe area regression
   // Top inset: only for screens without a header
   let topInset = 0;
   if (headerHeight === 0) {
     if (Platform.OS === "android") {
-      topInset = StatusBar.currentHeight || 24;
+      topInset = RNStatusBar.currentHeight || 24;
     } else {
       topInset = insets.top;
     }
@@ -39,13 +46,13 @@ function Screen({ children }) {
       <View
         style={[
           styles.container, {
-            backgroundColor: theme.themes.appScreen.screen[theme.current],
+            backgroundColor: theme.background,
             paddingTop: topInset,
             paddingBottom: bottomInset
           }]}
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{ flex: 1, backgroundColor: theme.themes.appScreen.screen[theme.current], }}>
+          <View style={{ flex: 1, backgroundColor: theme.background, }}>
             {children}
           </View>
         </TouchableWithoutFeedback>
@@ -59,5 +66,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export default Screen;

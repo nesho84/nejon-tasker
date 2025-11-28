@@ -1,19 +1,15 @@
-import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import DraggableFlatList, {
-  ScaleDecorator,
-} from "react-native-draggable-flatlist";
-import { LIGHT } from "@/constants/colors";
+import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
 import AppNoItems from "../AppNoItems";
+import { useThemeStore } from "@/store/themeStore";
+import { useLanguageStore } from "@/store/languageStore";
 
-export default function LabelsList({
-  labels,
-  orderLabels,
-  handleEditModal,
-  lang,
-}) {
+export default function LabelsList({ labels, orderLabels, handleEditModal }) {
+  const { theme } = useThemeStore();
+  const { tr } = useLanguageStore();
+
   const lastItem = labels[labels.length - 1];
 
   // Render Single Label template
@@ -43,8 +39,11 @@ export default function LabelsList({
           <View
             style={[
               styles.labelBox,
-              { backgroundColor: isActive ? LIGHT.muted : item.color },
-              { marginBottom: lastItem === item ? 6 : 0 },
+              {
+                backgroundColor: isActive ? theme.muted : item.color,
+                borderColor: theme.lightMuted,
+                marginBottom: lastItem === item ? 6 : 0,
+              },
             ]}
           >
             {/* -----Item title and icons Container----- */}
@@ -54,11 +53,11 @@ export default function LabelsList({
                 style={{ marginTop: 2, marginRight: 6 }}
                 name="label-outline"
                 size={26}
-                color={LIGHT.light}
+                color={theme.text}
               />
 
               {/* Label title */}
-              <Text style={styles.labelBoxTitle}>
+              <Text style={[styles.labelBoxTitle, { color: theme.text }]}>
                 {item.title}
               </Text>
 
@@ -68,7 +67,7 @@ export default function LabelsList({
                   style={{ marginTop: 2 }}
                   name="playlist-edit"
                   size={31}
-                  color={LIGHT.light}
+                  color={theme.text}
                 />
               </TouchableOpacity>
             </View>
@@ -77,25 +76,25 @@ export default function LabelsList({
             <View style={styles.summaryContainer}>
               {/* Remaining count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.count}>{unCheckedTasksCount}</Text>
-                <Text style={styles.subtitle}>
-                  {lang.languages.labels.remaining[lang.current]}
+                <Text style={[styles.count, { color: theme.text }]}>{unCheckedTasksCount}</Text>
+                <Text style={[styles.subtitle, { color: theme.text }]}>
+                  {tr.labels.remaining}
                 </Text>
               </View>
 
               {/* Reminders count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.count}>{taskActiveRemindersCount}</Text>
-                <Text style={styles.subtitle}>
-                  {lang.languages.labels.reminders[lang.current]}
+                <Text style={[styles.count, { color: theme.text }]}>{taskActiveRemindersCount}</Text>
+                <Text style={[styles.subtitle, { color: theme.text }]}>
+                  {tr.labels.reminders}
                 </Text>
               </View>
 
               {/* Completed count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.count}>{checkedTasksCount}</Text>
-                <Text style={styles.subtitle}>
-                  {lang.languages.labels.completed[lang.current]}
+                <Text style={[styles.count, { color: theme.text }]}>{checkedTasksCount}</Text>
+                <Text style={[styles.subtitle, { color: theme.text }]}>
+                  {tr.labels.completed}
                 </Text>
               </View>
             </View>
@@ -147,7 +146,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingBottom: 10,
     borderRadius: 5,
-    borderColor: LIGHT.lightMuted,
     borderWidth: 0.3,
     elevation: 2,
     marginTop: 6,
@@ -171,18 +169,15 @@ const styles = StyleSheet.create({
   labelBoxTitle: {
     flexShrink: 1,
     paddingVertical: 5,
-    color: LIGHT.light,
     fontSize: 21,
     fontWeight: "bold",
     marginRight: "auto"
   },
   count: {
     fontSize: 24,
-    color: LIGHT.light,
   },
   subtitle: {
     fontSize: 12,
     fontWeight: "700",
-    color: LIGHT.light,
   },
 });

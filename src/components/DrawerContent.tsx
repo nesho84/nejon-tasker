@@ -92,7 +92,7 @@ export default function DrawerContent({ close }: Props) {
                     onPress={() => { }}
                 >
                     <MaterialIcons name="add" size={24} color={theme.text} />
-                    <Text style={[styles.menuLabel, { fontSize: 14, color: theme.text }]}>Create new Label</Text>
+                    <Text style={[styles.menuLabel, { fontSize: 14, color: theme.text }]}>Create new label</Text>
                 </TouchableOpacity>
 
                 {/* Divider */}

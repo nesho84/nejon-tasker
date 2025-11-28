@@ -1,24 +1,21 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Alert,
-} from "react-native";
-import { LIGHT } from "@/constants/colors";
-import AppColorPicker from "../AppColorPicker";
+import { useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
+import ColorPicker from "@/components/ColorPicker";
+import { useThemeStore } from "@/store/themeStore";
+import { useLanguageStore } from "@/store/languageStore";
 
-export default function EditLabel({ labelToEdit, handleEditLabel, lang }) {
+export default function EditLabel({ labelToEdit, handleEditLabel }) {
+  const { theme } = useThemeStore();
+  const { tr } = useLanguageStore();
+
   const [input, setInput] = useState(labelToEdit.title);
   const [labelColor, setLabelColor] = useState(labelToEdit.color);
 
   const handleEdit = () => {
     if (input.length < 1) {
       Alert.alert(
-        `${lang.languages.alerts.requiredInputField.title[lang.current]}`,
-        `${lang.languages.alerts.requiredInputField.message[lang.current]}`,
+        tr.alerts.requiredField.title,
+        tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
@@ -32,7 +29,7 @@ export default function EditLabel({ labelToEdit, handleEditLabel, lang }) {
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: labelColor }]}>
-        {lang.languages.labels.editLabel[lang.current]}
+        {tr.forms.editLabel}
       </Text>
 
       <TextInput
@@ -40,19 +37,19 @@ export default function EditLabel({ labelToEdit, handleEditLabel, lang }) {
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={(text) => setInput(text)}
-        style={styles.input}
-        placeholder={lang.languages.inputPlaceholder[lang.current]}
+        style={[styles.input, { color: theme.dark, borderColor: theme.lightMuted }]}
+        placeholder={tr.forms.inputPlaceholder}
         value={input}
       />
 
-      <AppColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
+      <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
 
       <TouchableOpacity
         style={[styles.btnEdit, { backgroundColor: labelColor }]}
         onPress={handleEdit}
       >
         <Text style={styles.btnEditText}>
-          {lang.languages.saveButton[lang.current]}
+          {tr.buttons.save}
         </Text>
       </TouchableOpacity>
     </View>
@@ -72,10 +69,8 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 50,
     backgroundColor: "#fff",
-    color: LIGHT.dark,
     fontSize: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: LIGHT.lightMuted,
     borderBottomColor: "#DEE9F3",
     borderRadius: 5,
     paddingHorizontal: 15,
