@@ -18,7 +18,7 @@ export default function StackLayout() {
             open={drawerOpen}
             onOpen={() => setDrawerOpen(true)}
             onClose={() => setDrawerOpen(false)}
-            drawerStyle={{ width: "70%" }}
+            drawerStyle={{ width: "77%" }}
             renderDrawerContent={() => <DrawerContent close={() => setDrawerOpen(false)} />} // Drawer content and links
         >
             <Stack

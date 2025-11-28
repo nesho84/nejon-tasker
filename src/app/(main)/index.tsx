@@ -7,13 +7,13 @@ import LabelsList from "@/components/labels/LabelsList";
 import { LanguageContext } from "@/context/LanguageContext";
 import { TasksContext } from "@/context/TasksContext";
 import { useContext, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { useThemeStore } from '@/store/themeStore';
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 
-export default function LabelsScreen() {
+export default function HomeScreen() {
     const { theme } = useThemeStore();
     const { lang } = useContext(LanguageContext);
 
@@ -59,17 +59,30 @@ export default function LabelsScreen() {
             <Stack.Screen
                 options={{
                     headerRight: () => (
-                        <TouchableOpacity
-                            style={{ top: 1 }}
-                            onPress={() => setAddModalVisible(true)}>
-                            <MaterialIcons name="add" size={28} color={theme.text} />
-                        </TouchableOpacity>
+                        <>
+                            {/* Add Label */}
+                            <TouchableOpacity
+                                style={{ top: 1, marginRight: 16 }}
+                                onPress={() => setAddModalVisible(true)}>
+                                <MaterialIcons name="add" size={28} color={theme.text} />
+                            </TouchableOpacity>
+
+                            {/* Refresh */}
+                            <MaterialCommunityIcons
+                                name="dots-vertical"
+                                type="material-community"
+                                color={theme.text}
+                                size={28}
+                                style={{ marginRight: -3 }}
+                                onPress={() => { Alert.alert('warning', 'Not implemented!') }}
+                            />
+                        </>
                     ),
                 }}
             />
 
             <View style={[styles.container, { backgroundColor: theme.background }]}>
-                {/* -----Labels List----- */}
+                {/* Labels List */}
                 <LabelsList
                     labels={labels}
                     orderLabels={orderLabels}
