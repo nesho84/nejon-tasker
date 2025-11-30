@@ -6,12 +6,23 @@ import { useLanguageStore } from '@/store/languageStore';
 // Notification handler
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowList: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
         shouldShowBanner: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
+        shouldShowList: true,
     }),
 });
+
+const setNotificationChannel = async () => {
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.HIGH,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#ffffff',
+        });
+    }
+}
 
 export default function useNotifications(refreshContext) {
     const { language, tr } = useLanguageStore();
@@ -28,7 +39,7 @@ export default function useNotifications(refreshContext) {
 
             const currentDateTime = new Date();
             const reminderDateTime = new Date(taskObj.reminder.dateTime);
-            const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
+            const timeDifferenceInSeconds = Math.max(1, Math.floor((reminderDateTime - currentDateTime) / 1000));
 
             if (timeDifferenceInSeconds > 0) {
                 notificationId = await Notifications.scheduleNotificationAsync({
@@ -38,7 +49,9 @@ export default function useNotifications(refreshContext) {
                         data: { taskKey: taskObj.key },
                     },
                     trigger: {
+                        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
                         seconds: timeDifferenceInSeconds,
+                        channelId: 'default',
                     },
                 });
             }
@@ -82,31 +95,20 @@ export default function useNotifications(refreshContext) {
         }
     };
 
-    const setNotificationChannel = async () => {
-        if (Platform.OS === 'android') {
-            Notifications.setNotificationChannelAsync('default', {
-                name: 'default',
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#ffffff',
-            });
-        }
-    }
-
     useEffect(() => {
         // Handle received notifications here (app open in Foreground)
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
-            // const taskKey = notification.request.content.data.taskKey;
-            // console.log('Received notification:', notification);
+            const taskKey = notification.request.content.data.taskKey;
+            console.log('[Foreground] Received notification');
 
             // Refresh Tasks Context state
             await refreshContext();
-            await Notifications.setBadgeCountAsync(1);
+            // await Notifications.setBadgeCountAsync(1);
         });
         // Handle received responses here (app closed in backgrdound)
         const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
             // const taskKey = notification.request.content.data.taskKey;
-            // console.log('User responded to received notification:', response);
+            console.log('[Background] User responded to received notification');
 
             // Refresh Tasks Context state
             await refreshContext();

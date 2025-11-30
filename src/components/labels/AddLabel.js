@@ -4,10 +4,13 @@ import ColorPicker from "@/components/ColorPicker";
 import { labelBgColors } from "@/constants/colors";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { useKeyboard } from "@/hooks/useKeyboard";
 
 export default function AddLabel({ handleAddLabel }) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const { isKeyboardVisible } = useKeyboard();
 
   const [label, setLabel] = useState("");
   const [labelColor, setLabelColor] = useState(labelBgColors[0]);
@@ -28,7 +31,7 @@ export default function AddLabel({ handleAddLabel }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: isKeyboardVisible ? 80 : 0 }]}>
       <Text style={[styles.title, { color: labelColor }]}>
         {tr.forms.newLabel}
       </Text>
@@ -38,8 +41,9 @@ export default function AddLabel({ handleAddLabel }) {
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={(text) => setLabel(text)}
-        style={[styles.input, { color: theme.dark, borderColor: theme.lightMuted }]}
+        style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
+        placeholderTextColor={theme.placeholder}
       />
 
       <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />

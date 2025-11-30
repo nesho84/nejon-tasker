@@ -76,7 +76,10 @@ export default function DrawerContent({ close }: Props) {
                                 key={item.key}
                                 style={styles.menuItem}
                                 activeOpacity={0.7}
-                                onPress={() => router.push(`/label-details?labelKey=${item.key}`)}
+                                onPress={() => {
+                                    close();
+                                    router.push(`/tasks?labelKey=${item.key}`)
+                                }}
                             >
                                 <MaterialCommunityIcons name="label-outline" size={22} color={theme.text} />
                                 <Text style={[styles.menuLabel, { color: theme.text }]}>{item.title}</Text>

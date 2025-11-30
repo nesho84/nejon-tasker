@@ -20,7 +20,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.nesho84.nejontasker"
+      "package": "com.nesho84.nejontasker",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "output": "static",

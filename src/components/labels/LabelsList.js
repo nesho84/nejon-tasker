@@ -33,7 +33,7 @@ export default function LabelsList({ labels, orderLabels, handleEditModal }) {
     return (
       <ScaleDecorator>
         <TouchableOpacity
-          onPress={() => router.push(`/label-details?labelKey=${item.key}`)}
+          onPress={() => router.push(`/tasks?labelKey=${item.key}`)}
           onLongPress={drag}
         >
           <View

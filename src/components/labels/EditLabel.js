@@ -3,10 +3,13 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "reac
 import ColorPicker from "@/components/ColorPicker";
 import { useThemeStore } from "@/store/themeStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useKeyboard } from "@/hooks/useKeyboard";
 
 export default function EditLabel({ labelToEdit, handleEditLabel }) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const { isKeyboardVisible } = useKeyboard();
 
   const [input, setInput] = useState(labelToEdit.title);
   const [labelColor, setLabelColor] = useState(labelToEdit.color);
@@ -27,7 +30,7 @@ export default function EditLabel({ labelToEdit, handleEditLabel }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: isKeyboardVisible ? 80 : 0 }]}>
       <Text style={[styles.title, { color: labelColor }]}>
         {tr.forms.editLabel}
       </Text>
@@ -37,8 +40,9 @@ export default function EditLabel({ labelToEdit, handleEditLabel }) {
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={(text) => setInput(text)}
-        style={[styles.input, { color: theme.dark, borderColor: theme.lightMuted }]}
+        style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
+        placeholderTextColor={theme.placeholder}
         value={input}
       />
 

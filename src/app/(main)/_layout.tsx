@@ -69,9 +69,10 @@ export default function StackLayout() {
                 />
 
                 <Stack.Screen
-                    name="label-details"
+                    name="tasks"
                     options={{
-                        title: tr.forms.editTask, animation: "slide_from_right"
+                        title: tr.forms.editTask,
+                        animation: "slide_from_right"
                     }}
                 />
 

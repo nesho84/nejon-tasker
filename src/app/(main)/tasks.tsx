@@ -7,15 +7,14 @@ import { TasksContext } from "@/context/TasksContext";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { useContext, useLayoutEffect, useState } from "react";
-import { Alert, Keyboard, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useContext, useState } from "react";
+import { Alert, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function LabelDetailsScreen() {
   const { theme } = useThemeStore();
-  const { language, tr } = useLanguageStore();
+  const { tr } = useLanguageStore();
 
-  const navigation = useNavigation();
   const { labelKey } = useLocalSearchParams();
 
   const {
@@ -101,9 +100,9 @@ export default function LabelDetailsScreen() {
     orderTasks(currentLabel.key, orderedTasks);
   };
 
-  // Accessing Native navigation bar
-  useLayoutEffect(() => {
-    navigation.setOptions({
+  {/* Navigation bar icons */ }
+  <Stack.Screen
+    options={{
       headerRight: () => (
         <TouchableOpacity onPress={() => {
           // console.log(currentLabel);
@@ -117,41 +116,27 @@ export default function LabelDetailsScreen() {
           />
         </TouchableOpacity>
       ),
-    });
-  }, [navigation, currentLabel]);
+    }}
+  />
 
   return (
     <AppScreen>
 
       {currentLabel && (
-        <View
-          style={[
-            styles.container,
-            {
-              backgroundColor: theme.background,
-            },
-          ]}
-        >
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
           {/* Header container */}
-          <View
-            style={[
-              styles.headerContainer,
-              { borderBottomColor: currentLabel.color },
-            ]}
-          >
+          <View style={[styles.headerContainer, { borderBottomColor: currentLabel.color }]}>
             {/* Header Title */}
-            <Text
-              style={{
-                fontSize: 22,
-                color: currentLabel.color,
-                paddingHorizontal: 10,
-              }}
-            >
+            <Text style={{ fontSize: 22, color: currentLabel.color, paddingHorizontal: 8 }}>
               {currentLabel.title}
             </Text>
             {/* Header subtitle */}
-            <Text style={{ fontSize: 14, color: theme.muted, paddingHorizontal: 10 }}>
-              {`${filterTasks(true).length} ${tr.labels.of} ${currentLabel.tasks ? currentLabel.tasks.length : "0"} ${tr.labels.tasks}`}
+            <Text style={{ fontSize: 14, color: theme.muted, paddingHorizontal: 8 }}>
+              {
+                `${filterTasks(true).length} ${tr.labels.of} ${currentLabel.tasks
+                  ? currentLabel.tasks.length
+                  : "0"} ${tr.labels.tasks}`
+              }
             </Text>
           </View>
 
@@ -167,10 +152,10 @@ export default function LabelDetailsScreen() {
 
           {/* Add Task Input */}
           <AddTask
-            inputRef={inputRef}
+            placeholder={tr.forms.inputPlaceholder}
             handleAddTask={handleAddTask}
             currentLabelColor={currentLabel.color}
-            placeholder={tr.forms.inputPlaceholder}
+            inputRef={inputRef}
           />
 
           {/* -----Edit Task Modal----- */}
@@ -198,9 +183,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   headerContainer: {
-    paddingTop: 8,
-    paddingBottom: 5,
-    borderBottomWidth: 1,
     alignSelf: "stretch",
+    paddingTop: 8,
+    paddingBottom: 6,
+    marginBottom: 1,
+    borderBottomWidth: 1,
   },
 });

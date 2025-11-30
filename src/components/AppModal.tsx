@@ -38,7 +38,13 @@ export default function AppModal({ modalVisible, setModalVisible, inputRef, chil
         <View style={styles.handle} />
 
         {/* Close Icon */}
-        <Pressable style={styles.closeIcon} onPress={() => setModalVisible(false)}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.closeIcon,
+            { opacity: pressed ? 0.6 : 1 }
+          ]}
+          onPress={() => setModalVisible(false)}
+        >
           <MaterialIcons
             name="close"
             size={28}
@@ -47,7 +53,10 @@ export default function AppModal({ modalVisible, setModalVisible, inputRef, chil
         </Pressable>
 
         {/* Content */}
-        <Pressable onPress={Keyboard.dismiss} style={[styles.content, { paddingBottom: insets.bottom }]}>
+        <Pressable
+          style={[styles.content, { paddingBottom: insets.bottom + 24 }]}
+          onPress={Keyboard.dismiss}
+        >
 
           {children}
 
@@ -69,7 +78,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     paddingTop: 12,
-    paddingBottom: 30,
     paddingHorizontal: 20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,

@@ -222,7 +222,7 @@ export const TRANSLATIONS = {
             profile: "Profili",
             about: "Rreth nesh",
             language: "Gjuha",
-            tasks: "Tasket",
+            tasks: "Detyra",
             labels: "Etiketat",
             remaining: "Të mbetura",
             completed: "Përfunduar",

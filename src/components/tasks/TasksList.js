@@ -3,7 +3,6 @@ import Hyperlink from 'react-native-hyperlink'
 import Checkbox from "expo-checkbox";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { Ionicons } from "@expo/vector-icons";
-import TasksDivider from "@/components/tasks/TasksDivider";
 import AppNoItems from "@/components/AppNoItems";
 import moment from "moment";
 import { useThemeStore } from "@/store/themeStore";
@@ -48,7 +47,7 @@ export default function TasksList(props) {
           styles.tasksListContainer,
           {
             backgroundColor: item.checked ? theme.light : theme.backgroundAlt,
-            borderColor: item.checked ? theme.borderLight : theme.border,
+            borderColor: item.checked ? theme.faded : theme.border,
             borderWidth: 1,
           },
           isActive && { backgroundColor: theme.muted },
@@ -60,7 +59,7 @@ export default function TasksList(props) {
           {/* -----Task checkbox----- */}
           <View style={styles.checkboxAndTitleContainer}>
             <Checkbox
-              color={item.checked ? theme.shadow : theme.darkGrey}
+              color={item.checked ? theme.faded : theme.darkGrey}
               value={item.checked}
               onValueChange={(newValue) =>
                 props.handleCheckbox(newValue, item.key)
@@ -72,21 +71,11 @@ export default function TasksList(props) {
           <View style={styles.itemText}>
             <Hyperlink linkDefault={true} linkStyle={{ color: theme.link }}>
               <Text
-                style={[
-                  {
-                    textDecorationLine: item.checked ? "line-through" : "none",
-                    fontSize: 15,
-                  },
-                  mode === "light" ? {
-                    color: item.checked
-                      ? theme.checkedItemText
-                      : theme.text,
-                  } : {
-                    color: item.checked
-                      ? theme.checkedItemTextDark
-                      : theme.text,
-                  },
-                ]}
+                style={{
+                  color: item.checked ? theme.muted : theme.text,
+                  textDecorationLine: item.checked ? "line-through" : "none",
+                  fontSize: 15,
+                }}
               >
                 {item.name}
               </Text>
@@ -100,13 +89,8 @@ export default function TasksList(props) {
                 tr.alerts.deleteTask.title,
                 tr.alerts.deleteTask.message,
                 [
-                  {
-                    text: tr.buttons.yes,
-                    onPress: () => props.handleDeleteTask(item.key),
-                  },
-                  {
-                    text: tr.buttons.no,
-                  },
+                  { text: tr.buttons.yes, onPress: () => props.handleDeleteTask(item.key) },
+                  { text: tr.buttons.no },
                 ],
                 { cancelable: false }
               )
@@ -186,7 +170,12 @@ export default function TasksList(props) {
       {props.checkedTasks.length > 0 && (
         <>
           {/* -----Tasks Divider----- */}
-          <TasksDivider checkedTasks={props.checkedTasks.length} />
+          <View style={styles.checkedTasksDividerContainer}>
+            <View style={[styles.listDivider, { borderColor: theme.border }]} />
+            <Text style={[styles.listDividerText, { color: theme.muted }]}>
+              {`${props.checkedTasks.length} ${tr.labels.checkedItems}`}
+            </Text>
+          </View>
 
           <TouchableWithoutFeedback>
             <View style={{ flex: 1 }}>
@@ -248,9 +237,23 @@ const styles = StyleSheet.create({
     zIndex: 2
   },
   checkboxAndTitleContainer: {
+    // alignSelf: "baseline",
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 4,
     flexShrink: 1,
+  },
+  checkedTasksDividerContainer: {
+    width: "100%",
+    marginVertical: 2,
+    paddingHorizontal: 8,
+  },
+  listDivider: {
+    width: "100%",
+    borderWidth: 1,
+    marginBottom: 2,
+  },
+  listDividerText: {
+    fontSize: 13,
   },
 });

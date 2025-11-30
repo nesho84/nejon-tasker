@@ -1,12 +1,15 @@
-import { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View, Alert } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, TextInput, TouchableOpacity, View, Alert, Keyboard, Platform } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useThemeStore } from "@/store/themeStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useKeyboard } from "@/hooks/useKeyboard";
 
 export default function AddTask({ ...props }) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const { keyboardHeight } = useKeyboard();
 
   const [task, setTask] = useState("");
 
@@ -26,13 +29,14 @@ export default function AddTask({ ...props }) {
   };
 
   return (
-    <View style={styles.addTaskContainer}>
+    <View style={[styles.addTaskContainer, { marginBottom: keyboardHeight }]}>
       <TextInput
-        style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.dark }]}
+        style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.text }]}
         multiline
         autoCapitalize="none"
         autoCorrect={false}
         placeholder={props.placeholder}
+        placeholderTextColor={theme.placeholder}
         ref={props.inputRef}
         onChangeText={(text) => setTask(text)}
       />
@@ -47,24 +51,29 @@ export default function AddTask({ ...props }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+  },
   addTaskContainer: {
-    alignSelf: "stretch",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    paddingVertical: 6,
+    paddingHorizontal: 8,
     borderTopColor: "#616161",
     borderTopWidth: 0.2,
-    padding: 5,
   },
   addTaskInput: {
     flex: 1,
-    height: 46,
+    minHeight: 48,
     fontSize: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 15,
-    marginRight: 3.5,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    marginLeft: -2,
+    // borderRadius: 8,
   },
-  addTaskButton: {
-    borderWidth: StyleSheet.hairlineWidth,
+  addButton: {
+    width: 45,
+    height: 45,
   },
 });

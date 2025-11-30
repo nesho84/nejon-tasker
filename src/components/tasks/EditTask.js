@@ -1,15 +1,18 @@
 import { useState, useRef } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, TouchableWithoutFeedback, ScrollView, Platform } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, Pressable, ScrollView, Platform } from "react-native";
 import Hyperlink from 'react-native-hyperlink'
 import moment from "moment";
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { useKeyboard } from "@/hooks/useKeyboard";
 
 export default function EditTask({ handleEditTask, taskToEdit }) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const { keyboardHeight } = useKeyboard();
 
   const taskToEditDateTime = taskToEdit.reminder?.dateTime ?? null;
   const dateTimeToString = (date) => {
@@ -87,29 +90,30 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={() => setTaskInputActive(false)}>
-      <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: keyboardHeight - 24 }]}>
+      <Pressable onPress={() => setTaskInputActive(false)}>
+
         {/* Show as TaskText or TaskInput */}
         <View style={[
           styles.textInputContainer,
           {
-            backgroundColor: taskInputActive ? theme.lighterDark : theme.lightDark,
+            backgroundColor: taskInputActive ? theme.lightDark : theme.light,
             borderColor: theme.uncheckedItemDark,
           }
         ]}>
           <ScrollView ref={scrollViewRef}>
             {taskInputActive === false ? (
               // Inactive Input
-              <TouchableWithoutFeedback onPress={() => setTaskInputActive(true)}>
+              <Pressable onPress={() => setTaskInputActive(true)}>
                 <View style={styles.textInputInactive}>
                   <Hyperlink
                     linkDefault={true}
                     linkStyle={{ color: '#2980b9' }}
                   >
-                    <Text style={{ color: theme.light, fontSize: 15 }}>{taskInput}</Text>
+                    <Text style={{ color: theme.text, fontSize: 15 }}>{taskInput}</Text>
                   </Hyperlink>
                 </View>
-              </TouchableWithoutFeedback>
+              </Pressable>
             ) : (
               // Active Input
               <View style={styles.textInputActive}>
@@ -131,11 +135,11 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
 
         {/* Custom DateTime picker input */}
         <TouchableOpacity
-          style={[styles.inputDateContainer, { backgroundColor: theme.lightDark, borderColor: theme.uncheckedItemDark }]}
+          style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
           onPress={() => setDatePickerVisible(true)}>
           <TextInput
             style={{
-              color: hasActiveReminder() || inputRActive ? theme.success : theme.muted,
+              color: hasActiveReminder() || inputRActive ? theme.success : theme.lightMuted,
             }}
             placeholder={tr.forms.setReminder}
             value={inputReminder}
@@ -144,7 +148,7 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
           <Ionicons
             name={hasActiveReminder() || inputRActive ? "notifications" : "notifications-off"}
             size={20}
-            color={hasActiveReminder() || inputRActive ? theme.success : theme.muted}
+            color={hasActiveReminder() || inputRActive ? theme.success : theme.lightMuted}
           />
         </TouchableOpacity>
 
@@ -158,37 +162,40 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
         />
 
         {/* Save button */}
-        <TouchableOpacity style={[styles.btnEdit, { backgroundColor: theme.success }]} onPress={handleEdit}>
+        <TouchableOpacity
+          style={[styles.btnEdit, { backgroundColor: theme.lightMuted }]}
+          onPress={handleEdit}
+        >
           <Text style={styles.btnEditText}>
             {tr.buttons.save}
           </Text>
         </TouchableOpacity>
-      </View>
-    </TouchableWithoutFeedback>
+
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    flex: 1,
-    padding: 10,
-    flexDirection: "column",
-    justifyContent: "center",
+    paddingBottom: 32,
   },
   textInputContainer: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
-    marginTop: 50,
+    marginTop: 16,
     marginBottom: 10,
     justifyContent: 'center',
   },
   textInputInactive: {
+    maxHeight: 280,
     padding: 10,
     borderRadius: 5,
   },
   textInputActive: {
+    maxHeight: 280,
     padding: 10,
     borderRadius: 5,
   },
@@ -204,7 +211,6 @@ const styles = StyleSheet.create({
   },
   btnEdit: {
     height: 50,
-    marginBottom: 10,
     justifyContent: "center",
     padding: 11,
     borderRadius: 5,
@@ -212,7 +218,7 @@ const styles = StyleSheet.create({
   btnEditText: {
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 17,
     color: "white",
   },
 });

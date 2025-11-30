@@ -55,7 +55,7 @@ export default function HomeScreen() {
     return (
         <AppScreen>
 
-            {/* Navigation bar icons right */}
+            {/* Navigation bar icons */}
             <Stack.Screen
                 options={{
                     headerRight: () => (
