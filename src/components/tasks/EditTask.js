@@ -1,7 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, Pressable, ScrollView, Platform } from "react-native";
-import Hyperlink from 'react-native-hyperlink'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, Keyboard } from "react-native";
 import moment from "moment";
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguageStore } from "@/store/languageStore";
@@ -18,30 +17,39 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
   const dateTimeToString = (date) => {
     return date ? moment(date).format("DD.MM.YYYY HH:mm") : tr.forms.setReminder;
   }
+
   const [taskInput, setTaskInput] = useState(taskToEdit.name.toString());
-  const [taskInputActive, setTaskInputActive] = useState(false);
   const [inputReminder, setInputReminder] = useState(dateTimeToString(taskToEditDateTime));
-  const [inputRActive, setInputRActive] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState(taskToEditDateTime);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const scrollViewRef = useRef(null);
+  const textInputRef = useRef(null);
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      textInputRef.current?.blur();
+      setIsEditing(false);
+    }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const hasActiveReminder = () => {
     const currentDateTime = new Date();
-    const reminderDateTime = new Date(taskToEditDateTime);
+    const reminderDateTime = new Date(selectedDateTime);
     const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
-    if (taskToEditDateTime && timeDifferenceInSeconds > 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return selectedDateTime && timeDifferenceInSeconds > 0;
   }
 
   const handleDateConfirm = (dateTime) => {
     const currentDateTime = new Date();
     const reminderDateTime = new Date(dateTime);
     const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
+
     if (timeDifferenceInSeconds <= 0) {
       Alert.alert(
         tr.alerts.invalidDate.title,
@@ -54,7 +62,6 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
     } else {
       setSelectedDateTime(dateTime);
       setInputReminder(dateTimeToString(dateTime));
-      setInputRActive(true);
       setDatePickerVisible(false);
     }
   };
@@ -83,95 +90,74 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
     }
   };
 
-  const handleTextInputFocus = () => {
-    if (Platform.OS === 'android') {
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 200);
-    }
-  }
-
   return (
     <View style={[styles.container, { marginBottom: keyboardHeight - 24 }]}>
-      <Pressable onPress={() => setTaskInputActive(false)}>
 
-        {/* Show as TaskText or TaskInput */}
-        <View style={[
-          styles.textInputContainer,
-          {
-            backgroundColor: taskInputActive ? theme.lightDark : theme.light,
-            borderColor: theme.uncheckedItemDark,
-          }
-        ]}>
-          <ScrollView ref={scrollViewRef}>
-            {taskInputActive === false ? (
-              // Inactive Input
-              <Pressable onPress={() => setTaskInputActive(true)}>
-                <View style={styles.textInputInactive}>
-                  <Hyperlink
-                    linkDefault={true}
-                    linkStyle={{ color: '#2980b9' }}
-                  >
-                    <Text style={{ color: theme.text, fontSize: 15 }}>{taskInput}</Text>
-                  </Hyperlink>
-                </View>
-              </Pressable>
-            ) : (
-              // Active Input
-              <View style={styles.textInputActive}>
-                <TextInput
-                  style={{ color: theme.light, fontSize: 15 }}
-                  onFocus={handleTextInputFocus}
-                  multiline={true}
-                  autoFocus={true}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onChangeText={(text) => setTaskInput(text)}
-                  placeholder={tr.forms.inputPlaceholder}
-                  value={taskInput}
-                />
-              </View>
-            )}
-          </ScrollView>
-        </View>
+      {/* TextInput Container */}
+      <View style={[
+        styles.textInputContainer,
+        {
+          backgroundColor: isEditing ? theme.shadowMedium : theme.light,
+          borderColor: theme.uncheckedItemDark,
+        }
+      ]}>
 
-        {/* Custom DateTime picker input */}
-        <TouchableOpacity
-          style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
-          onPress={() => setDatePickerVisible(true)}>
-          <TextInput
-            style={{
-              color: hasActiveReminder() || inputRActive ? theme.success : theme.lightMuted,
-            }}
-            placeholder={tr.forms.setReminder}
-            value={inputReminder}
-            editable={false}
-          />
-          <Ionicons
-            name={hasActiveReminder() || inputRActive ? "notifications" : "notifications-off"}
-            size={20}
-            color={hasActiveReminder() || inputRActive ? theme.success : theme.lightMuted}
-          />
-        </TouchableOpacity>
-
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="datetime"
-          locale="de_DE"
-          is24Hour
-          onConfirm={handleDateConfirm}
-          onCancel={() => setDatePickerVisible(false)}
+        {/* Single TextInput - always present */}
+        <TextInput
+          ref={textInputRef}
+          style={[styles.textInput, { color: theme.text }]}
+          multiline={true}
+          scrollEnabled={true}
+          showsVerticalScrollIndicator={true}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(text) => setTaskInput(text)}
+          onFocus={() => setIsEditing(true)}
+          onBlur={() => setIsEditing(false)}
+          placeholder={tr.forms.inputPlaceholder}
+          placeholderTextColor={theme.muted}
+          value={taskInput}
+          selection={isEditing ? undefined : { start: 0, end: 0 }}
         />
+      </View>
 
-        {/* Save button */}
-        <TouchableOpacity
-          style={[styles.btnEdit, { backgroundColor: theme.lightMuted }]}
-          onPress={handleEdit}
-        >
-          <Text style={styles.btnEditText}>
-            {tr.buttons.save}
-          </Text>
-        </TouchableOpacity>
+      {/* Custom DateTime picker Input */}
+      <TouchableOpacity
+        style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
+        onPress={() => setDatePickerVisible(true)}>
+        <TextInput
+          style={{ color: hasActiveReminder() ? theme.success : theme.lightMuted }}
+          placeholder={tr.forms.setReminder}
+          value={inputReminder}
+          editable={false}
+        />
+        <Ionicons
+          name={hasActiveReminder() ? "notifications" : "notifications-off"}
+          color={hasActiveReminder() ? theme.success : theme.lightMuted}
+          size={20}
+        />
+      </TouchableOpacity>
 
-      </Pressable>
+      {/* Reminder input */}
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="datetime"
+        locale="de_DE"
+        is24Hour
+        onConfirm={handleDateConfirm}
+        onCancel={() => setDatePickerVisible(false)}
+      />
+
+      {/* Save button */}
+      <TouchableOpacity
+        style={[styles.btnEdit, { backgroundColor: theme.lightMuted }]}
+        onPress={handleEdit}
+      >
+        <Text style={styles.btnEditText}>
+          {tr.buttons.save}
+        </Text>
+      </TouchableOpacity>
+
     </View>
   );
 }
@@ -182,22 +168,16 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   textInputContainer: {
-    flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
     marginTop: 16,
     marginBottom: 10,
-    justifyContent: 'center',
   },
-  textInputInactive: {
-    maxHeight: 280,
-    padding: 10,
-    borderRadius: 5,
-  },
-  textInputActive: {
-    maxHeight: 280,
-    padding: 10,
-    borderRadius: 5,
+  textInput: {
+    fontSize: 15,
+    padding: 12,
+    height: 230,
+    textAlignVertical: 'top',
   },
   inputDateContainer: {
     flexDirection: "row",
@@ -212,7 +192,7 @@ const styles = StyleSheet.create({
   btnEdit: {
     height: 50,
     justifyContent: "center",
-    padding: 11,
+    padding: 10,
     borderRadius: 5,
   },
   btnEditText: {
