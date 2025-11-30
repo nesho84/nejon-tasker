@@ -1,11 +1,14 @@
+import { useOnboardingStore } from '@/store/onboardingStore';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 export default function OnboardingScreen() {
+    const { setOnboarding } = useOnboardingStore();
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Welcome!</Text>
             <Text style={styles.subtitle}>Let's get you started</Text>
-            <Button title="Get Started" onPress={() => { }} />
+            <Button title="Get Started" onPress={() => setOnboarding(true)} />
         </View>
     );
 }

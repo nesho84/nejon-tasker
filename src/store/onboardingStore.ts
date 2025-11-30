@@ -1,34 +1,24 @@
-// import { TRANSLATIONS } from "@/constants/translations";
-// import { mmkvStorage } from "@/store/storage";
-// import { create } from "zustand";
-// import { createJSONStorage, persist } from "zustand/middleware";
+import { mmkvStorage } from "@/store/storage";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-// export type Language = keyof typeof TRANSLATIONS;
+interface OnboardingState {
+    onboardingComplete: boolean
+    setOnboarding: (onboardingComplete: boolean) => void
+}
 
-// interface LanguageState {
-//     language: Language;
-//     tr: typeof TRANSLATIONS.en;
-//     setLanguage: (language: Language) => void;
-// }
+export const useOnboardingStore = create<OnboardingState>()(
+    persist(
+        (set) => ({
+            onboardingComplete: false,
 
-// export const useLanguageStore = create<LanguageState>()(
-//     persist(
-//         (set) => ({
-//             language: "en",
-//             tr: TRANSLATIONS.en,
-
-//             setLanguage: (language) =>
-//                 set({ language: language, tr: TRANSLATIONS[language] }),
-//         }),
-//         {
-//             name: "language-store",
-//             storage: createJSONStorage(() => mmkvStorage),
-//             partialize: (state) => ({ language: state.language }),
-//             onRehydrateStorage: () => (state) => {
-//                 if (state) {
-//                     state.tr = TRANSLATIONS[state.language];
-//                 }
-//             },
-//         }
-//     )
-// );
+            setOnboarding: (onboardingComplete) =>
+                set({ onboardingComplete: onboardingComplete }),
+        }),
+        {
+            name: "onboarding-store",
+            storage: createJSONStorage(() => mmkvStorage),
+            partialize: (state) => ({ onboardingComplete: state.onboardingComplete }),
+        }
+    )
+);

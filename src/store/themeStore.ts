@@ -20,7 +20,7 @@ export const useThemeStore = create<ThemeState>()(
 
             // Change theme manually
             setTheme: (mode) =>
-                set({ mode, theme: mode === "dark" ? DARK : LIGHT }),
+                set({ mode: mode, theme: mode === "dark" ? DARK : LIGHT }),
 
             // Toggle theme
             toggleTheme: () =>
