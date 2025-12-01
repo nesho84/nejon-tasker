@@ -1,7 +1,7 @@
+import { useLanguageStore } from '@/store/languageStore';
+import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import { useLanguageStore } from '@/store/languageStore';
 
 // Notification handler
 Notifications.setNotificationHandler({
@@ -12,6 +12,15 @@ Notifications.setNotificationHandler({
         shouldShowList: true,
     }),
 });
+
+interface TaskObj {
+    key: string;
+    name: string;
+    reminder: {
+        dateTime: string | null;
+        notificationId?: string | null;
+    };
+}
 
 const setNotificationChannel = async () => {
     if (Platform.OS === 'android') {
@@ -24,22 +33,22 @@ const setNotificationChannel = async () => {
     }
 }
 
-export default function useNotifications(refreshContext) {
+export default function useNotifications(refreshContext: () => Promise<void>) {
     const { language, tr } = useLanguageStore();
 
     // Function to schedule a notification
-    const scheduleNotification = async (taskObj) => {
+    const scheduleNotification = async (taskObj: TaskObj) => {
         // First request permission
-        requestPermission();
+        await requestPermission();
         // Android channel configuration
-        setNotificationChannel();
+        await setNotificationChannel();
 
         try {
             let notificationId = null;
 
             const currentDateTime = new Date();
-            const reminderDateTime = new Date(taskObj.reminder.dateTime);
-            const timeDifferenceInSeconds = Math.max(1, Math.floor((reminderDateTime - currentDateTime) / 1000));
+            const reminderDateTime = new Date(taskObj.reminder.dateTime!);
+            const timeDifferenceInSeconds = Math.max(1, Math.floor((reminderDateTime.getTime() - currentDateTime.getTime()) / 1000));
 
             if (timeDifferenceInSeconds > 0) {
                 notificationId = await Notifications.scheduleNotificationAsync({
@@ -58,11 +67,12 @@ export default function useNotifications(refreshContext) {
             return notificationId;
         } catch (error) {
             console.error('Error scheduling notification:', error);
+            return null;
         }
     };
 
     // Function to cancel a scheduled notification
-    const cancelScheduledNotification = async (notificationId) => {
+    const cancelScheduledNotification = async (notificationId: string) => {
         try {
             await Notifications.cancelScheduledNotificationAsync(notificationId);
         } catch (error) {
@@ -98,19 +108,13 @@ export default function useNotifications(refreshContext) {
     useEffect(() => {
         // Handle received notifications here (app open in Foreground)
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
-            const taskKey = notification.request.content.data.taskKey;
             console.log('[Foreground] Received notification');
-
-            // Refresh Tasks Context state
             await refreshContext();
-            // await Notifications.setBadgeCountAsync(1);
         });
-        // Handle received responses here (app closed in backgrdound)
-        const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            // const taskKey = notification.request.content.data.taskKey;
-            console.log('[Background] User responded to received notification');
 
-            // Refresh Tasks Context state
+        // Handle received responses here (app closed in background)
+        const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
+            console.log('[Background] User responded to received notification');
             await refreshContext();
         });
 
@@ -119,7 +123,7 @@ export default function useNotifications(refreshContext) {
             receivedListener.remove();
             responseReceivedListener.remove();
         };
-    }, []);
+    }, [refreshContext]);
 
     return { scheduleNotification, cancelScheduledNotification };
 }

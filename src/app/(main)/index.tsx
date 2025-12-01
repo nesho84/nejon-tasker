@@ -11,7 +11,13 @@ import LabelsList from "@/components/labels/LabelsList";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from '@/store/themeStore';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
+
+interface Label {
+    key: string;
+    title: string;
+    color: string;
+}
 
 export default function HomeScreen() {
     const { theme } = useThemeStore();
@@ -27,7 +33,7 @@ export default function HomeScreen() {
 
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [labelToEdit, setLabelToEdit] = useState(null);
+    const [labelToEdit, setLabelToEdit] = useState<Label | null>(null);
 
     // Handle Add Label
     const handleAddLabel = (text: string, color: string) => {
@@ -36,7 +42,7 @@ export default function HomeScreen() {
     };
 
     // Open modal for editing Label
-    const handleEditModal = (item: any) => {
+    const handleEditModal = (item: Label) => {
         setLabelToEdit(item);
         setEditModalVisible(true);
     };
@@ -60,6 +66,14 @@ export default function HomeScreen() {
                 options={{
                     headerRight: () => (
                         <>
+                            {/* test sqlite */}
+                            <TouchableOpacity
+                                style={{ top: 1, marginRight: 26 }}
+                                onPress={() => router.push('/test-sqlite')}
+                            >
+                                <MaterialCommunityIcons name="lightbulb-question-outline" size={26} color={theme.text} />
+                            </TouchableOpacity>
+
                             {/* Add Label */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: 26 }}
@@ -103,10 +117,12 @@ export default function HomeScreen() {
                     modalVisible={editModalVisible}
                     setModalVisible={setEditModalVisible}
                 >
-                    <EditLabel
-                        labelToEdit={labelToEdit}
-                        handleEditLabel={handleEditLabel}
-                    />
+                    {labelToEdit && (
+                        <EditLabel
+                            labelToEdit={labelToEdit}
+                            handleEditLabel={handleEditLabel}
+                        />
+                    )}
                 </AppModal>
             </View>
 

@@ -1,17 +1,19 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import ColorPicker from "@/components/ColorPicker";
 import { labelBgColors } from "@/constants/colors";
+import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
-import { useKeyboard } from "@/hooks/useKeyboard";
+import { useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function AddLabel({ handleAddLabel }) {
+interface Props {
+  handleAddLabel: (label: string, color: string) => void;
+}
+
+export default function AddLabel({ handleAddLabel }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { isKeyboardVisible } = useKeyboard();
-
   const [label, setLabel] = useState("");
   const [labelColor, setLabelColor] = useState(labelBgColors[0]);
 
@@ -35,19 +37,17 @@ export default function AddLabel({ handleAddLabel }) {
       <Text style={[styles.title, { color: labelColor }]}>
         {tr.forms.newLabel}
       </Text>
-
       <TextInput
         multiline
         autoCapitalize="none"
         autoCorrect={false}
+        value={label}
         onChangeText={(text) => setLabel(text)}
         style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
       />
-
       <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
-
       <TouchableOpacity
         style={[styles.btnAdd, { backgroundColor: labelColor }]}
         onPress={handleAdd}

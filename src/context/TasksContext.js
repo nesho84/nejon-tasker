@@ -4,7 +4,7 @@ import uuid from "react-native-uuid";
 import moment from "moment";
 
 import useNotifications from "@/hooks/useNotifications";
-import tempLabels from "../../tempData";
+import tempLabels from "@/db/sampleData";
 
 export const TasksContext = createContext();
 

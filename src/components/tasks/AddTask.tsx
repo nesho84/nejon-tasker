@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View, Alert, Keyboard, Platform } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useThemeStore } from "@/store/themeStore";
-import { useLanguageStore } from "@/store/languageStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
+import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
+import { MaterialIcons } from "@expo/vector-icons";
+import { RefObject, useState } from "react";
+import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function AddTask({ ...props }) {
+interface Props {
+  handleAddTask: (task: string) => void;
+  placeholder: string;
+  currentLabelColor: string;
+  inputRef: RefObject<TextInput>;
+}
+
+export default function AddTask({ handleAddTask, placeholder, currentLabelColor, inputRef }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -18,12 +25,12 @@ export default function AddTask({ ...props }) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
-        [{ task: "OK" }],
+        [{ text: "OK" }],
         { cancelable: false }
       );
       return false;
     } else {
-      props.handleAddTask(task);
+      handleAddTask(task);
       setTask("");
     }
   };
@@ -35,13 +42,14 @@ export default function AddTask({ ...props }) {
         multiline
         autoCapitalize="none"
         autoCorrect={false}
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         placeholderTextColor={theme.placeholder}
-        ref={props.inputRef}
+        ref={inputRef}
+        value={task}
         onChangeText={(text) => setTask(text)}
       />
       <TouchableOpacity
-        style={{ backgroundColor: props.currentLabelColor }}
+        style={[styles.addButton, { backgroundColor: currentLabelColor }]}
         onPress={handleAdd}
       >
         <MaterialIcons name="add" size={45} color={theme.light} />

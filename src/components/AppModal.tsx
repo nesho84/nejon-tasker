@@ -1,7 +1,7 @@
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
-import { Keyboard, Modal, Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -14,55 +14,43 @@ interface Props {
 
 export default function AppModal({ modalVisible, setModalVisible, inputRef, children }: Props) {
   const { theme } = useThemeStore();
+
   const insets = useSafeAreaInsets();
+  const screenHeight = Dimensions.get("window").height
+
+  const close = () => setModalVisible(false);
 
   return (
     <Modal
       visible={modalVisible}
       transparent
       animationType="slide"
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={close}
       onShow={() => inputRef?.current?.focus()}
     >
 
       {/* Dimmed background */}
-      <Pressable
-        onPress={() => setModalVisible(false)}
-        style={styles.backdrop}
-      />
+      <Pressable style={styles.backdrop} onPress={close} />
 
-      {/* Bottom Sheet */}
-      <View style={[styles.sheet, { backgroundColor: theme.background }]}>
-
+      {/* Modal Container */}
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
         {/* Drag Handle */}
         <View style={styles.handle} />
 
         {/* Close Icon */}
         <Pressable
-          style={({ pressed }) => [
-            styles.closeIcon,
-            { opacity: pressed ? 0.6 : 1 }
-          ]}
-          onPress={() => setModalVisible(false)}
+          style={({ pressed }) => [styles.closeIcon, { opacity: pressed ? 0.6 : 1 }]}
+          onPress={close}
         >
-          <MaterialIcons
-            name="close"
-            size={28}
-            color={theme.text}
-          />
+          <MaterialIcons name="close" size={28} color={theme.text} />
         </Pressable>
 
-        {/* Content */}
-        <Pressable
-          style={[styles.content, { paddingBottom: insets.bottom + 24 }]}
-          onPress={Keyboard.dismiss}
-        >
-
+        {/* Content (children) */}
+        <View style={{ marginTop: insets.top, marginBottom: insets.bottom + 24 }}>
           {children}
+        </View>
 
-        </Pressable>
       </View>
-
     </Modal>
   );
 }
@@ -70,22 +58,22 @@ export default function AppModal({ modalVisible, setModalVisible, inputRef, chil
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: "rgba(0, 0, 0, 0.30)",
   },
 
-  sheet: {
+  container: {
     position: "absolute",
     bottom: 0,
     width: "100%",
-    paddingTop: 12,
+    padding: 12,
     paddingHorizontal: 20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    elevation: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
+    elevation: 12,
   },
 
   handle: {
@@ -94,21 +82,12 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     alignSelf: "center",
     backgroundColor: "rgba(150,150,150,0.4)",
-    marginBottom: 12,
   },
 
   closeIcon: {
     position: "absolute",
-    top: 12,
-    right: 18,
+    right: 16,
+    top: 10,
     opacity: 0.7,
-  },
-
-  content: {
-    width: "100%",
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-    marginTop: 6,
   },
 });

@@ -1,19 +1,43 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
 import AppNoItems from "../AppNoItems";
-import { useThemeStore } from "@/store/themeStore";
-import { useLanguageStore } from "@/store/languageStore";
 
-export default function LabelsList({ labels, orderLabels, handleEditModal }) {
+interface Label {
+  key: string;
+  title: string;
+  color: string;
+}
+
+interface Task {
+  checked: boolean;
+  reminder?: {
+    dateTime: string | null;
+    notificationId: string | null;
+  } | null;
+}
+
+interface LabelWithTasks extends Label {
+  tasks: Task[];
+}
+
+interface Props {
+  labels: LabelWithTasks[];
+  orderLabels: (data: LabelWithTasks[]) => void;
+  handleEditModal: (item: LabelWithTasks) => void;
+}
+
+export default function LabelsList({ labels, orderLabels, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
   const lastItem = labels[labels.length - 1];
 
   // Render Single Label template
-  const RenderLabel = ({ item, index, drag, isActive }) => {
+  const RenderLabel = ({ item, drag, isActive }: RenderItemParams<LabelWithTasks>) => {
     const checkedTasksCount = item.tasks.filter((task) => task.checked).length;
     const unCheckedTasksCount = item.tasks.length - checkedTasksCount;
 
@@ -22,7 +46,7 @@ export default function LabelsList({ labels, orderLabels, handleEditModal }) {
       if (task.reminder && task.reminder.dateTime !== null && task.reminder.notificationId !== null) {
         const currentDateTime = new Date();
         const reminderDateTime = new Date(task.reminder.dateTime);
-        const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
+        const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
         if (timeDifferenceInSeconds > 0) {
           return count + 1;
         }
@@ -113,14 +137,7 @@ export default function LabelsList({ labels, orderLabels, handleEditModal }) {
         <DraggableFlatList
           containerStyle={styles.draggableFlatListContainer}
           data={labels}
-          renderItem={({ item, index, drag, isActive }) => (
-            <RenderLabel
-              item={item}
-              index={index}
-              drag={drag}
-              isActive={isActive}
-            />
-          )}
+          renderItem={(params) => <RenderLabel {...params} />}
           keyExtractor={(item, index) => `draggable-item-${item.key}`}
           onDragEnd={({ data }) => orderLabels(data)}
         />

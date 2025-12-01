@@ -1,54 +1,72 @@
-import { useState, useRef, useEffect } from "react";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, Keyboard } from "react-native";
-import moment from "moment";
-import { Ionicons } from '@expo/vector-icons';
+import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
-import { useKeyboard } from "@/hooks/useKeyboard";
+import { Ionicons } from '@expo/vector-icons';
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-export default function EditTask({ handleEditTask, taskToEdit }) {
+interface Reminder {
+  dateTime: string | null;
+  notificationId?: string | null;
+}
+
+interface Task {
+  name: string;
+  reminder?: Reminder | null;
+  [key: string]: any; // for other task properties
+}
+
+interface Props {
+  handleEditTask: (task: Task) => void;
+  taskToEdit: Task;
+}
+
+export default function EditTask({ handleEditTask, taskToEdit }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
   const { keyboardHeight } = useKeyboard();
 
   const taskToEditDateTime = taskToEdit.reminder?.dateTime ?? null;
-  const dateTimeToString = (date) => {
+
+  const dateTimeToString = (date: string | null): string => {
     return date ? moment(date).format("DD.MM.YYYY HH:mm") : tr.forms.setReminder;
   }
 
   const [taskInput, setTaskInput] = useState(taskToEdit.name.toString());
   const [inputReminder, setInputReminder] = useState(dateTimeToString(taskToEditDateTime));
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [selectedDateTime, setSelectedDateTime] = useState(taskToEditDateTime);
+  const [selectedDateTime, setSelectedDateTime] = useState<string | null>(taskToEditDateTime);
   const [isEditing, setIsEditing] = useState(false);
 
-  const textInputRef = useRef(null);
+  const textInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
       textInputRef.current?.blur();
       setIsEditing(false);
-    }
-    );
+    });
 
     return () => {
       keyboardDidHideListener.remove();
     };
   }, []);
 
-  const hasActiveReminder = () => {
+  const hasActiveReminder = (): boolean => {
+    if (!selectedDateTime) return false;
+
     const currentDateTime = new Date();
     const reminderDateTime = new Date(selectedDateTime);
-    const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
-    return selectedDateTime && timeDifferenceInSeconds > 0;
+    const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
+    return timeDifferenceInSeconds > 0;
   }
 
-  const handleDateConfirm = (dateTime) => {
+  const handleDateConfirm = (dateTime: Date) => {
     const currentDateTime = new Date();
     const reminderDateTime = new Date(dateTime);
-    const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
+    const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
 
     if (timeDifferenceInSeconds <= 0) {
       Alert.alert(
@@ -60,8 +78,9 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
       setDatePickerVisible(false);
       return;
     } else {
-      setSelectedDateTime(dateTime);
-      setInputReminder(dateTimeToString(dateTime));
+      const dateTimeString = dateTime.toISOString();
+      setSelectedDateTime(dateTimeString);
+      setInputReminder(dateTimeToString(dateTimeString));
       setDatePickerVisible(false);
     }
   };
@@ -85,7 +104,7 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
         }
       });
       setTaskInput("");
-      setSelectedDateTime("");
+      setSelectedDateTime(null);
       setInputReminder("");
     }
   };
@@ -108,7 +127,6 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
           style={[styles.textInput, { color: theme.text }]}
           multiline={true}
           scrollEnabled={true}
-          showsVerticalScrollIndicator={true}
           autoCapitalize="none"
           autoCorrect={false}
           onChangeText={(text) => setTaskInput(text)}
@@ -165,26 +183,24 @@ export default function EditTask({ handleEditTask, taskToEdit }) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    paddingBottom: 32,
+    gap: 10,
   },
   textInputContainer: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
-    marginTop: 16,
-    marginBottom: 10,
   },
   textInput: {
+    minHeight: 115,
+    maxHeight: 230,
     fontSize: 15,
-    padding: 12,
-    height: 230,
     textAlignVertical: 'top',
+    padding: 11,
   },
   inputDateContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     minHeight: 35,
-    marginBottom: 10,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
     paddingHorizontal: 10
@@ -192,7 +208,7 @@ const styles = StyleSheet.create({
   btnEdit: {
     height: 50,
     justifyContent: "center",
-    padding: 10,
+    padding: 11,
     borderRadius: 5,
   },
   btnEditText: {

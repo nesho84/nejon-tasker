@@ -16,7 +16,7 @@ type ScreenProps = {
   children: ReactNode;
 };
 
-export default function Screen({ children }: ScreenProps) {
+export default function AppFullScreen({ children }: ScreenProps) {
   const { mode, theme } = useThemeStore();
 
   const barStyle = mode === "dark" ? "light" : "dark";

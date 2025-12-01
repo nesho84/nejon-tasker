@@ -1,10 +1,9 @@
-import { Alert, BackHandler } from "react-native";
 import { useLanguageStore } from "@/store/languageStore";
+import { Alert, BackHandler } from "react-native";
 
 export default function useAppExit() {
   const { tr } = useLanguageStore();
 
-  // confirm Exit application
   const backAction = () => {
     Alert.alert(
       tr.alerts.appExit.title,

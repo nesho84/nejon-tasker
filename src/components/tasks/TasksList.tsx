@@ -1,47 +1,73 @@
-import { StyleSheet, Text, View, TouchableOpacity, TouchableWithoutFeedback, Alert, Share } from "react-native";
-import Hyperlink from 'react-native-hyperlink'
-import Checkbox from "expo-checkbox";
-import DraggableFlatList from "react-native-draggable-flatlist";
-import { Ionicons } from "@expo/vector-icons";
 import AppNoItems from "@/components/AppNoItems";
-import moment from "moment";
-import { useThemeStore } from "@/store/themeStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
+import { Ionicons } from "@expo/vector-icons";
+import Checkbox from "expo-checkbox";
+import moment from "moment";
+import { Alert, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
+import Hyperlink from 'react-native-hyperlink';
 
-export default function TasksList(props) {
+interface Reminder {
+  dateTime: string | null;
+  notificationId?: string | null;
+}
+
+interface Task {
+  key: string;
+  name: string;
+  checked: boolean;
+  date: string;
+  reminder?: Reminder | null;
+}
+
+interface Props {
+  unCheckedTasks: Task[];
+  checkedTasks: Task[];
+  handleEditModal: (item: Task) => void;
+  handleCheckbox: (newValue: boolean, key: string) => void;
+  handleDeleteTask: (key: string) => void;
+  handleOrderTasks: (data: Task[]) => void;
+}
+
+export default function TasksList({
+  unCheckedTasks,
+  checkedTasks,
+  handleEditModal,
+  handleCheckbox,
+  handleDeleteTask,
+  handleOrderTasks
+}: Props) {
   const { mode, theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
-  const lastUnchecked = props.unCheckedTasks[props.unCheckedTasks.length - 1];
-  const lastChecked = props.checkedTasks[props.checkedTasks.length - 1];
+  const lastUnchecked = unCheckedTasks[unCheckedTasks.length - 1];
+  const lastChecked = checkedTasks[checkedTasks.length - 1];
 
-  const shareTask = (text) => {
+  const shareTask = (text: string) => {
     Share.share({
       message: text.toString(),
     })
-      //after successful share return result
       .then((result) => console.log())
       .catch((err) => console.log(err))
   };
 
   // Single Task template
-  const RenderTask = ({ item, index, drag, isActive }) => {
+  const RenderTask = ({ item, drag, isActive }: RenderItemParams<Task>) => {
     // Task Reminder active logic
     const itemDateTime = item.reminder?.dateTime ?? null;
-    const hasActiveReminder = () => {
+    const hasActiveReminder = (): boolean => {
+      if (!itemDateTime) return false;
+
       const currentDateTime = new Date();
       const reminderDateTime = new Date(itemDateTime);
-      const timeDifferenceInSeconds = Math.max(0, (reminderDateTime - currentDateTime) / 1000);
-      if (itemDateTime && timeDifferenceInSeconds > 0) {
-        return true;
-      } else {
-        return false;
-      }
+      const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
+      return timeDifferenceInSeconds > 0;
     }
 
     return (
       <TouchableOpacity
-        onPress={() => props.handleEditModal(item)}
+        onPress={() => handleEditModal(item)}
         onLongPress={drag}
         style={[
           styles.tasksListContainer,
@@ -62,7 +88,7 @@ export default function TasksList(props) {
               color={item.checked ? theme.faded : theme.darkGrey}
               value={item.checked}
               onValueChange={(newValue) =>
-                props.handleCheckbox(newValue, item.key)
+                handleCheckbox(newValue, item.key)
               }
             />
           </View>
@@ -89,7 +115,7 @@ export default function TasksList(props) {
                 tr.alerts.deleteTask.title,
                 tr.alerts.deleteTask.message,
                 [
-                  { text: tr.buttons.yes, onPress: () => props.handleDeleteTask(item.key) },
+                  { text: tr.buttons.yes, onPress: () => handleDeleteTask(item.key) },
                   { text: tr.buttons.no },
                 ],
                 { cancelable: false }
@@ -110,7 +136,7 @@ export default function TasksList(props) {
           />
 
           {/* Reminder dateTime */}
-          {hasActiveReminder() && (
+          {hasActiveReminder() && item.reminder?.dateTime && (
             <Text
               style={{
                 marginLeft: -80,
@@ -140,23 +166,18 @@ export default function TasksList(props) {
   return (
     <>
       {/* -----Unchecked Tasks List START----- */}
-      {props.unCheckedTasks.length > 0 ? (
+      {unCheckedTasks.length > 0 ? (
         <TouchableWithoutFeedback>
           <View style={{ flex: 2 }}>
             <DraggableFlatList
-              data={props.unCheckedTasks}
-              renderItem={({ item, index, drag, isActive }) => (
-                <View style={{ marginBottom: lastUnchecked === item ? 3 : 0 }}>
-                  <RenderTask
-                    item={item}
-                    index={index}
-                    drag={drag}
-                    isActive={isActive}
-                  />
+              data={unCheckedTasks}
+              renderItem={(params) => (
+                <View style={{ marginBottom: lastUnchecked === params.item ? 3 : 0 }}>
+                  <RenderTask {...params} />
                 </View>
               )}
-              keyExtractor={(item, index) => `draggable-item-${item.key}`}
-              onDragEnd={({ data }) => props.handleOrderTasks(data)}
+              keyExtractor={(item) => `draggable-item-${item.key}`}
+              onDragEnd={({ data }) => handleOrderTasks(data)}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -167,32 +188,27 @@ export default function TasksList(props) {
       {/* -----Unchecked Tasks List END----- */}
 
       {/* -----Checked Tasks List START----- */}
-      {props.checkedTasks.length > 0 && (
+      {checkedTasks.length > 0 && (
         <>
           {/* -----Tasks Divider----- */}
           <View style={styles.checkedTasksDividerContainer}>
             <View style={[styles.listDivider, { borderColor: theme.border }]} />
             <Text style={[styles.listDividerText, { color: theme.muted }]}>
-              {`${props.checkedTasks.length} ${tr.labels.checkedItems}`}
+              {`${checkedTasks.length} ${tr.labels.checkedItems}`}
             </Text>
           </View>
 
           <TouchableWithoutFeedback>
             <View style={{ flex: 1 }}>
               <DraggableFlatList
-                data={props.checkedTasks}
-                renderItem={({ item, index, drag, isActive }) => (
-                  <View style={{ marginBottom: lastChecked === item ? 6 : 0 }}>
-                    <RenderTask
-                      item={item}
-                      index={index}
-                      drag={drag}
-                      isActive={isActive}
-                    />
+                data={checkedTasks}
+                renderItem={(params) => (
+                  <View style={{ marginBottom: lastChecked === params.item ? 6 : 0 }}>
+                    <RenderTask {...params} />
                   </View>
                 )}
-                keyExtractor={(item, index) => `draggable-item-${item.key}`}
-                onDragEnd={({ data }) => props.handleOrderTasks(data)}
+                keyExtractor={(item) => `draggable-item-${item.key}`}
+                onDragEnd={({ data }) => handleOrderTasks(data)}
               />
             </View>
           </TouchableWithoutFeedback>

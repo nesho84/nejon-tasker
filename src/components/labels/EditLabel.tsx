@@ -1,11 +1,22 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import ColorPicker from "@/components/ColorPicker";
-import { useThemeStore } from "@/store/themeStore";
-import { useLanguageStore } from "@/store/languageStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
+import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
+import { useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function EditLabel({ labelToEdit, handleEditLabel }) {
+interface Label {
+  key: string;
+  title: string;
+  color: string;
+}
+
+interface Props {
+  labelToEdit: Label;
+  handleEditLabel: (labelKey: string, input: string, color: string) => void;
+}
+
+export default function EditLabel({ labelToEdit, handleEditLabel }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -73,7 +84,7 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 50,
     backgroundColor: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#DEE9F3",
     borderRadius: 5,
