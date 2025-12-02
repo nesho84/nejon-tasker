@@ -10,11 +10,17 @@ export function useTasks(labelId?: string) {
     const [deletedTasks, setDeletedTasks] = useState<Task[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
 
+    const refresh = () => {
+        setRefreshKey(prev => prev + 1)
+    };
+
     useEffect(() => {
-        setTasks(TasksRepo.getTasks(labelId));
-        setCheckedTasks(TasksRepo.getCheckedTasks(labelId));
-        setUncheckedTasks(TasksRepo.getUncheckedTasks(labelId));
-        setFavoriteTasks(TasksRepo.getFavoriteTasks(labelId));
+        const all = TasksRepo.getTasks(labelId);
+
+        setTasks(all);
+        setCheckedTasks(all.filter(t => t.checked));
+        setUncheckedTasks(all.filter(t => !t.checked));
+        setFavoriteTasks(all.filter(t => t.isFavorite));
 
         // Deleted tasks are not label-specific
         if (!labelId) {
@@ -22,18 +28,18 @@ export function useTasks(labelId?: string) {
         }
     }, [refreshKey, labelId]);
 
-    const refresh = () => setRefreshKey(prev => prev + 1);
-
     return {
         tasks,
         checkedTasks,
         uncheckedTasks,
         favoriteTasks,
         deletedTasks,
+        refresh,
 
         createTask: (data: { labelId: string; name: string; reminderDateTime?: string | null }) => {
-            TasksRepo.createTask(data);
+            const id = TasksRepo.createTask(data);
             refresh();
+            return id;
         },
 
         updateTask: (id: string, data: {
@@ -77,7 +83,5 @@ export function useTasks(labelId?: string) {
             TasksRepo.reorderTasks(taskIds);
             refresh();
         },
-
-        refresh
     };
 }

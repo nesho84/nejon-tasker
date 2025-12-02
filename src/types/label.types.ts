@@ -3,7 +3,7 @@ export interface Label {
     title: string;
     color: string;
     category: string | null;
-    order: number;
+    order_position: number;
     isFavorite: boolean;
     isDeleted: boolean;
     deletedAt: string | null;

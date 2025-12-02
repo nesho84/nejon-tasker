@@ -4,7 +4,7 @@ export interface Task {
     name: string;
     date: string; // ISO 8601
     checked: boolean;
-    order: number;
+    order_position: number;
     reminderDateTime: string | null;
     reminderId: string | null;
     isFavorite: boolean;

@@ -8,18 +8,23 @@ export function useLabels() {
     const [deletedLabels, setDeletedLabels] = useState<Label[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
 
+    const refresh = () => {
+        setRefreshKey(prev => prev + 1);
+    };
+
     useEffect(() => {
-        setLabels(LabelsRepo.getLabels());
-        setFavoriteLabels(LabelsRepo.getFavoriteLabels());
+        const all = LabelsRepo.getLabels();
+
+        setLabels(all);
+        setFavoriteLabels(all.filter(t => t.isFavorite));
         setDeletedLabels(LabelsRepo.getDeletedLabels());
     }, [refreshKey]);
-
-    const refresh = () => setRefreshKey(prev => prev + 1);
 
     return {
         labels,
         favoriteLabels,
         deletedLabels,
+        refresh,
 
         createLabel: (data: { title: string; color: string; category?: string | null }) => {
             LabelsRepo.createLabel(data);
@@ -55,7 +60,5 @@ export function useLabels() {
             LabelsRepo.reorderLabels(labelIds);
             refresh();
         },
-
-        refresh
     };
 }

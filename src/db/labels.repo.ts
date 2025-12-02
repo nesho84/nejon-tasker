@@ -1,78 +1,66 @@
 import { db } from "@/db/database";
+import { LabelRow } from "@/types/db.types";
 import { Label } from "@/types/label.types";
 import uuid from "react-native-uuid";
 
+/* Mapper */
+function mapLabel(row: LabelRow): Label {
+    return {
+        id: row.id,
+        title: row.title,
+        color: row.color,
+        category: row.category,
+        order_position: row.order_position,
+        isFavorite: Boolean(row.isFavorite),
+        isDeleted: Boolean(row.isDeleted),
+        deletedAt: row.deletedAt,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt
+    };
+}
+
 // Get active labels
 export function getLabels(): Label[] {
-    const rows = db.getAllSync<any>(
+    const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 0 ORDER BY order_position ASC"
     );
-    return rows.map(row => ({
-        ...row,
-        order: row.order_position,
-        isFavorite: Boolean(row.isFavorite),
-        isDeleted: Boolean(row.isDeleted)
-    }));
+    return rows.map(mapLabel);
 }
 
 // Get favorite labels
 export function getFavoriteLabels(): Label[] {
-    const rows = db.getAllSync<any>(
+    const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 0 AND isFavorite = 1 ORDER BY order_position ASC"
     );
-    return rows.map(row => ({
-        ...row,
-        order: row.order_position,
-        isFavorite: Boolean(row.isFavorite),
-        isDeleted: Boolean(row.isDeleted)
-    }));
+    return rows.map(mapLabel);
 }
 
 // Get deleted labels (trash)
 export function getDeletedLabels(): Label[] {
-    const rows = db.getAllSync<any>(
+    const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 1 ORDER BY deletedAt DESC"
     );
-    return rows.map(row => ({
-        ...row,
-        order: row.order_position,
-        isFavorite: Boolean(row.isFavorite),
-        isDeleted: Boolean(row.isDeleted)
-    }));
+    return rows.map(mapLabel);
 }
 
 // Get labels by category
 export function getLabelsByCategory(category: string): Label[] {
-    const rows = db.getAllSync<any>(
+    const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 0 AND category = ? ORDER BY order_position ASC",
         [category]
     );
-    return rows.map(row => ({
-        ...row,
-        order: row.order_position,
-        isFavorite: Boolean(row.isFavorite),
-        isDeleted: Boolean(row.isDeleted)
-    }));
+    return rows.map(mapLabel);
 }
 
 // Get single label
 export function getLabel(id: string): Label | null {
-    const row = db.getFirstSync<any>("SELECT * FROM labels WHERE id = ?", [id]);
+    const row = db.getFirstSync<LabelRow>("SELECT * FROM labels WHERE id = ?", [id]);
     if (!row) return null;
-    return {
-        ...row,
-        order: row.order_position,
-        isFavorite: Boolean(row.isFavorite),
-        isDeleted: Boolean(row.isDeleted)
-    };
+    return mapLabel(row);
 }
 
 // Create label
-export function createLabel(data: {
-    title: string;
-    color: string;
-    category?: string | null
-}): string {
+export function createLabel(data: { title: string; color: string; category?: string | null }): string {
     const id = uuid.v4();
     const now = new Date().toISOString();
 
@@ -90,42 +78,54 @@ export function createLabel(data: {
 }
 
 // Update label
-export function updateLabel(
-    id: string,
-    data: { title?: string; color?: string; category?: string | null }
-) {
+export function updateLabel(id: string, data: { title?: string; color?: string; category?: string | null }) {
     const existing = getLabel(id);
     if (!existing) throw new Error("Label not found");
 
     const title = data.title ?? existing.title;
     const color = data.color ?? existing.color;
     const category = data.category !== undefined ? data.category : existing.category;
+    const now = new Date().toISOString();
 
     db.runSync(
         "UPDATE labels SET title = ?, color = ?, category = ?, updatedAt = ? WHERE id = ?",
-        [title, color, category, new Date().toISOString(), id]
+        [title, color, category, now, id]
     );
 }
 
-// Soft delete
+// Soft delete label AND soft-delete its tasks
 export function deleteLabel(id: string) {
     const now = new Date().toISOString();
-    db.runSync(
-        "UPDATE labels SET isDeleted = 1, deletedAt = ?, updatedAt = ? WHERE id = ?",
-        [now, now, id]
-    );
+    db.withTransactionSync(() => {
+        db.runSync(
+            "UPDATE tasks SET isDeleted = 1, deletedAt = ?, updatedAt = ? WHERE labelId = ? AND isDeleted = 0",
+            [now, now, id]
+        );
+        db.runSync(
+            "UPDATE labels SET isDeleted = 1, deletedAt = ?, updatedAt = ? WHERE id = ?",
+            [now, now, id]
+        );
+    });
 }
 
-// Restore from trash
+// Restore label and its tasks
 export function restoreLabel(id: string) {
-    db.runSync(
-        "UPDATE labels SET isDeleted = 0, deletedAt = NULL, updatedAt = ? WHERE id = ?",
-        [new Date().toISOString(), id]
-    );
+    const now = new Date().toISOString();
+    db.withTransactionSync(() => {
+        db.runSync(
+            "UPDATE labels SET isDeleted = 0, deletedAt = NULL, updatedAt = ? WHERE id = ?",
+            [now, id]
+        );
+        db.runSync(
+            "UPDATE tasks SET isDeleted = 0, deletedAt = NULL, updatedAt = ? WHERE labelId = ?",
+            [now, id]
+        );
+    });
 }
 
-// Permanent delete
+// Permanent delete (hard delete)
 export function deleteLabelPermanently(id: string) {
+    // This will cascade-delete tasks via FK ON DELETE CASCADE
     db.runSync("DELETE FROM labels WHERE id = ?", [id]);
 }
 
@@ -133,20 +133,21 @@ export function deleteLabelPermanently(id: string) {
 export function toggleLabelFavorite(id: string) {
     const label = getLabel(id);
     if (!label) throw new Error("Label not found");
-
+    const now = new Date().toISOString();
     db.runSync(
         "UPDATE labels SET isFavorite = ?, updatedAt = ? WHERE id = ?",
-        [label.isFavorite ? 0 : 1, new Date().toISOString(), id]
+        [label.isFavorite ? 0 : 1, now, id]
     );
 }
 
 // Reorder labels
 export function reorderLabels(labelIds: string[]) {
+    const now = new Date().toISOString();
     db.withTransactionSync(() => {
         labelIds.forEach((id, index) => {
             db.runSync(
                 "UPDATE labels SET order_position = ?, updatedAt = ? WHERE id = ?",
-                [index, new Date().toISOString(), id]
+                [index, now, id]
             );
         });
     });
