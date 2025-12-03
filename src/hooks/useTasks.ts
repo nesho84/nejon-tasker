@@ -1,49 +1,52 @@
 import * as TasksRepo from "@/db/tasks.repo";
 import { Task } from "@/types/task.types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useTasks(labelId?: string) {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [checkedTasks, setCheckedTasks] = useState<Task[]>([]);
     const [uncheckedTasks, setUncheckedTasks] = useState<Task[]>([]);
     const [favoriteTasks, setFavoriteTasks] = useState<Task[]>([]);
+    const [tasksWithReminders, setTasksWithReminders] = useState<Task[]>([]);
     const [deletedTasks, setDeletedTasks] = useState<Task[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
 
-    const refresh = () => {
-        setRefreshKey(prev => prev + 1)
-    };
-
     useEffect(() => {
+        // Get tasks for label (or all if no labelId)
         const all = TasksRepo.getTasks(labelId);
 
+        // Filter in memory for label-specific views
         setTasks(all);
-        setCheckedTasks(all.filter(t => t.checked));
-        setUncheckedTasks(all.filter(t => !t.checked));
-        setFavoriteTasks(all.filter(t => t.isFavorite));
+        setCheckedTasks(all.filter((t) => t.checked));
+        setUncheckedTasks(all.filter((t) => !t.checked));
 
-        // Deleted tasks are not label-specific
-        if (!labelId) {
-            setDeletedTasks(TasksRepo.getDeletedTasks());
-        }
+        // GLOBAL queries (for separate screens)
+        setFavoriteTasks(TasksRepo.getFavoriteTasks());
+        setTasksWithReminders(TasksRepo.getTasksWithReminders());
+        setDeletedTasks(TasksRepo.getDeletedTasks());
     }, [refreshKey, labelId]);
+
+    const reloadTasks = useCallback(() => {
+        setRefreshKey((prev) => prev + 1);
+    }, []);
 
     return {
         tasks,
         checkedTasks,
         uncheckedTasks,
         favoriteTasks,
+        tasksWithReminders,
         deletedTasks,
-        refresh,
+        reloadTasks,
 
-        createTask: (data: { labelId: string; name: string; reminderDateTime?: string | null }) => {
+        createTask: (data: { labelId: string; text: string; reminderDateTime?: string | null }) => {
             const id = TasksRepo.createTask(data);
-            refresh();
+            reloadTasks();
             return id;
         },
 
         updateTask: (id: string, data: {
-            name?: string;
+            text?: string;
             date?: string;
             checked?: boolean;
             reminderDateTime?: string | null;
@@ -51,37 +54,37 @@ export function useTasks(labelId?: string) {
             isFavorite?: boolean;
         }) => {
             TasksRepo.updateTask(id, data);
-            refresh();
+            reloadTasks();
         },
 
         toggleTask: (id: string) => {
             TasksRepo.toggleTask(id);
-            refresh();
+            reloadTasks();
         },
 
         toggleFavorite: (id: string) => {
             TasksRepo.toggleTaskFavorite(id);
-            refresh();
+            reloadTasks();
         },
 
         deleteTask: (id: string) => {
             TasksRepo.deleteTask(id);
-            refresh();
+            reloadTasks();
         },
 
         restoreTask: (id: string) => {
             TasksRepo.restoreTask(id);
-            refresh();
+            reloadTasks();
         },
 
         deleteTaskPermanently: (id: string) => {
             TasksRepo.deleteTaskPermanently(id);
-            refresh();
+            reloadTasks();
         },
 
         reorderTasks: (taskIds: string[]) => {
             TasksRepo.reorderTasks(taskIds);
-            refresh();
+            reloadTasks();
         },
     };
 }

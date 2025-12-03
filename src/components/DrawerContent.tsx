@@ -1,10 +1,10 @@
-import { TasksContext } from "@/context/TasksContext";
 import useAppExit from "@/hooks/useAppExit";
+import { useLabels } from "@/hooks/useLabels";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from '@/store/themeStore';
+import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { router } from "expo-router";
-import { useContext } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,7 +19,7 @@ export default function DrawerContent({ close }: Props) {
     const { backAction } = useAppExit();
     const insets = useSafeAreaInsets();
 
-    const { labels } = useContext(TasksContext);
+    const { labels } = useLabels();
 
     return (
         <View
@@ -61,6 +61,19 @@ export default function DrawerContent({ close }: Props) {
                     <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.reminders}</Text>
                 </TouchableOpacity>
 
+                {/* Favorites */}
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => {
+                        close();
+                        router.push("/(main)/favorites");
+                    }}
+                    activeOpacity={0.7}
+                >
+                    <MaterialCommunityIcons name="bookmark-outline" size={22} color={theme.text} />
+                    <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.favorites}</Text>
+                </TouchableOpacity>
+
                 {/* Divider */}
                 <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
@@ -70,15 +83,15 @@ export default function DrawerContent({ close }: Props) {
                 </View>
                 {/* Labels */}
                 {labels && labels.length > 0 && (
-                    labels.map((item: any, index: number) => {
+                    labels.map((item: Label) => {
                         return (
                             <TouchableOpacity
-                                key={item.key}
+                                key={item.id}
                                 style={styles.menuItem}
                                 activeOpacity={0.7}
                                 onPress={() => {
                                     close();
-                                    router.push(`/tasks?labelKey=${item.key}`)
+                                    router.push(`/tasks?labelId=${item.id}`)
                                 }}
                             >
                                 <MaterialCommunityIcons name="label-outline" size={22} color={theme.text} />
@@ -107,11 +120,11 @@ export default function DrawerContent({ close }: Props) {
                     activeOpacity={0.7}
                     onPress={() => {
                         close();
-                        // router.push("/(main)/settings");
+                        router.push("/(main)/trash");
                     }}
                 >
                     <MaterialCommunityIcons name="trash-can-outline" size={22} color={theme.text} />
-                    <Text style={[styles.menuLabel, { color: theme.text }]}>Tash</Text>
+                    <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.trash}</Text>
                 </TouchableOpacity>
 
                 {/* Settings */}

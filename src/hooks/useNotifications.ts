@@ -1,4 +1,6 @@
+import * as TasksRepo from "@/db/tasks.repo";
 import { useLanguageStore } from '@/store/languageStore';
+import { Task } from '@/types/task.types';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
@@ -6,21 +8,12 @@ import { Alert, Linking, Platform } from 'react-native';
 // Notification handler
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldPlaySound: false,
-        shouldSetBadge: false,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
     }),
 });
-
-interface TaskObj {
-    key: string;
-    name: string;
-    reminder: {
-        dateTime: string | null;
-        notificationId?: string | null;
-    };
-}
 
 const setNotificationChannel = async () => {
     if (Platform.OS === 'android') {
@@ -33,11 +26,11 @@ const setNotificationChannel = async () => {
     }
 }
 
-export default function useNotifications(refreshContext: () => Promise<void>) {
+export default function useNotifications() {
     const { language, tr } = useLanguageStore();
 
     // Function to schedule a notification
-    const scheduleNotification = async (taskObj: TaskObj) => {
+    const scheduleNotification = async (task: Task) => {
         // First request permission
         await requestPermission();
         // Android channel configuration
@@ -46,16 +39,24 @@ export default function useNotifications(refreshContext: () => Promise<void>) {
         try {
             let notificationId = null;
 
+            // Guard against null reminderDateTime
+            if (!task.reminderDateTime) {
+                console.warn('Task has no reminder date set');
+                return null;
+            }
+
             const currentDateTime = new Date();
-            const reminderDateTime = new Date(taskObj.reminder.dateTime!);
+            const reminderDateTime = new Date(task.reminderDateTime);
             const timeDifferenceInSeconds = Math.max(1, Math.floor((reminderDateTime.getTime() - currentDateTime.getTime()) / 1000));
 
             if (timeDifferenceInSeconds > 0) {
                 notificationId = await Notifications.scheduleNotificationAsync({
                     content: {
                         title: tr.notifications.taskReminder,
-                        body: `${taskObj.name.substring(0, 40)}...`,
-                        data: { taskKey: taskObj.key },
+                        body: `${task.text.substring(0, 40)}...`,
+                        data: {
+                            taskId: task.id
+                        },
                     },
                     trigger: {
                         type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -109,13 +110,29 @@ export default function useNotifications(refreshContext: () => Promise<void>) {
         // Handle received notifications here (app open in Foreground)
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
             console.log('[Foreground] Received notification');
-            await refreshContext();
+
+            const taskId = notification.request.content.data?.taskId;
+            // Ensure the taskId is a string before calling updateTask
+            if (typeof taskId === 'string' && taskId.length > 0) {
+                TasksRepo.updateTask(taskId, {
+                    reminderDateTime: null,
+                    reminderId: null,
+                });
+            }
         });
 
         // Handle received responses here (app closed in background)
         const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            console.log('[Background] User responded to received notification');
-            await refreshContext();
+            console.log('[Background] User responded to received notification', response.notification.request.content.data);
+
+            const taskId = response.notification.request.content.data?.taskId;
+            // Ensure the taskId is a string before calling updateTask
+            if (typeof taskId === 'string' && taskId.length > 0) {
+                TasksRepo.updateTask(taskId, {
+                    reminderDateTime: null,
+                    reminderId: null,
+                });
+            }
         });
 
         return () => {
@@ -123,7 +140,7 @@ export default function useNotifications(refreshContext: () => Promise<void>) {
             receivedListener.remove();
             responseReceivedListener.remove();
         };
-    }, [refreshContext]);
+    }, []);
 
     return { scheduleNotification, cancelScheduledNotification };
 }

@@ -8,7 +8,7 @@ function mapTask(row: TaskRow): Task {
     return {
         id: row.id,
         labelId: row.labelId,
-        name: row.name,
+        text: row.text,
         date: row.date,
         checked: Boolean(row.checked),
         order_position: row.order_position,
@@ -22,82 +22,42 @@ function mapTask(row: TaskRow): Task {
     };
 }
 
-// Get all active tasks
+// Get active tasks (optionally filtered by label)
 export function getTasks(labelId?: string): Task[] {
     let query = "SELECT * FROM tasks WHERE isDeleted = 0";
     const params: any[] = [];
+
     if (labelId) {
         query += " AND labelId = ?";
         params.push(labelId);
     }
+
     query += " ORDER BY order_position ASC";
     const rows = db.getAllSync<TaskRow>(query, params);
     return rows.map(mapTask);
 }
 
-// Get checked tasks
-export function getCheckedTasks(labelId?: string): Task[] {
-    // @TODO: Keep for compatibility, but prefer using getTasks + filter in hooks
-    let query = "SELECT * FROM tasks WHERE isDeleted = 0 AND checked = 1";
-    const params: any[] = [];
-    if (labelId) {
-        query += " AND labelId = ?";
-        params.push(labelId);
-    }
-    query += " ORDER BY order_position ASC";
-    const rows = db.getAllSync<TaskRow>(query, params);
+// Get favorite tasks (GLOBAL - for favorites screen)
+export function getFavoriteTasks(): Task[] {
+    const rows = db.getAllSync<TaskRow>(
+        "SELECT * FROM tasks WHERE isDeleted = 0 AND isFavorite = 1 ORDER BY order_position ASC"
+    );
     return rows.map(mapTask);
 }
 
-// Get unchecked tasks
-export function getUncheckedTasks(labelId?: string): Task[] {
-    let query = "SELECT * FROM tasks WHERE isDeleted = 0 AND checked = 0";
-    const params: any[] = [];
-    if (labelId) {
-        query += " AND labelId = ?";
-        params.push(labelId);
-    }
-    query += " ORDER BY order_position ASC";
-    const rows = db.getAllSync<TaskRow>(query, params);
+// Get deleted tasks (GLOBAL - for trash screen)
+export function getDeletedTasks(): Task[] {
+    const rows = db.getAllSync<TaskRow>(
+        "SELECT * FROM tasks WHERE isDeleted = 1 ORDER BY deletedAt DESC"
+    );
     return rows.map(mapTask);
 }
 
-// Get favorite tasks
-export function getFavoriteTasks(labelId?: string): Task[] {
-    let query = "SELECT * FROM tasks WHERE isDeleted = 0 AND isFavorite = 1";
-    const params: any[] = [];
-    if (labelId) {
-        query += " AND labelId = ?";
-        params.push(labelId);
-    }
-    query += " ORDER BY order_position ASC";
-    const rows = db.getAllSync<TaskRow>(query, params);
-    return rows.map(mapTask);
-}
-
-// Get deleted tasks (trash)
-export function getDeletedTasks(labelId?: string): Task[] {
-    let query = "SELECT * FROM tasks WHERE isDeleted = 1";
-    const params: any[] = [];
-    if (labelId) {
-        query += " AND labelId = ?";
-        params.push(labelId);
-    }
-    query += " ORDER BY deletedAt DESC";
-    const rows = db.getAllSync<TaskRow>(query, params);
-    return rows.map(mapTask);
-}
-
-// Get tasks with reminders
-export function getTasksWithReminders(labelId?: string): Task[] {
-    let query = "SELECT * FROM tasks WHERE isDeleted = 0 AND checked = 0 AND reminderDateTime IS NOT NULL";
-    const params: any[] = [];
-    if (labelId) {
-        query += " AND labelId = ?";
-        params.push(labelId);
-    }
-    query += " ORDER BY reminderDateTime ASC";
-    const rows = db.getAllSync<any>(query, params);
+// Get tasks with reminders (GLOBAL - for reminders screen)
+export function getTasksWithReminders(): Task[] {
+    const rows = db.getAllSync<TaskRow>(
+        "SELECT * FROM tasks WHERE isDeleted = 0 AND checked = 0 AND reminderDateTime IS NOT NULL ORDER BY reminderDateTime ASC"
+    );
     return rows.map(mapTask);
 }
 
@@ -109,8 +69,9 @@ export function getTask(id: string): Task | null {
 }
 
 // Create task
-export function createTask(data: { labelId: string; name: string; reminderDateTime?: string | null; }): string {
-    if (!data.name || !data.name.trim()) throw new Error("Task name cannot be empty");
+export function createTask(data: { labelId: string; text: string; reminderDateTime?: string | null; }): string {
+    if (!data.text || !data.text.trim()) throw new Error("Task text cannot be empty");
+
     const id = uuid.v4();
     const now = new Date().toISOString();
 
@@ -118,11 +79,11 @@ export function createTask(data: { labelId: string; name: string; reminderDateTi
         "SELECT MAX(order_position) as max FROM tasks WHERE labelId = ? AND isDeleted = 0",
         [data.labelId]
     );
-    const order = (maxOrder?.max ?? -1) + 1;
+    const order_position = (maxOrder?.max ?? -1) + 1;
 
     db.runSync(
-        "INSERT INTO tasks (id, labelId, name, date, checked, order_position, reminderDateTime, reminderId, isFavorite, isDeleted, deletedAt, createdAt, updatedAt) VALUES (?, ?, ?, ?, 0, ?, ?, NULL, 0, 0, NULL, ?, ?)",
-        [id, data.labelId, data.name, now, order, data.reminderDateTime || null, now, now]
+        "INSERT INTO tasks (id, labelId, text, date, checked, order_position, reminderDateTime, reminderId, isFavorite, isDeleted, deletedAt, createdAt, updatedAt) VALUES (?, ?, ?, ?, 0, ?, ?, NULL, 0, 0, NULL, ?, ?)",
+        [id, data.labelId, data.text, now, order_position, data.reminderDateTime || null, now, now]
     );
 
     return id;
@@ -130,7 +91,7 @@ export function createTask(data: { labelId: string; name: string; reminderDateTi
 
 // Update task
 export function updateTask(id: string, data: {
-    name?: string;
+    text?: string;
     date?: string;
     checked?: boolean;
     reminderDateTime?: string | null;
@@ -144,9 +105,9 @@ export function updateTask(id: string, data: {
     const task = { ...existing, ...data, updatedAt: now };
 
     db.runSync(
-        "UPDATE tasks SET name = ?, date = ?, checked = ?, reminderDateTime = ?, reminderId = ?, isFavorite = ?, updatedAt = ? WHERE id = ?",
+        "UPDATE tasks SET text = ?, date = ?, checked = ?, reminderDateTime = ?, reminderId = ?, isFavorite = ?, updatedAt = ? WHERE id = ?",
         [
-            task.name,
+            task.text,
             task.date,
             task.checked ? 1 : 0,
             task.reminderDateTime,
@@ -160,23 +121,19 @@ export function updateTask(id: string, data: {
 
 // Toggle checked
 export function toggleTask(id: string) {
-    const task = getTask(id);
     const now = new Date().toISOString();
-    if (!task) throw new Error("Task not found");
     db.runSync(
-        "UPDATE tasks SET checked = ?, updatedAt = ? WHERE id = ?",
-        [task.checked ? 0 : 1, now, id]
+        `UPDATE tasks SET checked = CASE checked WHEN 1 THEN 0 ELSE 1 END, updatedAt = ? WHERE id = ?`,
+        [now, id]
     );
 }
 
 // Toggle favorite
 export function toggleTaskFavorite(id: string) {
-    const task = getTask(id);
     const now = new Date().toISOString();
-    if (!task) throw new Error("Task not found");
     db.runSync(
-        "UPDATE tasks SET isFavorite = ?, updatedAt = ? WHERE id = ?",
-        [task.isFavorite ? 0 : 1, now, id]
+        `UPDATE tasks SET isFavorite = CASE isFavorite WHEN 1 THEN 0 ELSE 1 END, updatedAt = ? WHERE id = ?`,
+        [now, id]
     );
 }
 

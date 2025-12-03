@@ -27,7 +27,7 @@ export function getLabels(): Label[] {
     return rows.map(mapLabel);
 }
 
-// Get favorite labels
+// Get favorite labels (GLOBAL - for favorites screen)
 export function getFavoriteLabels(): Label[] {
     const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 0 AND isFavorite = 1 ORDER BY order_position ASC"
@@ -35,7 +35,7 @@ export function getFavoriteLabels(): Label[] {
     return rows.map(mapLabel);
 }
 
-// Get deleted labels (trash)
+// Get deleted labels (GLOBAL - for trash screen)
 export function getDeletedLabels(): Label[] {
     const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 1 ORDER BY deletedAt DESC"
@@ -67,11 +67,11 @@ export function createLabel(data: { title: string; color: string; category?: str
     const maxOrder = db.getFirstSync<{ max: number }>(
         "SELECT MAX(order_position) as max FROM labels WHERE isDeleted = 0"
     );
-    const order = (maxOrder?.max ?? -1) + 1;
+    const order_position = (maxOrder?.max ?? -1) + 1;
 
     db.runSync(
         "INSERT INTO labels (id, title, color, category, order_position, isFavorite, isDeleted, deletedAt, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, 0, 0, NULL, ?, ?)",
-        [id, data.title, data.color, data.category || null, order, now, now]
+        [id, data.title, data.color, data.category || null, order_position, now, now]
     );
 
     return id;
@@ -131,12 +131,10 @@ export function deleteLabelPermanently(id: string) {
 
 // Toggle favorite
 export function toggleLabelFavorite(id: string) {
-    const label = getLabel(id);
-    if (!label) throw new Error("Label not found");
     const now = new Date().toISOString();
     db.runSync(
-        "UPDATE labels SET isFavorite = ?, updatedAt = ? WHERE id = ?",
-        [label.isFavorite ? 0 : 1, now, id]
+        `UPDATE labels SET isFavorite = CASE isFavorite WHEN 1 THEN 0 ELSE 1 END, updatedAt = ? WHERE id = ?`,
+        [now, id]
     );
 }
 

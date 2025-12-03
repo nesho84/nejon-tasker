@@ -2,14 +2,14 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialIcons } from "@expo/vector-icons";
-import { RefObject, useState } from "react";
+import { useState } from "react";
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
   handleAddTask: (task: string) => void;
   placeholder: string;
   currentLabelColor: string;
-  inputRef: RefObject<TextInput>;
+  inputRef?: React.Ref<TextInput>;
 }
 
 export default function AddTask({ handleAddTask, placeholder, currentLabelColor, inputRef }: Props) {
@@ -36,7 +36,10 @@ export default function AddTask({ handleAddTask, placeholder, currentLabelColor,
   };
 
   return (
-    <View style={[styles.addTaskContainer, { marginBottom: keyboardHeight }]}>
+    <View style={[styles.container, {
+      marginBottom: keyboardHeight,
+      borderTopColor: theme.border
+    }]}>
       <TextInput
         style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.text }]}
         multiline
@@ -60,15 +63,12 @@ export default function AddTask({ handleAddTask, placeholder, currentLabelColor,
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-  },
-  addTaskContainer: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderTopColor: "#616161",
+    paddingHorizontal: 5,
     borderTopWidth: 0.2,
+    gap: 5,
   },
   addTaskInput: {
     flex: 1,
@@ -76,12 +76,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 12,
-    marginRight: 8,
-    marginLeft: -2,
-    // borderRadius: 8,
+    borderRadius: 4,
   },
   addButton: {
     width: 45,
     height: 45,
+    borderRadius: 4,
   },
 });

@@ -24,7 +24,7 @@ export function setupDatabase() {
     CREATE TABLE IF NOT EXISTS tasks (
       id TEXT PRIMARY KEY,
       labelId TEXT NOT NULL,
-      name TEXT NOT NULL,
+      text TEXT NOT NULL,
       date TEXT NOT NULL,
       checked INTEGER DEFAULT 0,
       order_position INTEGER NOT NULL DEFAULT 0,

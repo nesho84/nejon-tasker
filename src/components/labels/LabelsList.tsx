@@ -1,51 +1,39 @@
+import AppNoItems from "@/components/AppNoItems";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Label } from "@/types/label.types";
+import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
-import AppNoItems from "../AppNoItems";
-
-interface Label {
-  key: string;
-  title: string;
-  color: string;
-}
-
-interface Task {
-  checked: boolean;
-  reminder?: {
-    dateTime: string | null;
-    notificationId: string | null;
-  } | null;
-}
-
-interface LabelWithTasks extends Label {
-  tasks: Task[];
-}
 
 interface Props {
-  labels: LabelWithTasks[];
-  orderLabels: (data: LabelWithTasks[]) => void;
-  handleEditModal: (item: LabelWithTasks) => void;
+  labels: Label[];
+  tasks: Task[];
+  orderLabels: (labelIds: string[]) => void;
+  handleEditModal: (item: Label) => void;
 }
 
-export default function LabelsList({ labels, orderLabels, handleEditModal }: Props) {
+export default function LabelsList({ labels, tasks, orderLabels, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
   const lastItem = labels[labels.length - 1];
 
   // Render Single Label template
-  const RenderLabel = ({ item, drag, isActive }: RenderItemParams<LabelWithTasks>) => {
-    const checkedTasksCount = item.tasks.filter((task) => task.checked).length;
-    const unCheckedTasksCount = item.tasks.length - checkedTasksCount;
+  const RenderLabel = ({ item, drag, isActive }: RenderItemParams<Label>) => {
+    // Get tasks for THIS label
+    const labelTasks = tasks.filter(t => t.labelId === item.id);
+    // Count checked/unchecked
+    const checkedTasksCount = labelTasks.filter(t => t.checked).length;
+    const unCheckedTasksCount = labelTasks.filter(t => !t.checked).length;
 
-    // Active task Reminders count
-    const taskActiveRemindersCount = item.tasks.reduce((count, task) => {
-      if (task.reminder && task.reminder.dateTime !== null && task.reminder.notificationId !== null) {
+    // Count active reminders for THIS label
+    const taskActiveRemindersCount = labelTasks.reduce((count, task) => {
+      if (task.reminderDateTime && task.reminderId) {
         const currentDateTime = new Date();
-        const reminderDateTime = new Date(task.reminder.dateTime);
+        const reminderDateTime = new Date(task.reminderDateTime);
         const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
         if (timeDifferenceInSeconds > 0) {
           return count + 1;
@@ -57,7 +45,7 @@ export default function LabelsList({ labels, orderLabels, handleEditModal }: Pro
     return (
       <ScaleDecorator>
         <TouchableOpacity
-          onPress={() => router.push(`/tasks?labelKey=${item.key}`)}
+          onPress={() => router.push(`/tasks?labelId=${item.id}`)}
           onLongPress={drag}
         >
           <View
@@ -131,20 +119,20 @@ export default function LabelsList({ labels, orderLabels, handleEditModal }: Pro
 
   return (
     <View style={styles.container}>
-      {/* -----Label List START----- */}
       {labels && labels.length > 0 ? (
-        // <Text>Labels List Component Placeholder</Text>
         <DraggableFlatList
           containerStyle={styles.draggableFlatListContainer}
           data={labels}
           renderItem={(params) => <RenderLabel {...params} />}
-          keyExtractor={(item, index) => `draggable-item-${item.key}`}
-          onDragEnd={({ data }) => orderLabels(data)}
+          keyExtractor={(item) => `draggable-item-${item.id}`}
+          onDragEnd={({ data }) => {
+            const labelIds = data.map(label => label.id)
+            orderLabels(labelIds);
+          }}
         />
       ) : (
         <AppNoItems />
       )}
-      {/* -----Label List END----- */}
     </View>
   );
 }

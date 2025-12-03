@@ -7,18 +7,18 @@ import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
-  handleAddLabel: (label: string, color: string) => void;
+  handleAddLabel: (title: string, color: string) => void;
 }
 
 export default function AddLabel({ handleAddLabel }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
   const { isKeyboardVisible } = useKeyboard();
-  const [label, setLabel] = useState("");
-  const [labelColor, setLabelColor] = useState(labelBgColors[0]);
+  const [title, setTitle] = useState("");
+  const [color, setColor] = useState(labelBgColors[0]);
 
   const handleAdd = () => {
-    if (label.length < 1) {
+    if (title.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
@@ -27,29 +27,29 @@ export default function AddLabel({ handleAddLabel }: Props) {
       );
       return false;
     } else {
-      handleAddLabel(label, labelColor);
-      setLabel("");
+      handleAddLabel(title, color);
+      setTitle("");
     }
   };
 
   return (
     <View style={[styles.container, { marginBottom: isKeyboardVisible ? 80 : 0 }]}>
-      <Text style={[styles.title, { color: labelColor }]}>
+      <Text style={[styles.title, { color: color }]}>
         {tr.forms.newLabel}
       </Text>
       <TextInput
         multiline
         autoCapitalize="none"
         autoCorrect={false}
-        value={label}
-        onChangeText={(text) => setLabel(text)}
+        value={title}
+        onChangeText={(text) => setTitle(text)}
         style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
       />
-      <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
+      <ColorPicker labelColor={color} handleLabelColor={setColor} />
       <TouchableOpacity
-        style={[styles.btnAdd, { backgroundColor: labelColor }]}
+        style={[styles.btnAdd, { backgroundColor: color }]}
         onPress={handleAdd}
       >
         <Text style={styles.btnAddText}>

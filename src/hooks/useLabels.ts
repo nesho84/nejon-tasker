@@ -1,6 +1,6 @@
 import * as LabelsRepo from "@/db/labels.repo";
 import { Label } from "@/types/label.types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useLabels() {
     const [labels, setLabels] = useState<Label[]>([]);
@@ -8,57 +8,59 @@ export function useLabels() {
     const [deletedLabels, setDeletedLabels] = useState<Label[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
 
-    const refresh = () => {
-        setRefreshKey(prev => prev + 1);
-    };
-
     useEffect(() => {
+        // Get active labels - filter in memory for consistency
         const all = LabelsRepo.getLabels();
-
         setLabels(all);
-        setFavoriteLabels(all.filter(t => t.isFavorite));
+
+        // Get global favorites & deleted from separate queries
+        setFavoriteLabels(LabelsRepo.getFavoriteLabels());
         setDeletedLabels(LabelsRepo.getDeletedLabels());
     }, [refreshKey]);
+
+    const reloadLabels = useCallback(() => {
+        setRefreshKey((prev) => prev + 1);
+    }, []);
 
     return {
         labels,
         favoriteLabels,
         deletedLabels,
-        refresh,
+        reloadLabels,
 
         createLabel: (data: { title: string; color: string; category?: string | null }) => {
             LabelsRepo.createLabel(data);
-            refresh();
+            reloadLabels();
         },
 
         updateLabel: (id: string, data: { title?: string; color?: string; category?: string | null }) => {
             LabelsRepo.updateLabel(id, data);
-            refresh();
+            reloadLabels();
         },
 
         deleteLabel: (id: string) => {
             LabelsRepo.deleteLabel(id);
-            refresh();
+            reloadLabels();
         },
 
         restoreLabel: (id: string) => {
             LabelsRepo.restoreLabel(id);
-            refresh();
+            reloadLabels();
         },
 
         deleteLabelPermanently: (id: string) => {
             LabelsRepo.deleteLabelPermanently(id);
-            refresh();
+            reloadLabels();
         },
 
         toggleFavorite: (id: string) => {
             LabelsRepo.toggleLabelFavorite(id);
-            refresh();
+            reloadLabels();
         },
 
         reorderLabels: (labelIds: string[]) => {
             LabelsRepo.reorderLabels(labelIds);
-            refresh();
+            reloadLabels();
         },
     };
 }

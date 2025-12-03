@@ -3,41 +3,60 @@ import AppModal from "@/components/AppModal";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
-import { TasksContext } from "@/context/TasksContext";
-import { useContext, useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
-
 import LabelsList from "@/components/labels/LabelsList";
-import { useLanguageStore } from "@/store/languageStore";
+import { useLabels } from "@/hooks/useLabels";
+import { useTasks } from "@/hooks/useTasks";
 import { useThemeStore } from '@/store/themeStore';
+import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { router, Stack } from "expo-router";
-
-interface Label {
-    key: string;
-    title: string;
-    color: string;
-}
+import { useIsFocused } from "@react-navigation/native";
+import { Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
     const { theme } = useThemeStore();
-    const { language, tr } = useLanguageStore();
+    const isFocused = useIsFocused();
 
     const {
         labels,
-        isLoading,
-        addLabel,
-        editLabel,
-        orderLabels,
-    } = useContext(TasksContext);
+        reloadLabels,
+        createLabel,
+        updateLabel,
+        reorderLabels
+    } = useLabels();
 
+    const { tasks, reloadTasks } = useTasks();
+
+    const [isLoading, setIsLoading] = useState(false);
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [labelToEdit, setLabelToEdit] = useState<Label | null>(null);
 
+    // Reload on Screen focus
+    useEffect(() => {
+        if (isFocused) {
+            reloadTasks();
+            reloadLabels();
+        }
+    }, [isFocused, reloadLabels, reloadTasks]);
+
+    // Refresh Labels manually
+    const handleRefresh = () => {
+        setIsLoading(true);
+        try {
+            reloadTasks();
+            reloadLabels();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Handle Add Label
-    const handleAddLabel = (text: string, color: string) => {
-        addLabel(text, color);
+    const handleAddLabel = (title: string, color: string) => {
+        createLabel({ title, color });
         setAddModalVisible(false);
     };
 
@@ -48,8 +67,8 @@ export default function HomeScreen() {
     };
 
     // Handle Edit Label
-    const handleEditLabel = (labelKey: string, input: string, color: string) => {
-        editLabel(labelKey, input, color);
+    const handleUpdateLabel = (id: string, title: string, color: string) => {
+        updateLabel(id, { title, color });
         setEditModalVisible(false);
     };
 
@@ -66,14 +85,6 @@ export default function HomeScreen() {
                 options={{
                     headerRight: () => (
                         <>
-                            {/* test sqlite */}
-                            <TouchableOpacity
-                                style={{ top: 1, marginRight: 26 }}
-                                onPress={() => router.push('/test-sqlite')}
-                            >
-                                <MaterialCommunityIcons name="lightbulb-question-outline" size={26} color={theme.text} />
-                            </TouchableOpacity>
-
                             {/* Add Label */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: 26 }}
@@ -82,10 +93,10 @@ export default function HomeScreen() {
                                 <MaterialCommunityIcons name="folder-plus-outline" size={26} color={theme.text} />
                             </TouchableOpacity>
 
-                            {/* Refresh */}
+                            {/* Refresh Labels */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: -3 }}
-                                onPress={() => { Alert.alert('warning', 'Not implemented!') }}
+                                onPress={handleRefresh}
                             >
                                 <MaterialCommunityIcons name="refresh" size={26} color={theme.text} />
                             </TouchableOpacity>
@@ -98,7 +109,8 @@ export default function HomeScreen() {
                 {/* Labels List */}
                 <LabelsList
                     labels={labels}
-                    orderLabels={orderLabels}
+                    tasks={tasks}
+                    orderLabels={(labelIds) => reorderLabels(labelIds)}
                     handleEditModal={handleEditModal}
                 />
 
@@ -107,9 +119,7 @@ export default function HomeScreen() {
                     modalVisible={addModalVisible}
                     setModalVisible={setAddModalVisible}
                 >
-                    <AddLabel
-                        handleAddLabel={handleAddLabel}
-                    />
+                    <AddLabel handleAddLabel={handleAddLabel} />
                 </AppModal>
 
                 {/* Edit Label Modal */}
@@ -120,7 +130,7 @@ export default function HomeScreen() {
                     {labelToEdit && (
                         <EditLabel
                             labelToEdit={labelToEdit}
-                            handleEditLabel={handleEditLabel}
+                            handleUpdateLabel={handleUpdateLabel}
                         />
                     )}
                 </AppModal>

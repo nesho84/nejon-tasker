@@ -55,6 +55,20 @@ export default function StackLayout() {
                 />
 
                 <Stack.Screen
+                    name="favorites"
+                    options={{
+                        title: tr.labels.favorites
+                    }}
+                />
+
+                <Stack.Screen
+                    name="trash"
+                    options={{
+                        title: tr.labels.trash
+                    }}
+                />
+
+                <Stack.Screen
                     name="settings"
                     options={{
                         title: tr.labels.settings

@@ -1,41 +1,30 @@
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Task } from "@/types/task.types";
 import { Ionicons } from '@expo/vector-icons';
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-interface Reminder {
-  dateTime: string | null;
-  notificationId?: string | null;
-}
-
-interface Task {
-  name: string;
-  reminder?: Reminder | null;
-  [key: string]: any; // for other task properties
-}
-
 interface Props {
-  handleEditTask: (task: Task) => void;
+  handleUpdateTask: (task: Task) => void;
   taskToEdit: Task;
 }
 
-export default function EditTask({ handleEditTask, taskToEdit }: Props) {
+export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { keyboardHeight } = useKeyboard();
 
-  const taskToEditDateTime = taskToEdit.reminder?.dateTime ?? null;
+  const taskToEditDateTime = taskToEdit.reminderDateTime ?? null;
 
   const dateTimeToString = (date: string | null): string => {
     return date ? moment(date).format("DD.MM.YYYY HH:mm") : tr.forms.setReminder;
   }
 
-  const [taskInput, setTaskInput] = useState(taskToEdit.name.toString());
+  const [taskInput, setTaskInput] = useState(taskToEdit.text.toString());
   const [inputReminder, setInputReminder] = useState(dateTimeToString(taskToEditDateTime));
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(taskToEditDateTime);
@@ -95,13 +84,11 @@ export default function EditTask({ handleEditTask, taskToEdit }: Props) {
       );
       return false;
     } else {
-      handleEditTask({
+      handleUpdateTask({
         ...taskToEdit,
-        name: taskInput,
-        reminder: {
-          ...taskToEdit.reminder,
-          dateTime: selectedDateTime
-        }
+        text: taskInput,
+        reminderDateTime: selectedDateTime,
+        // reminderId stays as is (will be updated when notification is scheduled)
       });
       setTaskInput("");
       setSelectedDateTime(null);

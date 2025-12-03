@@ -3,73 +3,138 @@ import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
 import TasksList from "@/components/tasks/TasksList";
-import { TasksContext } from "@/context/TasksContext";
+import { useLabels } from "@/hooks/useLabels";
+import useNotifications from "@/hooks/useNotifications";
+import { useTasks } from "@/hooks/useTasks";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Label } from "@/types/label.types";
+import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useContext, useState } from "react";
-import { Alert, Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRef, useState } from "react";
+import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function LabelDetailsScreen() {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
-  const { labelKey } = useLocalSearchParams();
+  const { labelId } = useLocalSearchParams();
 
+  const { labels, deleteLabel } = useLabels();
   const {
-    labels,
-    deleteLabel,
-    addTask,
-    editTask,
+    tasks,
+    checkedTasks,
+    uncheckedTasks,
+    createTask,
+    updateTask,
     deleteTask,
-    checkUncheckTask,
-    orderTasks,
-    inputRef,
-  } = useContext(TasksContext);
+    toggleTask,
+    toggleFavorite,
+    reorderTasks,
+  } = useTasks(labelId as string);
+
+  const inputRef = useRef<TextInput>(null);
+
+  const { scheduleNotification, cancelScheduledNotification } = useNotifications();
 
   // Get the current Label
   const currentLabel = labels.find(
-    (label: any) => label.key === labelKey
+    (label: Label) => label.id === labelId
   );
 
-  // Filter Tasks unchecked and checked
-  const filterTasks = (isChecked: any) => {
-    return currentLabel && currentLabel.tasks
-      ? currentLabel.tasks.filter((task: any) => task.checked === isChecked)
-      : [];
-  };
-
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState(null);
-
-  // Add Task to Storage
-  const handleAddTask = (text: string) => {
-    addTask(currentLabel.key, text);
-    inputRef.current.clear();
-    Keyboard.dismiss();
-  };
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
   // Open modal for editing Task
-  const handleEditModal = (item: any) => {
+  const handleEditModal = (item: Task) => {
     setTaskToEdit(item);
     setEditModalVisible(true);
   };
 
-  // Edit Task in Storage
-  const handleEditTask = (taskObj: any) => {
-    editTask(taskObj);
+  // Add Task
+  const handleAddTask = (text: string) => {
+    if (currentLabel) {
+      createTask({ labelId: currentLabel.id, text: text });
+      inputRef.current?.clear();
+      Keyboard.dismiss();
+    }
+  };
+
+  // Edit Task
+  const handleUpdateTask = async (task: Task) => {
+    const reminderChanged = taskToEdit?.reminderDateTime !== task.reminderDateTime;
+    // Check for existing reminders
+    if (reminderChanged && task.reminderDateTime) {
+      // Cancel for old/existing notification
+      if (task.reminderId) {
+        await cancelScheduledNotification(task.reminderId);
+      }
+      // Schedule a new notification
+      const notificationId = await scheduleNotification(task);
+      updateTask(task.id, {
+        text: task.text,
+        reminderDateTime: task.reminderDateTime,
+        reminderId: notificationId,
+      });
+    } else {
+      updateTask(task.id, {
+        text: task.text,
+        reminderDateTime: task.reminderDateTime,
+      });
+    }
+
     setEditModalVisible(false);
   };
 
-  // Delete task from the Storage
-  const handleDeleteTask = (taskKey: string) => {
-    deleteTask(taskKey);
+  // Delete task
+  const handleDeleteTask = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+
+    // Cancel the existing notification
+    if (task?.reminderId) {
+      await cancelScheduledNotification(task.reminderId);
+      // Clear reminder data when deleting
+      updateTask(taskId, {
+        reminderDateTime: null,
+        reminderId: null,
+      });
+    }
+
+    deleteTask(taskId);
   };
 
-  // Delete the entire label from the Storage
-  const handleDeleteLabel = (labelKey: string) => {
+  // Toggle task checked/unchecked
+  const handleCheckbox = async (value: boolean, taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+
+    // If checking a task with active reminder, cancel notification
+    if (value === true && task?.reminderId) {
+      await cancelScheduledNotification(task.reminderId);
+      // Clear reminder data when checking
+      updateTask(taskId, {
+        checked: true,
+        reminderDateTime: null,
+        reminderId: null,
+      });
+    } else {
+      toggleTask(taskId);
+    }
+  };
+
+  // Toggle task favorite
+  const handleFavoriteTask = async (value: boolean, taskId: string) => {
+    toggleFavorite(taskId);
+  };
+
+  // Order Tasks
+  const handleOrderTasks = (orderedTasks: Task[]) => {
+    const taskIds = orderedTasks.map(task => task.id);
+    reorderTasks(taskIds);
+  };
+
+  // Delete the entire label
+  const handleDeleteLabel = (labelId: string) => {
     Alert.alert(
       `${tr.alerts.deleteLabel.title}`,
       `${tr.alerts.deleteLabel.message}`,
@@ -77,7 +142,7 @@ export default function LabelDetailsScreen() {
         {
           text: `${tr.buttons.yes}`,
           onPress: () => {
-            deleteLabel(labelKey);
+            deleteLabel(labelId);
             router.back();
           },
         },
@@ -89,65 +154,46 @@ export default function LabelDetailsScreen() {
     );
   };
 
-  // Toggle task to checked or unchecked
-  const handleCheckbox = (newValue: boolean, itemKey: string) => {
-    checkUncheckTask(itemKey);
-    setToggleCheckBox(newValue);
-  };
-
-  // Order Tasks
-  const handleOrderTasks = (orderedTasks: any) => {
-    orderTasks(currentLabel.key, orderedTasks);
-  };
-
-  {/* Navigation bar icons */ }
-  <Stack.Screen
-    options={{
-      headerRight: () => (
-        <TouchableOpacity onPress={() => {
-          // console.log(currentLabel);
-          handleDeleteLabel(currentLabel.key);
-        }}>
-          <MaterialCommunityIcons
-            name="delete-alert-outline"
-            size={24}
-            color={theme.danger}
-            style={{ marginRight: 6 }}
-          />
-        </TouchableOpacity>
-      ),
-    }}
-  />
-
   return (
     <AppScreen>
 
+      {/* Navigation bar icons */}
+      <Stack.Screen
+        options={{
+          title: currentLabel?.title,
+          headerTintColor: currentLabel?.color,
+          headerRight: () => (
+            <TouchableOpacity onPress={() => {
+              if (currentLabel) {
+                handleDeleteLabel(currentLabel.id);
+              }
+            }}>
+              <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
       {currentLabel && (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
+
           {/* Header container */}
           <View style={[styles.headerContainer, { borderBottomColor: currentLabel.color }]}>
-            {/* Header Title */}
-            <Text style={{ fontSize: 22, color: currentLabel.color, paddingHorizontal: 8 }}>
-              {currentLabel.title}
-            </Text>
             {/* Header subtitle */}
             <Text style={{ fontSize: 14, color: theme.muted, paddingHorizontal: 8 }}>
-              {
-                `${filterTasks(true).length} ${tr.labels.of} ${currentLabel.tasks
-                  ? currentLabel.tasks.length
-                  : "0"} ${tr.labels.tasks}`
-              }
+              {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
             </Text>
           </View>
 
           {/* -----Tasks List----- */}
           <TasksList
-            unCheckedTasks={filterTasks(false)}
-            checkedTasks={filterTasks(true)}
+            unCheckedTasks={uncheckedTasks}
+            checkedTasks={checkedTasks}
             handleEditModal={handleEditModal}
-            handleCheckbox={handleCheckbox}
-            handleOrderTasks={handleOrderTasks}
             handleDeleteTask={handleDeleteTask}
+            handleCheckbox={handleCheckbox}
+            handleFavoriteTask={handleFavoriteTask}
+            handleOrderTasks={handleOrderTasks}
           />
 
           {/* Add Task Input */}
@@ -163,10 +209,12 @@ export default function LabelDetailsScreen() {
             modalVisible={editModalVisible}
             setModalVisible={setEditModalVisible}
           >
-            <EditTask
-              taskToEdit={taskToEdit}
-              handleEditTask={handleEditTask}
-            />
+            {taskToEdit && (
+              <EditTask
+                taskToEdit={taskToEdit}
+                handleUpdateTask={handleUpdateTask}
+              />
+            )}
           </AppModal>
         </View>
       )}

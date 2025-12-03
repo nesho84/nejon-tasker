@@ -14,7 +14,7 @@ export type LabelRow = {
 export type TaskRow = {
     id: string;
     labelId: string;
-    name: string;
+    text: string;
     date: string;
     checked: number;
     order_position: number;

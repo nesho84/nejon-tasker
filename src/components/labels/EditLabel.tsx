@@ -2,21 +2,16 @@ import ColorPicker from "@/components/ColorPicker";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Label } from "@/types/label.types";
 import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-interface Label {
-  key: string;
-  title: string;
-  color: string;
-}
-
 interface Props {
   labelToEdit: Label;
-  handleEditLabel: (labelKey: string, input: string, color: string) => void;
+  handleUpdateLabel: (id: string, title: string, color: string) => void;
 }
 
-export default function EditLabel({ labelToEdit, handleEditLabel }: Props) {
+export default function EditLabel({ labelToEdit, handleUpdateLabel }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -35,7 +30,7 @@ export default function EditLabel({ labelToEdit, handleEditLabel }: Props) {
       );
       return false;
     } else {
-      handleEditLabel(labelToEdit.key, input, labelColor);
+      handleUpdateLabel(labelToEdit.id, input, labelColor);
       setInput("");
     }
   };
