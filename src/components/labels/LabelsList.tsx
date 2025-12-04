@@ -1,30 +1,32 @@
 import AppNoItems from "@/components/AppNoItems";
+import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
-import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
 
 interface Props {
-  labels: Label[];
-  tasks: Task[];
-  orderLabels: (labelIds: string[]) => void;
   handleEditModal: (item: Label) => void;
 }
 
-export default function LabelsList({ labels, tasks, orderLabels, handleEditModal }: Props) {
+export default function LabelsList({ handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
-  const lastItem = labels[labels.length - 1];
+  const { labels, reorderLabels } = useLabelStore();
+  const { tasks } = useTaskStore();
+
+  const lastLabel = labels[labels.length - 1];
 
   // Render Single Label template
   const RenderLabel = ({ item, drag, isActive }: RenderItemParams<Label>) => {
     // Get tasks for THIS label
     const labelTasks = tasks.filter(t => t.labelId === item.id);
+
     // Count checked/unchecked
     const checkedTasksCount = labelTasks.filter(t => t.checked).length;
     const unCheckedTasksCount = labelTasks.filter(t => !t.checked).length;
@@ -54,13 +56,13 @@ export default function LabelsList({ labels, tasks, orderLabels, handleEditModal
               {
                 backgroundColor: isActive ? theme.muted : item.color,
                 borderColor: theme.lightMuted,
-                marginBottom: lastItem === item ? 6 : 0,
+                marginBottom: lastLabel === item ? 6 : 0,
               },
             ]}
           >
             {/* -----Item title and icons Container----- */}
             <View style={styles.labelBoxHeaderContainer}>
-              {/* Icon before Label title */}
+              {/* Icon before label title */}
               <MaterialCommunityIcons
                 style={{ marginTop: 2, marginRight: 6 }}
                 name="label-outline"
@@ -73,7 +75,7 @@ export default function LabelsList({ labels, tasks, orderLabels, handleEditModal
                 {item.title}
               </Text>
 
-              {/* EditLabel Icon */}
+              {/* Edit Label Icon */}
               <TouchableOpacity onPress={() => handleEditModal(item)}>
                 <MaterialCommunityIcons
                   style={{ marginTop: 2 }}
@@ -121,13 +123,23 @@ export default function LabelsList({ labels, tasks, orderLabels, handleEditModal
     <View style={styles.container}>
       {labels && labels.length > 0 ? (
         <DraggableFlatList
+          refreshControl={
+            <RefreshControl
+              // refreshing={labelsLoading || tasksLoading}
+              // onRefresh={handleRefresh}
+              refreshing={false}
+              onRefresh={() => { }}
+              tintColor={theme.muted}
+              colors={[theme.muted]}
+            />
+          }
           containerStyle={styles.draggableFlatListContainer}
           data={labels}
           renderItem={(params) => <RenderLabel {...params} />}
           keyExtractor={(item) => `draggable-item-${item.id}`}
           onDragEnd={({ data }) => {
             const labelIds = data.map(label => label.id)
-            orderLabels(labelIds);
+            reorderLabels(labelIds);
           }}
         />
       ) : (

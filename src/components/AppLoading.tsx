@@ -7,13 +7,11 @@ export default function AppLoading() {
   const { tr } = useLanguageStore();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-
-      <ActivityIndicator style={{ paddingBottom: 15 }} size={65} color={theme.muted} />
-      <Text style={{ fontSize: 23, color: theme.text }}>
+    <View style={[styles.container, { backgroundColor: theme.background }]} pointerEvents="auto">
+      <ActivityIndicator style={{ paddingBottom: 15 }} size={58} color={theme.muted} />
+      <Text style={{ fontSize: 20, color: theme.text, opacity: 0.7 }}>
         {tr.messages.loading}
       </Text>
-
     </View>
   );
 }
@@ -23,5 +21,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: -50,
   },
 });

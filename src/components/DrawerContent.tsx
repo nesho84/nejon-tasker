@@ -1,5 +1,5 @@
 import useAppExit from "@/hooks/useAppExit";
-import { useLabels } from "@/hooks/useLabels";
+import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
@@ -19,7 +19,7 @@ export default function DrawerContent({ close }: Props) {
     const { backAction } = useAppExit();
     const insets = useSafeAreaInsets();
 
-    const { labels } = useLabels();
+    const { labels } = useLabelStore();
 
     return (
         <View

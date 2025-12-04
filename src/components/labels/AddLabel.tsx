@@ -1,19 +1,23 @@
 import ColorPicker from "@/components/ColorPicker";
 import { labelBgColors } from "@/constants/colors";
 import { useKeyboard } from "@/hooks/useKeyboard";
+import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
-  handleAddLabel: (title: string, color: string) => void;
+  handleModal: (value: boolean) => void;
 }
 
-export default function AddLabel({ handleAddLabel }: Props) {
+export default function AddLabel({ handleModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
   const { isKeyboardVisible } = useKeyboard();
+
+  const { createLabel } = useLabelStore();
+
   const [title, setTitle] = useState("");
   const [color, setColor] = useState(labelBgColors[0]);
 
@@ -27,8 +31,11 @@ export default function AddLabel({ handleAddLabel }: Props) {
       );
       return false;
     } else {
-      handleAddLabel(title, color);
+      // Create Label
+      createLabel({ title, color });
       setTitle("");
+      // Close Modal
+      handleModal(false);
     }
   };
 
@@ -43,7 +50,7 @@ export default function AddLabel({ handleAddLabel }: Props) {
         autoCorrect={false}
         value={title}
         onChangeText={(text) => setTitle(text)}
-        style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
+        style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
       />
@@ -70,7 +77,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  input: {
+  textInput: {
     minHeight: 50,
     backgroundColor: "#fff",
     fontSize: 20,

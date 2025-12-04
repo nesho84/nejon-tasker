@@ -9,6 +9,13 @@ export default function FavoritesScreen() {
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
 
+
+            {favoriteTasks.length === 0 && (
+                <Text style={{ color: theme.text }}>
+                    No Favorites set.
+                </Text>
+            )}
+
             <FlatList
                 data={favoriteTasks}
                 renderItem={({ item }) => (

@@ -9,6 +9,12 @@ export default function RemindersScreen() {
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
 
+            {tasksWithReminders.length === 0 && (
+                <Text style={{ color: theme.text }}>
+                    No reminders set.
+                </Text>
+            )}
+
             <FlatList
                 data={tasksWithReminders}
                 renderItem={({ item }) => (

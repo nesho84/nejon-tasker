@@ -3,10 +3,11 @@ import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
 import TasksList from "@/components/tasks/TasksList";
-import { useLabels } from "@/hooks/useLabels";
 import useNotifications from "@/hooks/useNotifications";
 import { useTasks } from "@/hooks/useTasks";
+import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { Task } from "@/types/task.types";
@@ -21,7 +22,9 @@ export default function LabelDetailsScreen() {
 
   const { labelId } = useLocalSearchParams();
 
-  const { labels, deleteLabel } = useLabels();
+  const { labels, deleteLabel } = useLabelStore();
+  const { loadTasks: reloadTasks } = useTaskStore();
+
   const {
     tasks,
     checkedTasks,
@@ -58,6 +61,8 @@ export default function LabelDetailsScreen() {
       createTask({ labelId: currentLabel.id, text: text });
       inputRef.current?.clear();
       Keyboard.dismiss();
+      // Reload tasks to update counts in the Home screen
+      reloadTasks();
     }
   };
 
@@ -102,6 +107,8 @@ export default function LabelDetailsScreen() {
     }
 
     deleteTask(taskId);
+    // Reload tasks to update counts in the Home screen
+    reloadTasks();
   };
 
   // Toggle task checked/unchecked
@@ -120,6 +127,9 @@ export default function LabelDetailsScreen() {
     } else {
       toggleTask(taskId);
     }
+
+    // Reload tasks to update counts in the Home screen
+    reloadTasks();
   };
 
   // Toggle task favorite

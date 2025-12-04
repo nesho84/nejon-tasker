@@ -1,5 +1,6 @@
 import ColorPicker from "@/components/ColorPicker";
 import { useKeyboard } from "@/hooks/useKeyboard";
+import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
@@ -8,14 +9,15 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "reac
 
 interface Props {
   labelToEdit: Label;
-  handleUpdateLabel: (id: string, title: string, color: string) => void;
+  handleModal: (value: boolean) => void;
 }
 
-export default function EditLabel({ labelToEdit, handleUpdateLabel }: Props) {
+export default function EditLabel({ labelToEdit, handleModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { isKeyboardVisible } = useKeyboard();
+
+  const { updateLabel } = useLabelStore();
 
   const [input, setInput] = useState(labelToEdit.title);
   const [labelColor, setLabelColor] = useState(labelToEdit.color);
@@ -30,8 +32,14 @@ export default function EditLabel({ labelToEdit, handleUpdateLabel }: Props) {
       );
       return false;
     } else {
-      handleUpdateLabel(labelToEdit.id, input, labelColor);
+      // Update Label
+      updateLabel(labelToEdit.id, {
+        title: input,
+        color: labelColor,
+      });
       setInput("");
+      // Close Modal
+      handleModal(false);
     }
   };
 

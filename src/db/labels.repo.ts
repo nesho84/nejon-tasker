@@ -20,23 +20,35 @@ function mapLabel(row: LabelRow): Label {
 }
 
 // Get active labels
-export function getLabels(): Label[] {
-    const rows = db.getAllSync<LabelRow>(
-        "SELECT * FROM labels WHERE isDeleted = 0 ORDER BY order_position ASC"
-    );
-    return rows.map(mapLabel);
+export function getLabels(): Promise<Label[]> {
+    return new Promise((resolve, reject) => {
+        try {
+            const rows = db.getAllSync<LabelRow>(
+                "SELECT * FROM labels WHERE isDeleted = 0 ORDER BY order_position ASC"
+            );
+            resolve(rows.map(mapLabel));
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 // Get favorite labels (GLOBAL - for favorites screen)
-export function getFavoriteLabels(): Label[] {
-    const rows = db.getAllSync<LabelRow>(
-        "SELECT * FROM labels WHERE isDeleted = 0 AND isFavorite = 1 ORDER BY order_position ASC"
-    );
-    return rows.map(mapLabel);
+export function getFavoriteLabels(): Promise<Label[]> {
+    return new Promise((resolve, reject) => {
+        try {
+            const rows = db.getAllSync<LabelRow>(
+                "SELECT * FROM labels WHERE isDeleted = 0 AND isFavorite = 1 ORDER BY order_position ASC"
+            );
+            resolve(rows.map(mapLabel));
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 // Get deleted labels (GLOBAL - for trash screen)
-export function getDeletedLabels(): Label[] {
+export function getDeletedLabels(): Label[] { //...................continue here.....
     const rows = db.getAllSync<LabelRow>(
         "SELECT * FROM labels WHERE isDeleted = 1 ORDER BY deletedAt DESC"
     );

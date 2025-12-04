@@ -9,6 +9,12 @@ export default function TrashScreen() {
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
 
+            {deletedTasks.length === 0 && (
+                <Text style={{ color: theme.text }}>
+                    No Deleted set.
+                </Text>
+            )}
+
             <FlatList
                 data={deletedTasks}
                 renderItem={({ item }) => (
