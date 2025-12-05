@@ -2,8 +2,8 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
+import { dates } from "@/utils/dates";
 import { Ionicons } from '@expo/vector-icons';
-import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -21,7 +21,7 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
   const taskToEditDateTime = taskToEdit.reminderDateTime ?? null;
 
   const dateTimeToString = (date: string | null): string => {
-    return date ? moment(date).format("DD.MM.YYYY HH:mm") : tr.forms.setReminder;
+    return date ? dates.format(date) : tr.forms.setReminder;
   }
 
   const [taskInput, setTaskInput] = useState(taskToEdit.text.toString());

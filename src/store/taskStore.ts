@@ -60,16 +60,16 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             const contextLabelId = labelId ?? get().currentLabelId;
 
             // Get tasks for label (or all if no labelId)
-            const all = await TasksRepo.getTasks(contextLabelId);
+            const all = TasksRepo.getTasks(contextLabelId);
 
             // Filter in memory for label-specific views
             const checked = all.filter((t) => t.checked);
             const unchecked = all.filter((t) => !t.checked);
 
             // GLOBAL queries (for separate screens)
-            const favorites = await TasksRepo.getFavoriteTasks();
-            const reminders = await TasksRepo.getTasksWithReminders();
-            const deleted = await TasksRepo.getDeletedTasks();
+            const favorites = TasksRepo.getFavoriteTasks();
+            const reminders = TasksRepo.getTasksWithReminders();
+            const deleted = TasksRepo.getDeletedTasks();
 
             set({
                 tasks: all,
@@ -82,18 +82,15 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         } catch (error) {
             console.error('Failed to load tasks:', error);
         } finally {
-            // For smoother UX, add slight delay
-            setTimeout(() => {
-                set({ isLoading: false });
-            }, 500);
+            set({ isLoading: false });
         }
     },
 
     createTask: async (data) => {
         try {
-            const id = await TasksRepo.createTask(data);
+            const id = TasksRepo.createTask(data);
             // Reload tasks with current context
-            await get().loadTasks();
+            get().loadTasks();
             // Auto-sync labels (tasks affect label counts)
             useLabelStore.getState().loadLabels();
             return id;
@@ -105,7 +102,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     updateTask: async (id, data) => {
         try {
-            await TasksRepo.updateTask(id, data);
+            TasksRepo.updateTask(id, data);
             // Reload tasks with current context
             get().loadTasks();
             // Auto-sync labels
@@ -118,7 +115,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     toggleTask: async (id) => {
         try {
-            await TasksRepo.toggleTask(id);
+            TasksRepo.toggleTask(id);
             // Reload tasks with current context
             get().loadTasks();
             // Auto-sync labels (checked/unchecked counts changed)
@@ -131,8 +128,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     toggleFavorite: async (id) => {
         try {
-            await TasksRepo.toggleTaskFavorite(id);
-            await get().loadTasks();
+            TasksRepo.toggleTaskFavorite(id);
+            get().loadTasks();
         } catch (error) {
             console.error('Failed to toggle favorite:', error);
             throw error;
@@ -141,9 +138,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     deleteTask: async (id) => {
         try {
-            await TasksRepo.deleteTask(id);
+            TasksRepo.deleteTask(id);
             // Reload tasks with current context
-            await get().loadTasks();
+            get().loadTasks();
             // Auto-sync labels (task count decreased)
             useLabelStore.getState().loadLabels();
         } catch (error) {
@@ -152,11 +149,12 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
+    // @TODO: What happens if label is deleted? This shoould also restore label
     restoreTask: async (id) => {
         try {
-            await TasksRepo.restoreTask(id);
+            TasksRepo.restoreTask(id);
             // Reload tasks with current context
-            await get().loadTasks();
+            get().loadTasks();
             // Auto-sync labels (task count increased)
             useLabelStore.getState().loadLabels();
         } catch (error) {
@@ -167,9 +165,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     deleteTaskPermanently: async (id) => {
         try {
-            await TasksRepo.deleteTaskPermanently(id);
+            TasksRepo.deleteTaskPermanently(id);
             // Reload tasks with current context
-            await get().loadTasks();
+            get().loadTasks();
             // Auto-sync labels
             useLabelStore.getState().loadLabels();
         } catch (error) {
@@ -180,8 +178,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     reorderTasks: async (taskIds) => {
         try {
-            await TasksRepo.reorderTasks(taskIds);
-            await get().loadTasks();
+            TasksRepo.reorderTasks(taskIds);
+            get().loadTasks();
         } catch (error) {
             console.error('Failed to reorder tasks:', error);
             throw error;

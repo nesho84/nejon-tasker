@@ -33,7 +33,10 @@ export default function HomeScreen() {
         } catch (error) {
             console.log(error);
         } finally {
-            setIsLoading(false);
+            // Delay for smoother UX
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 500);
         }
     };
 
@@ -44,7 +47,7 @@ export default function HomeScreen() {
     };
 
     // Loading state
-    if (labelsLoading || tasksLoading) {
+    if (isLoading || labelsLoading || tasksLoading) {
         return <AppLoading />;
     }
 

@@ -33,12 +33,12 @@ export const useLabelStore = create<LabelState>((set, get) => ({
             set({ isLoading: true });
 
             // Option A: If we have a batched repo method (RECOMMENDED)
-            // const { labels, favorites, deleted } = await LabelsRepo.getAllLabelData();
+            // const { labels, favorites, deleted } = LabelsRepo.getAllLabelData();
 
             // Option B: Multiple queries (current approach)
-            const all = await LabelsRepo.getLabels();
-            const favorites = await LabelsRepo.getFavoriteLabels();
-            const deleted = await LabelsRepo.getDeletedLabels();
+            const all = LabelsRepo.getLabels();
+            const favorites = LabelsRepo.getFavoriteLabels();
+            const deleted = LabelsRepo.getDeletedLabels();
 
             set({
                 labels: all,
@@ -48,18 +48,15 @@ export const useLabelStore = create<LabelState>((set, get) => ({
         } catch (error) {
             console.error('Failed to load labels:', error);
         } finally {
-            // For smoother UX, add slight delay
-            setTimeout(() => {
-                set({ isLoading: false });
-            }, 500);
+            set({ isLoading: false });
         }
     },
 
     // Create a new label
     createLabel: async (data) => {
         try {
-            await LabelsRepo.createLabel(data);
-            await get().loadLabels();
+            LabelsRepo.createLabel(data);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to create label:', error);
             throw error;
@@ -69,8 +66,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     // Update an existing label
     updateLabel: async (id, data) => {
         try {
-            await LabelsRepo.updateLabel(id, data);
-            await get().loadLabels();
+            LabelsRepo.updateLabel(id, data);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to update label:', error);
             throw error;
@@ -80,8 +77,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     // Soft delete a label
     deleteLabel: async (id) => {
         try {
-            await LabelsRepo.deleteLabel(id);
-            await get().loadLabels();
+            LabelsRepo.deleteLabel(id);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to delete label:', error);
             throw error;
@@ -91,8 +88,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     // Restore a deleted label
     restoreLabel: async (id) => {
         try {
-            await LabelsRepo.restoreLabel(id);
-            await get().loadLabels();
+            LabelsRepo.restoreLabel(id);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to restore label:', error);
             throw error;
@@ -102,8 +99,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     // Permanently delete a label
     deleteLabelPermanently: async (id) => {
         try {
-            await LabelsRepo.deleteLabelPermanently(id);
-            await get().loadLabels();
+            LabelsRepo.deleteLabelPermanently(id);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to permanently delete label:', error);
             throw error;
@@ -113,8 +110,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     // Toggle favorite status
     toggleFavorite: async (id) => {
         try {
-            await LabelsRepo.toggleLabelFavorite(id);
-            await get().loadLabels();
+            LabelsRepo.toggleLabelFavorite(id);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to toggle favorite:', error);
             throw error;
@@ -124,8 +121,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     // Reorder labels
     reorderLabels: async (labelIds) => {
         try {
-            await LabelsRepo.reorderLabels(labelIds);
-            await get().loadLabels();
+            LabelsRepo.reorderLabels(labelIds);
+            get().loadLabels();
         } catch (error) {
             console.error('Failed to reorder labels:', error);
             throw error;

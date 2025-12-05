@@ -25,7 +25,7 @@ export default function LabelDetailsScreen() {
   const { labels, deleteLabel } = useLabelStore();
   const { loadTasks: reloadTasks } = useTaskStore();
 
-  const {
+  const { // continue here to convert it to zustand just like labelStore....
     tasks,
     checkedTasks,
     uncheckedTasks,
@@ -42,9 +42,7 @@ export default function LabelDetailsScreen() {
   const { scheduleNotification, cancelScheduledNotification } = useNotifications();
 
   // Get the current Label
-  const currentLabel = labels.find(
-    (label: Label) => label.id === labelId
-  );
+  const currentLabel = labels.find((label: Label) => label.id === labelId);
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);

@@ -19,7 +19,7 @@ export default function DrawerContent({ close }: Props) {
     const { backAction } = useAppExit();
     const insets = useSafeAreaInsets();
 
-    const { labels } = useLabelStore();
+    const labels = useLabelStore((state) => state.labels);
 
     return (
         <View

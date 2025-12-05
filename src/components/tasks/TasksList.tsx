@@ -2,9 +2,9 @@ import AppNoItems from "@/components/AppNoItems";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
+import { dates } from "@/utils/dates";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
-import moment from "moment";
 import { Alert, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import Hyperlink from 'react-native-hyperlink';
@@ -38,7 +38,7 @@ export default function TasksList({
     Share.share({
       message: text.toString(),
     })
-      .then((result) => console.log())
+      .then((result) => console.log("Share result:", result))
       .catch((err) => console.log(err))
   };
 
@@ -67,12 +67,12 @@ export default function TasksList({
         ]}
       >
         {/* Top Section */}
-        <View style={styles.tasksListContainerTop}>
+        <View style={styles.tasksListTop}>
           {/* -----Task checkbox----- */}
-          <View style={styles.checkboxAndTitleContainer}>
+          <View style={styles.taskCheckBox}>
             <Checkbox
               color={item.checked ? theme.border : theme.darkGrey}
-              value={item.checked}
+              value={!!item.checked}
               onValueChange={(value) => handleCheckbox(value, item.id)}
             />
           </View>
@@ -82,8 +82,8 @@ export default function TasksList({
             <Hyperlink linkDefault={true} linkStyle={{ color: theme.link }}>
               <Text
                 style={{
-                  color: item.checked ? theme.muted : theme.text,
-                  textDecorationLine: item.checked ? "line-through" : "none",
+                  color: !!item.checked ? theme.muted : theme.text,
+                  textDecorationLine: !!item.checked ? "line-through" : "none",
                   fontSize: 15,
                 }}
               >
@@ -127,7 +127,7 @@ export default function TasksList({
         </View>
 
         {/* Bottom Section */}
-        <View style={[styles.tasksListContainerBottom, { backgroundColor: theme.shadow }]}>
+        <View style={[styles.tasksListBottom, { backgroundColor: theme.shadow }]}>
           <Ionicons
             name={hasActiveReminder() ? "notifications" : "notifications-off"}
             color={hasActiveReminder() ? theme.success : theme.muted}
@@ -143,7 +143,7 @@ export default function TasksList({
                 color: hasActiveReminder() ? theme.success : theme.muted
               }}
             >
-              {moment(item.reminderDateTime).format('DD.MM.YYYY HH:mm')}
+              {dates.format(item.reminderDateTime)}
             </Text>
           )}
 
@@ -154,7 +154,7 @@ export default function TasksList({
 
           {/* -----Task dateTime----- */}
           <Text style={[{ color: theme.muted, fontSize: 11 }]}>
-            {moment(item.updatedAt).format('DD.MM.YYYY HH:mm')}
+            {dates.format(item.updatedAt)}
           </Text>
         </View>
       </TouchableOpacity>
@@ -218,12 +218,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
   },
-  tasksListContainerTop: {
+  tasksListTop: {
     flexDirection: "row",
     alignItems: "center",
     padding: 5,
   },
-  tasksListContainerBottom: {
+  tasksListBottom: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -232,23 +232,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3
   },
-  taskText: {
-    width: "100%",
-    marginLeft: 10,
-    marginRight: 8,
-    flexShrink: 1,
-  },
-  deleteTaskIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 2
-  },
-  checkboxAndTitleContainer: {
+  taskCheckBox: {
     // alignSelf: "baseline",
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 3,
+    flexShrink: 1,
+  },
+  taskText: {
+    width: "100%",
+    marginLeft: 12,
+    marginRight: 8,
     flexShrink: 1,
   },
   checkedTasksDividerContainer: {
