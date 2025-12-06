@@ -1,10 +1,10 @@
-import { useTasks } from "@/hooks/useTasks";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function FavoritesScreen() {
     const { theme } = useThemeStore();
-    const { favoriteTasks } = useTasks();
+    const { favoriteTasks } = useTaskStore();
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>

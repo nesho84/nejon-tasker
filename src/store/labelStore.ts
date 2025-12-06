@@ -10,7 +10,7 @@ interface LabelState {
     isLoading: boolean;
 
     // Actions
-    loadLabels: () => Promise<void>;
+    reloadLabels: () => Promise<void>;
     createLabel: (data: { title: string; color: string; category?: string | null }) => Promise<void>;
     updateLabel: (id: string, data: { title?: string; color?: string; category?: string | null }) => Promise<void>;
     deleteLabel: (id: string) => Promise<void>;
@@ -28,7 +28,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     isLoading: false,
 
     // Load labels from database
-    loadLabels: async () => {
+    reloadLabels: async () => {
         try {
             set({ isLoading: true });
 
@@ -56,7 +56,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     createLabel: async (data) => {
         try {
             LabelsRepo.createLabel(data);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to create label:', error);
             throw error;
@@ -67,7 +67,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     updateLabel: async (id, data) => {
         try {
             LabelsRepo.updateLabel(id, data);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to update label:', error);
             throw error;
@@ -78,7 +78,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     deleteLabel: async (id) => {
         try {
             LabelsRepo.deleteLabel(id);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to delete label:', error);
             throw error;
@@ -89,7 +89,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     restoreLabel: async (id) => {
         try {
             LabelsRepo.restoreLabel(id);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to restore label:', error);
             throw error;
@@ -100,7 +100,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     deleteLabelPermanently: async (id) => {
         try {
             LabelsRepo.deleteLabelPermanently(id);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to permanently delete label:', error);
             throw error;
@@ -111,7 +111,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     toggleFavorite: async (id) => {
         try {
             LabelsRepo.toggleLabelFavorite(id);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to toggle favorite:', error);
             throw error;
@@ -122,7 +122,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     reorderLabels: async (labelIds) => {
         try {
             LabelsRepo.reorderLabels(labelIds);
-            get().loadLabels();
+            get().reloadLabels();
         } catch (error) {
             console.error('Failed to reorder labels:', error);
             throw error;
@@ -131,7 +131,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
 }));
 
 // Initialize the store by loading labels from SQLite
-useLabelStore.getState().loadLabels();
+useLabelStore.getState().reloadLabels();
 
 
 

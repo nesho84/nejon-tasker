@@ -1,5 +1,7 @@
 import AppNoItems from "@/components/AppNoItems";
+import useNotifications from "@/hooks/useNotifications";
 import { useLanguageStore } from "@/store/languageStore";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
@@ -10,30 +12,81 @@ import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flat
 import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
-  unCheckedTasks: Task[];
-  checkedTasks: Task[];
+  labelId: string;
   handleEditModal: (item: Task) => void;
-  handleDeleteTask: (taskId: string) => void;
-  handleCheckbox: (value: boolean, taskId: string) => void;
-  handleFavoriteTask: (value: boolean, taskId: string) => void;
-  handleOrderTasks: (data: Task[]) => void;
 }
 
-export default function TasksList({
-  unCheckedTasks,
-  checkedTasks,
-  handleEditModal,
-  handleDeleteTask,
-  handleCheckbox,
-  handleFavoriteTask,
-  handleOrderTasks
-}: Props) {
+export default function TasksList({ labelId, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
-  const lastUnchecked = unCheckedTasks[unCheckedTasks.length - 1];
-  const lastChecked = checkedTasks[checkedTasks.length - 1];
+  const {
+    allTasks,
+    allCheckedTasks,
+    allUncheckedTasks,
+    updateTask,
+    deleteTask,
+    toggleTask,
+    toggleFavorite,
+    reorderTasks,
+    reloadTasks
+  } = useTaskStore();
 
+  // Filter by labelId
+  const tasks = allTasks.filter(t => t.labelId === labelId);
+  const checkedTasks = allCheckedTasks.filter(t => t.labelId === labelId);
+  const uncheckedTasks = allUncheckedTasks.filter(t => t.labelId === labelId);
+
+  const { cancelScheduledNotification } = useNotifications();
+
+  // Toggle task checked/unchecked
+  const handleCheckbox = async (value: boolean, taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    // If checking a task with active reminder, cancel notification
+    if (value === true && task?.reminderId) {
+      await cancelScheduledNotification(task.reminderId);
+      // Clear reminder data when checking
+      updateTask(taskId, {
+        checked: true,
+        reminderDateTime: null,
+        reminderId: null,
+      });
+    } else {
+      toggleTask(taskId);
+    }
+    // Reload tasks to update counts in the Home screen
+    reloadTasks();
+  };
+
+  // Delete task
+  const handleDeleteTask = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    // Cancel the existing notification
+    if (task?.reminderId) {
+      await cancelScheduledNotification(task.reminderId);
+      // Clear reminder data when deleting
+      updateTask(taskId, {
+        reminderDateTime: null,
+        reminderId: null,
+      });
+    }
+    deleteTask(taskId);
+    // Reload tasks to update counts in the Home screen
+    reloadTasks();
+  };
+
+  // Toggle task favorite
+  const handleFavoriteTask = async (value: boolean, taskId: string) => {
+    toggleFavorite(taskId);
+  };
+
+  // Order Tasks
+  const handleOrderTasks = (orderedTasks: Task[]) => {
+    const taskIds = orderedTasks.map(task => task.id);
+    reorderTasks(taskIds);
+  };
+
+  // Share task
   const shareTask = (text: string) => {
     Share.share({
       message: text.toString(),
@@ -41,6 +94,10 @@ export default function TasksList({
       .then((result) => console.log("Share result:", result))
       .catch((err) => console.log(err))
   };
+
+  // Get the last items for styling
+  const lastUnchecked = uncheckedTasks[uncheckedTasks.length - 1];
+  const lastChecked = checkedTasks[checkedTasks.length - 1];
 
   const RenderTask = ({ item, drag, isActive }: RenderItemParams<Task>) => {
     const itemDateTime = item.reminderDateTime ?? null;
@@ -63,7 +120,7 @@ export default function TasksList({
             backgroundColor: item.checked ? theme.faded : theme.backgroundAlt,
             borderColor: item.checked ? theme.faded : theme.border,
           },
-          isActive && { backgroundColor: theme.muted },
+          isActive && { opacity: 0.5, borderWidth: 3 },
         ]}
       >
         {/* Top Section */}
@@ -163,11 +220,11 @@ export default function TasksList({
 
   return (
     <>
-      {unCheckedTasks.length > 0 ? (
+      {uncheckedTasks.length > 0 ? (
         <TouchableWithoutFeedback>
           <View style={{ flex: 2 }}>
             <DraggableFlatList
-              data={unCheckedTasks}
+              data={uncheckedTasks}
               renderItem={(params) => (
                 <View style={{ marginBottom: lastUnchecked === params.item ? 3 : 0 }}>
                   <RenderTask {...params} />
@@ -192,7 +249,7 @@ export default function TasksList({
           </View>
 
           <TouchableWithoutFeedback>
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, opacity: 0.4 }}>
               <DraggableFlatList
                 data={checkedTasks}
                 renderItem={(params) => (

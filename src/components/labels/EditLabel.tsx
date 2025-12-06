@@ -9,21 +9,22 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "reac
 
 interface Props {
   labelToEdit: Label;
-  handleModal: (value: boolean) => void;
+  handleEditModal: (value: boolean) => void;
 }
 
-export default function EditLabel({ labelToEdit, handleModal }: Props) {
+export default function EditLabel({ labelToEdit, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
   const { isKeyboardVisible } = useKeyboard();
 
   const { updateLabel } = useLabelStore();
 
-  const [input, setInput] = useState(labelToEdit.title);
+  const [labelInput, setLabelInput] = useState(labelToEdit.title);
   const [labelColor, setLabelColor] = useState(labelToEdit.color);
 
   const handleEdit = () => {
-    if (input.length < 1) {
+    if (labelInput.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
@@ -34,12 +35,12 @@ export default function EditLabel({ labelToEdit, handleModal }: Props) {
     } else {
       // Update Label
       updateLabel(labelToEdit.id, {
-        title: input,
+        title: labelInput,
         color: labelColor,
       });
-      setInput("");
+      setLabelInput("");
       // Close Modal
-      handleModal(false);
+      handleEditModal(false);
     }
   };
 
@@ -53,11 +54,11 @@ export default function EditLabel({ labelToEdit, handleModal }: Props) {
         multiline
         autoCapitalize="none"
         autoCorrect={false}
-        onChangeText={(text) => setInput(text)}
+        onChangeText={(text) => setLabelInput(text)}
         style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
-        value={input}
+        value={labelInput}
       />
 
       <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />

@@ -1,5 +1,7 @@
 import { useKeyboard } from "@/hooks/useKeyboard";
+import useNotifications from "@/hooks/useNotifications";
 import { useLanguageStore } from "@/store/languageStore";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
@@ -9,14 +11,16 @@ import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface Props {
-  handleUpdateTask: (task: Task) => void;
   taskToEdit: Task;
+  handleEditModal: (value: boolean) => void;
 }
 
-export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
+export default function EditTask({ taskToEdit, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
   const { keyboardHeight } = useKeyboard();
+
+  const { updateTask } = useTaskStore();
 
   const taskToEditDateTime = taskToEdit.reminderDateTime ?? null;
 
@@ -24,8 +28,10 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
     return date ? dates.format(date) : tr.forms.setReminder;
   }
 
+  const { scheduleNotification, cancelScheduledNotification } = useNotifications();
+
   const [taskInput, setTaskInput] = useState(taskToEdit.text.toString());
-  const [inputReminder, setInputReminder] = useState(dateTimeToString(taskToEditDateTime));
+  const [reminderInput, setReminderInput] = useState(dateTimeToString(taskToEditDateTime));
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(taskToEditDateTime);
   const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +51,6 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
 
   const hasActiveReminder = (): boolean => {
     if (!selectedDateTime) return false;
-
     const currentDateTime = new Date();
     const reminderDateTime = new Date(selectedDateTime);
     const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
@@ -56,7 +61,6 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
     const currentDateTime = new Date();
     const reminderDateTime = new Date(dateTime);
     const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
-
     if (timeDifferenceInSeconds <= 0) {
       Alert.alert(
         tr.alerts.invalidDate.title,
@@ -69,12 +73,12 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
     } else {
       const dateTimeString = dateTime.toISOString();
       setSelectedDateTime(dateTimeString);
-      setInputReminder(dateTimeToString(dateTimeString));
+      setReminderInput(dateTimeToString(dateTimeString));
       setDatePickerVisible(false);
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     if (taskInput.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
@@ -84,15 +88,39 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
       );
       return false;
     } else {
-      handleUpdateTask({
-        ...taskToEdit,
-        text: taskInput,
-        reminderDateTime: selectedDateTime,
-        // reminderId stays as is (will be updated when notification is scheduled)
-      });
+      const reminderChanged = taskToEdit?.reminderDateTime !== selectedDateTime;
+      // Check for existing reminders
+      if (reminderChanged && selectedDateTime) {
+        // Cancel old/existing notification
+        if (taskToEdit.reminderId) {
+          await cancelScheduledNotification(taskToEdit.reminderId);
+        }
+        // Schedule a new notification
+        const notificationId = await scheduleNotification({
+          ...taskToEdit,
+          text: taskInput,
+          reminderDateTime: selectedDateTime,
+        });
+        // Update Task
+        updateTask(taskToEdit.id, {
+          text: taskInput,
+          reminderDateTime: selectedDateTime,
+          reminderId: notificationId,
+        });
+      } else {
+        // Update Task
+        updateTask(taskToEdit.id, {
+          text: taskInput,
+          reminderDateTime: selectedDateTime,
+        });
+      }
+
+      // Clear inputs
       setTaskInput("");
       setSelectedDateTime(null);
-      setInputReminder("");
+      setReminderInput("");
+      // Close Modal
+      handleEditModal(false);
     }
   };
 
@@ -133,7 +161,7 @@ export default function EditTask({ handleUpdateTask, taskToEdit }: Props) {
         <TextInput
           style={{ color: hasActiveReminder() ? theme.success : theme.lightMuted }}
           placeholder={tr.forms.setReminder}
-          value={inputReminder}
+          value={reminderInput}
           editable={false}
         />
         <Ionicons

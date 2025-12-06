@@ -8,12 +8,13 @@ import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
-  handleModal: (value: boolean) => void;
+  handleAddModal: (value: boolean) => void;
 }
 
-export default function AddLabel({ handleModal }: Props) {
+export default function AddLabel({ handleAddModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
   const { isKeyboardVisible } = useKeyboard();
 
   const { createLabel } = useLabelStore();
@@ -35,7 +36,7 @@ export default function AddLabel({ handleModal }: Props) {
       createLabel({ title, color });
       setTitle("");
       // Close Modal
-      handleModal(false);
+      handleAddModal(false);
     }
   };
 

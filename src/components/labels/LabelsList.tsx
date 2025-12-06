@@ -18,21 +18,21 @@ export default function LabelsList({ handleEditModal }: Props) {
   const { tr } = useLanguageStore();
 
   const { labels, reorderLabels } = useLabelStore();
-  const { tasks } = useTaskStore();
+  const { allTasks } = useTaskStore();
 
   const lastLabel = labels[labels.length - 1];
 
   // Render Single Label template
   const RenderLabel = ({ item, drag, isActive }: RenderItemParams<Label>) => {
     // Get tasks for THIS label
-    const labelTasks = tasks.filter(t => t.labelId === item.id);
+    const tasks = allTasks.filter(t => t.labelId === item.id);
 
     // Count checked/unchecked
-    const checkedTasksCount = labelTasks.filter(t => t.checked).length;
-    const unCheckedTasksCount = labelTasks.filter(t => !t.checked).length;
+    const checkedTasksCount = tasks.filter(t => t.checked).length;
+    const unCheckedTasksCount = tasks.filter(t => !t.checked).length;
 
     // Count active reminders for THIS label
-    const taskActiveRemindersCount = labelTasks.reduce((count, task) => {
+    const taskActiveRemindersCount = tasks.reduce((count, task) => {
       if (task.reminderDateTime && task.reminderId) {
         const currentDateTime = new Date();
         const reminderDateTime = new Date(task.reminderDateTime);
@@ -49,15 +49,17 @@ export default function LabelsList({ handleEditModal }: Props) {
         <TouchableOpacity
           onPress={() => router.push(`/tasks?labelId=${item.id}`)}
           onLongPress={drag}
+          activeOpacity={0.6}
         >
           <View
             style={[
               styles.labelBox,
               {
-                backgroundColor: isActive ? theme.muted : item.color,
+                backgroundColor: item.color,
                 borderColor: theme.lightMuted,
                 marginBottom: lastLabel === item ? 6 : 0,
               },
+              isActive && { opacity: 0.6 }
             ]}
           >
             {/* -----Item title and icons Container----- */}

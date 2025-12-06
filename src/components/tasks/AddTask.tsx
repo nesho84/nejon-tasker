@@ -1,27 +1,30 @@
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { useRef, useState } from "react";
+import { Alert, Keyboard, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
-  handleAddTask: (task: string) => void;
-  placeholder: string;
+  labelId: string;
   currentLabelColor: string;
-  inputRef?: React.Ref<TextInput>;
 }
 
-export default function AddTask({ handleAddTask, placeholder, currentLabelColor, inputRef }: Props) {
+export default function AddTask({ labelId, currentLabelColor }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
   const { keyboardHeight } = useKeyboard();
 
-  const [task, setTask] = useState("");
+  const { createTask } = useTaskStore();
+
+  const [text, setText] = useState("");
+
+  const textInputRef = useRef<TextInput>(null);
 
   const handleAdd = () => {
-    if (task.length < 1) {
+    if (text.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
@@ -30,8 +33,11 @@ export default function AddTask({ handleAddTask, placeholder, currentLabelColor,
       );
       return false;
     } else {
-      handleAddTask(task);
-      setTask("");
+      // Create Task
+      createTask({ labelId: labelId, text: text });
+      setText("");
+      textInputRef.current?.clear();
+      Keyboard.dismiss();
     }
   };
 
@@ -45,11 +51,11 @@ export default function AddTask({ handleAddTask, placeholder, currentLabelColor,
         multiline
         autoCapitalize="none"
         autoCorrect={false}
-        placeholder={placeholder}
+        placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
-        ref={inputRef}
-        value={task}
-        onChangeText={(text) => setTask(text)}
+        ref={textInputRef}
+        value={text}
+        onChangeText={(text) => setText(text)}
       />
       <TouchableOpacity
         style={[styles.addButton, { backgroundColor: currentLabelColor }]}

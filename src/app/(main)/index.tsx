@@ -16,8 +16,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 export default function HomeScreen() {
     const { theme } = useThemeStore();
 
-    const { isLoading: labelsLoading, loadLabels: reloadLabels } = useLabelStore();
-    const { isLoading: tasksLoading, loadTasks: reloadTasks } = useTaskStore();
+    const { isLoading: labelsLoading, reloadLabels } = useLabelStore();
+    const { isLoading: tasksLoading, reloadTasks } = useTaskStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [addModalVisible, setAddModalVisible] = useState(false);
@@ -89,14 +89,14 @@ export default function HomeScreen() {
                     {labelToEdit && (
                         <EditLabel
                             labelToEdit={labelToEdit}
-                            handleModal={setEditModalVisible}
+                            handleEditModal={setEditModalVisible}
                         />
                     )}
                 </AppModal>
 
                 {/* Add Label Modal */}
                 <AppModal modalVisible={addModalVisible} setModalVisible={setAddModalVisible}>
-                    <AddLabel handleModal={setAddModalVisible} />
+                    <AddLabel handleAddModal={setAddModalVisible} />
                 </AppModal>
             </View>
 

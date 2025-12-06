@@ -1,5 +1,5 @@
-import * as TasksRepo from "@/db/tasks.repo";
 import { useLanguageStore } from '@/store/languageStore';
+import { useTaskStore } from "@/store/taskStore";
 import { Task } from '@/types/task.types';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
@@ -27,7 +27,9 @@ const setNotificationChannel = async () => {
 }
 
 export default function useNotifications() {
-    const { language, tr } = useLanguageStore();
+    const { tr } = useLanguageStore();
+
+    const { updateTask } = useTaskStore();
 
     // Function to schedule a notification
     const scheduleNotification = async (task: Task) => {
@@ -112,9 +114,8 @@ export default function useNotifications() {
             console.log('[Foreground] Received notification');
 
             const taskId = notification.request.content.data?.taskId;
-            // Ensure the taskId is a string before calling updateTask
             if (typeof taskId === 'string' && taskId.length > 0) {
-                TasksRepo.updateTask(taskId, {
+                updateTask(taskId, {
                     reminderDateTime: null,
                     reminderId: null,
                 });
@@ -122,13 +123,13 @@ export default function useNotifications() {
         });
 
         // Handle received responses here (app closed in background)
+        // (@TODO: reminderDateTime and reminderId will not clear when app is in background or killed)
         const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
             console.log('[Background] User responded to received notification', response.notification.request.content.data);
 
             const taskId = response.notification.request.content.data?.taskId;
-            // Ensure the taskId is a string before calling updateTask
             if (typeof taskId === 'string' && taskId.length > 0) {
-                TasksRepo.updateTask(taskId, {
+                updateTask(taskId, {
                     reminderDateTime: null,
                     reminderId: null,
                 });
