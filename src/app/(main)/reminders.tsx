@@ -4,19 +4,19 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function RemindersScreen() {
     const { theme } = useThemeStore();
-    const { tasksWithReminders } = useTaskStore();
+    const { reminderTasks } = useTaskStore();
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-            {tasksWithReminders.length === 0 && (
+            {reminderTasks.length === 0 && (
                 <Text style={{ color: theme.text }}>
                     No reminders set.
                 </Text>
             )}
 
             <FlatList
-                data={tasksWithReminders}
+                data={reminderTasks}
                 renderItem={({ item }) => (
                     <View>
                         <Text style={{ color: theme.text }}>{item.text}</Text>

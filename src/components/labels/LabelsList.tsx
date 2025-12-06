@@ -6,7 +6,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
 
 interface Props {
@@ -24,25 +24,11 @@ export default function LabelsList({ handleEditModal }: Props) {
 
   // Render Single Label template
   const RenderLabel = ({ item, drag, isActive }: RenderItemParams<Label>) => {
-    // Get tasks for THIS label
+    // Filter tasks by labelId
     const tasks = allTasks.filter(t => t.labelId === item.id);
-
-    // Count checked/unchecked
-    const checkedTasksCount = tasks.filter(t => t.checked).length;
-    const unCheckedTasksCount = tasks.filter(t => !t.checked).length;
-
-    // Count active reminders for THIS label
-    const taskActiveRemindersCount = tasks.reduce((count, task) => {
-      if (task.reminderDateTime && task.reminderId) {
-        const currentDateTime = new Date();
-        const reminderDateTime = new Date(task.reminderDateTime);
-        const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
-        if (timeDifferenceInSeconds > 0) {
-          return count + 1;
-        }
-      }
-      return count;
-    }, 0);
+    const checkedTasks = tasks.filter(t => t.checked);
+    const uncheckedTasks = tasks.filter(t => !t.checked);
+    const reminderTasks = tasks.filter(t => t.reminderDateTime && t.reminderId);
 
     return (
       <ScaleDecorator>
@@ -90,25 +76,25 @@ export default function LabelsList({ handleEditModal }: Props) {
 
             {/* Tasks summary*/}
             <View style={styles.summaryContainer}>
-              {/* Remaining count */}
+              {/* Tasks Remaining count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={[styles.count, { color: theme.text }]}>{unCheckedTasksCount}</Text>
+                <Text style={[styles.count, { color: theme.text }]}>{uncheckedTasks.length}</Text>
                 <Text style={[styles.subtitle, { color: theme.text }]}>
                   {tr.labels.remaining}
                 </Text>
               </View>
 
-              {/* Reminders count */}
+              {/* Tasks Reminders count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={[styles.count, { color: theme.text }]}>{taskActiveRemindersCount}</Text>
+                <Text style={[styles.count, { color: theme.text }]}>{reminderTasks.length}</Text>
                 <Text style={[styles.subtitle, { color: theme.text }]}>
                   {tr.labels.reminders}
                 </Text>
               </View>
 
-              {/* Completed count */}
+              {/* Tasks Completed count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={[styles.count, { color: theme.text }]}>{checkedTasksCount}</Text>
+                <Text style={[styles.count, { color: theme.text }]}>{checkedTasks.length}</Text>
                 <Text style={[styles.subtitle, { color: theme.text }]}>
                   {tr.labels.completed}
                 </Text>
@@ -125,16 +111,14 @@ export default function LabelsList({ handleEditModal }: Props) {
     <View style={styles.container}>
       {labels && labels.length > 0 ? (
         <DraggableFlatList
-          refreshControl={
-            <RefreshControl
-              // refreshing={labelsLoading || tasksLoading}
-              // onRefresh={handleRefresh}
-              refreshing={false}
-              onRefresh={() => { }}
-              tintColor={theme.muted}
-              colors={[theme.muted]}
-            />
-          }
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={labelsLoading || tasksLoading}
+          //     onRefresh={handleRefresh}
+          //     tintColor={theme.muted}
+          //     colors={[theme.muted]}
+          //   />
+          // }
           containerStyle={styles.draggableFlatListContainer}
           data={labels}
           renderItem={(params) => <RenderLabel {...params} />}

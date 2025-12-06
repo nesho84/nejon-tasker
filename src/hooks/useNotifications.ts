@@ -15,24 +15,26 @@ Notifications.setNotificationHandler({
     }),
 });
 
-const setNotificationChannel = async () => {
-    if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.HIGH,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#ffffff',
-        });
-    }
-}
-
 export default function useNotifications() {
-    const { tr } = useLanguageStore();
-
     const { updateTask } = useTaskStore();
 
-    // Function to schedule a notification
+    // Set Android notification channel
+    const setNotificationChannel = async () => {
+        if (Platform.OS === 'android') {
+            await Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.HIGH,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#ffffff',
+            });
+        }
+    }
+
+    // Schedule a notification
     const scheduleNotification = async (task: Task) => {
+        // Get tr at call time, not hook initialization
+        const { tr } = useLanguageStore.getState();
+
         // First request permission
         await requestPermission();
         // Android channel configuration
@@ -43,7 +45,7 @@ export default function useNotifications() {
 
             // Guard against null reminderDateTime
             if (!task.reminderDateTime) {
-                console.warn('Task has no reminder date set');
+                console.warn('Task has no reminderDateTime set');
                 return null;
             }
 
@@ -74,7 +76,7 @@ export default function useNotifications() {
         }
     };
 
-    // Function to cancel a scheduled notification
+    // Cancel a scheduled notification
     const cancelScheduledNotification = async (notificationId: string) => {
         try {
             await Notifications.cancelScheduledNotificationAsync(notificationId);
@@ -83,23 +85,18 @@ export default function useNotifications() {
         }
     };
 
-    // Function to request notification permission
+    // Request notification permission
     const requestPermission = async () => {
+        // Get tr at call time, not hook initialization
+        const { tr } = useLanguageStore.getState();
+
         try {
             const { status } = await Notifications.requestPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert(
                     tr.alerts.notificationPermission.title,
                     tr.alerts.notificationPermission.message,
-                    [
-                        {
-                            text: "OK",
-                            onPress: async () => {
-                                // Open device settings
-                                Linking.openSettings();
-                            },
-                        },
-                    ],
+                    [{ text: "OK", onPress: async () => { Linking.openSettings(); } }],
                     { cancelable: false }
                 );
             }
@@ -109,7 +106,7 @@ export default function useNotifications() {
     };
 
     useEffect(() => {
-        // Handle received notifications here (app open in Foreground)
+        // Handle received notifications (app open in Foreground)
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
             console.log('[Foreground] Received notification');
 
@@ -119,13 +116,15 @@ export default function useNotifications() {
                     reminderDateTime: null,
                     reminderId: null,
                 });
+                console.log('Updated task:', taskId);
+            } else {
+                console.log('taskId invalid or missing');
             }
         });
 
-        // Handle received responses here (app closed in background)
-        // (@TODO: reminderDateTime and reminderId will not clear when app is in background or killed)
+        // Handle received responses (app closed in background)
         const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            console.log('[Background] User responded to received notification', response.notification.request.content.data);
+            console.log('[Background] User responded to received notification');
 
             const taskId = response.notification.request.content.data?.taskId;
             if (typeof taskId === 'string' && taskId.length > 0) {
@@ -133,6 +132,9 @@ export default function useNotifications() {
                     reminderDateTime: null,
                     reminderId: null,
                 });
+                console.log('Updated task:', taskId);
+            } else {
+                console.log('taskId invalid or missing');
             }
         });
 

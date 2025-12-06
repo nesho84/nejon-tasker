@@ -1,7 +1,6 @@
-import { setupDatabase } from "@/db/database";
+import useNotifications from "@/hooks/useNotifications";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -24,10 +23,8 @@ const RootStack = () => {
 }
 
 export default function RootLayout() {
-  useEffect(() => {
-    // Initialize SQLite database
-    setupDatabase();
-  }, []);
+  // Initialize notifications
+  useNotifications();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

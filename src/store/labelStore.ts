@@ -10,14 +10,14 @@ interface LabelState {
     isLoading: boolean;
 
     // Actions
-    reloadLabels: () => Promise<void>;
-    createLabel: (data: { title: string; color: string; category?: string | null }) => Promise<void>;
-    updateLabel: (id: string, data: { title?: string; color?: string; category?: string | null }) => Promise<void>;
-    deleteLabel: (id: string) => Promise<void>;
-    restoreLabel: (id: string) => Promise<void>;
-    deleteLabelPermanently: (id: string) => Promise<void>;
-    toggleFavorite: (id: string) => Promise<void>;
-    reorderLabels: (labelIds: string[]) => Promise<void>;
+    reloadLabels: () => void;
+    createLabel: (data: { title: string; color: string; category?: string | null }) => void;
+    updateLabel: (id: string, data: { title?: string; color?: string; category?: string | null }) => void;
+    deleteLabel: (id: string) => void;
+    restoreLabel: (id: string) => void;
+    deleteLabelPermanently: (id: string) => void;
+    toggleFavorite: (id: string) => void;
+    reorderLabels: (labelIds: string[]) => void;
 }
 
 export const useLabelStore = create<LabelState>((set, get) => ({
@@ -28,12 +28,9 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     isLoading: false,
 
     // Load labels from database
-    reloadLabels: async () => {
+    reloadLabels: () => {
         try {
             set({ isLoading: true });
-
-            // Option A: If we have a batched repo method (RECOMMENDED)
-            // const { labels, favorites, deleted } = LabelsRepo.getAllLabelData();
 
             // Option B: Multiple queries (current approach)
             const all = LabelsRepo.getLabels();
@@ -53,7 +50,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Create a new label
-    createLabel: async (data) => {
+    createLabel: (data) => {
         try {
             LabelsRepo.createLabel(data);
             get().reloadLabels();
@@ -64,7 +61,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Update an existing label
-    updateLabel: async (id, data) => {
+    updateLabel: (id, data) => {
         try {
             LabelsRepo.updateLabel(id, data);
             get().reloadLabels();
@@ -75,7 +72,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Soft delete a label
-    deleteLabel: async (id) => {
+    deleteLabel: (id) => {
         try {
             LabelsRepo.deleteLabel(id);
             get().reloadLabels();
@@ -86,7 +83,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Restore a deleted label
-    restoreLabel: async (id) => {
+    restoreLabel: (id) => {
         try {
             LabelsRepo.restoreLabel(id);
             get().reloadLabels();
@@ -97,7 +94,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Permanently delete a label
-    deleteLabelPermanently: async (id) => {
+    deleteLabelPermanently: (id) => {
         try {
             LabelsRepo.deleteLabelPermanently(id);
             get().reloadLabels();
@@ -108,7 +105,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Toggle favorite status
-    toggleFavorite: async (id) => {
+    toggleFavorite: (id) => {
         try {
             LabelsRepo.toggleLabelFavorite(id);
             get().reloadLabels();
@@ -119,7 +116,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // Reorder labels
-    reorderLabels: async (labelIds) => {
+    reorderLabels: (labelIds) => {
         try {
             LabelsRepo.reorderLabels(labelIds);
             get().reloadLabels();

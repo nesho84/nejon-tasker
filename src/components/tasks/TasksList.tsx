@@ -5,7 +5,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { Alert, Share, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
@@ -22,20 +22,18 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
 
   const {
     allTasks,
-    allCheckedTasks,
-    allUncheckedTasks,
+    reloadTasks,
     updateTask,
     deleteTask,
     toggleTask,
     toggleFavorite,
     reorderTasks,
-    reloadTasks
   } = useTaskStore();
 
-  // Filter by labelId
+  // Filter tasks by labelId
   const tasks = allTasks.filter(t => t.labelId === labelId);
-  const checkedTasks = allCheckedTasks.filter(t => t.labelId === labelId);
-  const uncheckedTasks = allUncheckedTasks.filter(t => t.labelId === labelId);
+  const checkedTasks = tasks.filter(t => t.checked);
+  const uncheckedTasks = tasks.filter(t => !t.checked);
 
   const { cancelScheduledNotification } = useNotifications();
 
@@ -76,7 +74,7 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
   };
 
   // Toggle task favorite
-  const handleFavoriteTask = async (value: boolean, taskId: string) => {
+  const handleFavoriteTask = (value: boolean, taskId: string) => {
     toggleFavorite(taskId);
   };
 
@@ -99,6 +97,7 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
   const lastUnchecked = uncheckedTasks[uncheckedTasks.length - 1];
   const lastChecked = checkedTasks[checkedTasks.length - 1];
 
+  // Render Single Task template
   const RenderTask = ({ item, drag, isActive }: RenderItemParams<Task>) => {
     const itemDateTime = item.reminderDateTime ?? null;
 
@@ -155,10 +154,12 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
               handleFavoriteTask(!item.isFavorite, item.id);
             }}
           >
-            <Ionicons
+            <MaterialCommunityIcons
               name={item.isFavorite ? "star" : "star-outline"}
-              size={20} color={theme.muted}
-              style={{ marginRight: 12 }} />
+              size={22}
+              color={theme.muted}
+              style={{ marginRight: 12 }}
+            />
           </TouchableOpacity>
 
           {/* -----Delete icon----- */}
@@ -168,18 +169,19 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
                 tr.alerts.deleteTask.title,
                 tr.alerts.deleteTask.message,
                 [
-                  {
-                    text: tr.buttons.yes,
-                    onPress: () => handleDeleteTask(item.id)
-
-                  },
+                  { text: tr.buttons.yes, onPress: () => handleDeleteTask(item.id) },
                   { text: tr.buttons.no },
                 ],
                 { cancelable: false }
               )
             }
           >
-            <Ionicons name="close" size={24} color={theme.muted} style={{ marginRight: 3 }} />
+            <MaterialCommunityIcons
+              name="close"
+              size={22}
+              color={theme.muted}
+              style={{ marginRight: 3 }}
+            />
           </TouchableOpacity>
         </View>
 

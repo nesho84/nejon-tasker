@@ -51,3 +51,6 @@ export function setupDatabase() {
   db.execSync("CREATE INDEX IF NOT EXISTS idx_tasks_favorite ON tasks(isFavorite);");
   db.execSync("CREATE INDEX IF NOT EXISTS idx_tasks_deleted ON tasks(isDeleted);");
 }
+
+// Run setup immediately when this module loads
+setupDatabase();

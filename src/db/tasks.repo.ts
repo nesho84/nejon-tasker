@@ -146,9 +146,9 @@ export function toggleTaskFavorite(id: string): void {
 }
 
 // Get tasks with reminders (GLOBAL - for reminders screen)
-export function getTasksWithReminders(): Task[] {
+export function getReminderTasks(): Task[] {
     const rows = db.getAllSync<Task>(
-        "SELECT * FROM tasks WHERE isDeleted = 0 AND checked = 0 AND reminderDateTime IS NOT NULL ORDER BY reminderDateTime ASC"
+        "SELECT * FROM tasks WHERE isDeleted = 0 AND checked = 0 AND reminderDateTime IS NOT NULL AND reminderId IS NOT NULL ORDER BY reminderDateTime ASC"
     );
     return rows;
 }

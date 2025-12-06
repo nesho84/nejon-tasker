@@ -23,17 +23,16 @@ export default function LabelDetailsScreen() {
 
   const { isLoading: labelsLoading, labels, deleteLabel } = useLabelStore();
   // Get the current Label
-  const currentLabel = labels.find((label: Label) => label.id === labelId);
+  const label = labels.find((label: Label) => label.id === labelId);
 
   const {
     isLoading: tasksLoading,
     allTasks,
-    allCheckedTasks,
   } = useTaskStore();
 
   // Filter by labelId
   const tasks = allTasks.filter(t => t.labelId === labelId);
-  const checkedTasks = allCheckedTasks.filter(t => t.labelId === labelId);
+  const checkedTasks = tasks.filter(t => t.checked);
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
@@ -47,18 +46,18 @@ export default function LabelDetailsScreen() {
   // Delete the entire label
   const handleDeleteLabel = (labelId: string) => {
     Alert.alert(
-      `${tr.alerts.deleteLabel.title}`,
-      `${tr.alerts.deleteLabel.message}`,
+      tr.alerts.deleteLabel.title,
+      tr.alerts.deleteLabel.message,
       [
         {
-          text: `${tr.buttons.yes}`,
+          text: tr.buttons.yes,
           onPress: () => {
             deleteLabel(labelId);
             router.back();
           },
         },
         {
-          text: `${tr.buttons.no}`,
+          text: tr.buttons.no,
         },
       ],
       { cancelable: false }
@@ -76,12 +75,12 @@ export default function LabelDetailsScreen() {
       {/* Navigation bar icons */}
       <Stack.Screen
         options={{
-          title: currentLabel?.title,
-          headerTintColor: currentLabel?.color,
+          title: label?.title,
+          headerTintColor: label?.color,
           headerRight: () => (
             <TouchableOpacity onPress={() => {
-              if (currentLabel) {
-                handleDeleteLabel(currentLabel.id);
+              if (label) {
+                handleDeleteLabel(label.id);
               }
             }}>
               <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
@@ -90,11 +89,11 @@ export default function LabelDetailsScreen() {
         }}
       />
 
-      {currentLabel && (
+      {label && (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
 
           {/* Header container */}
-          <View style={[styles.headerContainer, { borderBottomColor: currentLabel.color }]}>
+          <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
             {/* Header subtitle */}
             <Text style={{ fontSize: 14, color: theme.muted, paddingHorizontal: 8 }}>
               {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
@@ -103,7 +102,7 @@ export default function LabelDetailsScreen() {
 
           {/* -----Tasks List----- */}
           <TasksList
-            labelId={currentLabel.id}
+            labelId={label.id}
             handleEditModal={handleEditModal}
           />
 
@@ -119,8 +118,8 @@ export default function LabelDetailsScreen() {
 
           {/* Add Task Input */}
           <AddTask
-            labelId={currentLabel.id}
-            currentLabelColor={currentLabel.color}
+            labelId={label.id}
+            currentLabelColor={label.color}
           />
         </View>
       )}
