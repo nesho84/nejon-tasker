@@ -1,37 +1,61 @@
+import TaskCard from "@/components/tasks/TaskCard";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Task } from "@/types/task.types";
+import { dates } from "@/utils/dates";
+import { Ionicons } from "@expo/vector-icons";
+import { FlatList, Text, View } from 'react-native';
 
 export default function RemindersScreen() {
     const { theme } = useThemeStore();
     const { reminderTasks } = useTaskStore();
 
+    const renderItem = ({ item }: { item: Task }) => (
+        <TaskCard
+            task={item}
+            bottomContent={
+                <>
+                    <Ionicons
+                        name="notifications"
+                        color={theme.success}
+                        size={16}
+                    />
+
+                    {item.reminderDateTime && (
+                        <Text
+                            style={{
+                                marginLeft: -120,
+                                fontSize: 12,
+                                fontWeight: '500',
+                                color: theme.success,
+                            }}
+                        >
+                            {dates.format(item.reminderDateTime)}
+                        </Text>
+                    )}
+
+                    <Text style={{ color: theme.muted, fontSize: 11 }}>
+                        {dates.format(item.updatedAt)}
+                    </Text>
+                </>
+            }
+        />
+    );
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-
-            {reminderTasks.length === 0 && (
-                <Text style={{ color: theme.text }}>
-                    No reminders set.
-                </Text>
-            )}
-
             <FlatList
                 data={reminderTasks}
-                renderItem={({ item }) => (
-                    <View>
-                        <Text style={{ color: theme.text }}>{item.text}</Text>
-                        <Text style={{ color: theme.text }}>Due: {item.reminderDateTime}</Text>
-                    </View>
-                )}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ paddingVertical: 8 }}
             />
-
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const styles = {
     container: {
         flex: 1,
-        padding: 16,
     },
-});
+};

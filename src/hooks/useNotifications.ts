@@ -5,9 +5,9 @@ import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
 
-// Notification handler
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
+        shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
@@ -32,11 +32,11 @@ export default function useNotifications() {
 
     // Schedule a notification
     const scheduleNotification = async (task: Task) => {
-        // Get tr at call time, not hook initialization
         const { tr } = useLanguageStore.getState();
 
         // First request permission
         await requestPermission();
+
         // Android channel configuration
         await setNotificationChannel();
 
@@ -59,7 +59,7 @@ export default function useNotifications() {
                         title: tr.notifications.taskReminder,
                         body: `${task.text.substring(0, 40)}...`,
                         data: {
-                            taskId: task.id
+                            taskId: task.id,
                         },
                     },
                     trigger: {
@@ -68,6 +68,8 @@ export default function useNotifications() {
                         channelId: 'default',
                     },
                 });
+
+                console.log(`Scheduled notification for task "${task.text}" in ${timeDifferenceInSeconds} seconds.`);
             }
             return notificationId;
         } catch (error) {
@@ -106,9 +108,9 @@ export default function useNotifications() {
     };
 
     useEffect(() => {
-        // Handle received notifications (app open in Foreground)
+        // Handle received notifications
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
-            console.log('[Foreground] Received notification');
+            console.log('🔔 [Foreground] Received notification');
 
             const taskId = notification.request.content.data?.taskId;
             if (typeof taskId === 'string' && taskId.length > 0) {
@@ -116,15 +118,15 @@ export default function useNotifications() {
                     reminderDateTime: null,
                     reminderId: null,
                 });
-                console.log('Updated task:', taskId);
+                console.log('[Foreground] Updated task ID:', taskId);
             } else {
-                console.log('taskId invalid or missing');
+                console.log('[Foreground] taskId invalid or missing');
             }
         });
 
-        // Handle received responses (app closed in background)
+        // Handle received responses
         const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            console.log('[Background] User responded to received notification');
+            console.log('[Foreground] User responded to received notification');
 
             const taskId = response.notification.request.content.data?.taskId;
             if (typeof taskId === 'string' && taskId.length > 0) {
@@ -132,9 +134,9 @@ export default function useNotifications() {
                     reminderDateTime: null,
                     reminderId: null,
                 });
-                console.log('Updated task:', taskId);
+                console.log('[Foreground] Updated task ID:', taskId);
             } else {
-                console.log('taskId invalid or missing');
+                console.log('[Foreground] taskId invalid or missing');
             }
         });
 
@@ -145,5 +147,10 @@ export default function useNotifications() {
         };
     }, []);
 
-    return { scheduleNotification, cancelScheduledNotification };
+    return {
+        requestPermission,
+        setNotificationChannel,
+        scheduleNotification,
+        cancelScheduledNotification,
+    };
 }

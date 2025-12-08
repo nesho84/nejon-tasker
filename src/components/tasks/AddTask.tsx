@@ -71,9 +71,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 5,
-    borderTopWidth: 0.2,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    padding: 6,
     gap: 5,
   },
   addTaskInput: {
@@ -85,8 +84,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   addButton: {
-    width: 45,
-    height: 45,
+    width: 47,
+    height: 47,
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 4,
   },
 });

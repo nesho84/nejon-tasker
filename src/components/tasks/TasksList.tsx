@@ -272,8 +272,8 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
 
 const styles = StyleSheet.create({
   tasksListContainer: {
-    marginTop: 5,
-    marginHorizontal: 5,
+    marginTop: 8,
+    marginHorizontal: 8,
     borderRadius: 5,
     borderWidth: 1,
   },
