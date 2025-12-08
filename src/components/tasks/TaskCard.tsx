@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     top: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 16,
-        paddingVertical: 14,
+        paddingVertical: 8,
+        paddingHorizontal: 10,
     },
     leftAction: {
         flexDirection: "row",
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         borderBottomLeftRadius: 5,
         borderBottomRightRadius: 5,
-        paddingHorizontal: 16,
+        paddingHorizontal: 10,
         paddingVertical: 6,
         borderTopWidth: 0.5,
         borderTopColor: 'rgba(0, 0, 0, 0.05)',

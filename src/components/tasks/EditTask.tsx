@@ -11,30 +11,29 @@ import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface Props {
-  taskToEdit: Task;
+  task: Task;
   handleEditModal: (value: boolean) => void;
 }
 
-export default function EditTask({ taskToEdit, handleEditModal }: Props) {
+export default function EditTask({ task, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
   const { keyboardHeight } = useKeyboard();
+  const { scheduleNotification, cancelScheduledNotification } = useNotifications();
 
+  // TaskStore
   const { updateTask } = useTaskStore();
-
-  const taskToEditDateTime = taskToEdit.reminderDateTime ?? null;
 
   const dateTimeToString = (date: string | null): string => {
     return date ? dates.format(date) : tr.forms.setReminder;
   }
 
-  const { scheduleNotification, cancelScheduledNotification } = useNotifications();
-
-  const [taskInput, setTaskInput] = useState(taskToEdit.text.toString());
-  const [reminderInput, setReminderInput] = useState(dateTimeToString(taskToEditDateTime));
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [selectedDateTime, setSelectedDateTime] = useState<string | null>(taskToEditDateTime);
+  // Local State
   const [isEditing, setIsEditing] = useState(false);
+  const [taskInput, setTaskInput] = useState(task.text.toString());
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [reminderInput, setReminderInput] = useState(dateTimeToString(task.reminderDateTime));
+  const [selectedDateTime, setSelectedDateTime] = useState<string | null>(task.reminderDateTime);
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -48,14 +47,6 @@ export default function EditTask({ taskToEdit, handleEditModal }: Props) {
       keyboardDidHideListener.remove();
     };
   }, []);
-
-  const hasActiveReminder = (): boolean => {
-    if (!selectedDateTime) return false;
-    const currentDateTime = new Date();
-    const reminderDateTime = new Date(selectedDateTime);
-    const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
-    return timeDifferenceInSeconds > 0;
-  }
 
   const handleDateConfirm = (dateTime: Date) => {
     const currentDateTime = new Date();
@@ -88,28 +79,28 @@ export default function EditTask({ taskToEdit, handleEditModal }: Props) {
       );
       return false;
     } else {
-      const reminderChanged = taskToEdit?.reminderDateTime !== selectedDateTime;
+      const reminderChanged = task?.reminderDateTime !== selectedDateTime;
       // Check for existing reminders
       if (reminderChanged && selectedDateTime) {
         // Cancel old/existing notification
-        if (taskToEdit.reminderId) {
-          await cancelScheduledNotification(taskToEdit.reminderId);
+        if (task.reminderId) {
+          await cancelScheduledNotification(task.reminderId);
         }
         // Schedule a new notification
         const notificationId = await scheduleNotification({
-          ...taskToEdit,
+          ...task,
           text: taskInput,
           reminderDateTime: selectedDateTime,
         });
         // Update Task
-        updateTask(taskToEdit.id, {
+        updateTask(task.id, {
           text: taskInput,
           reminderDateTime: selectedDateTime,
           reminderId: notificationId,
         });
       } else {
         // Update Task
-        updateTask(taskToEdit.id, {
+        updateTask(task.id, {
           text: taskInput,
           reminderDateTime: selectedDateTime,
         });
@@ -159,14 +150,14 @@ export default function EditTask({ taskToEdit, handleEditModal }: Props) {
         style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
         onPress={() => setDatePickerVisible(true)}>
         <TextInput
-          style={{ color: hasActiveReminder() ? theme.success : theme.lightMuted }}
+          style={{ color: task.reminderId ? theme.success : theme.lightMuted }}
           placeholder={tr.forms.setReminder}
           value={reminderInput}
           editable={false}
         />
         <Ionicons
-          name={hasActiveReminder() ? "notifications" : "notifications-off"}
-          color={hasActiveReminder() ? theme.success : theme.lightMuted}
+          name={task.reminderId ? "notifications" : "notifications-off"}
+          color={task.reminderId ? theme.success : theme.lightMuted}
           size={20}
         />
       </TouchableOpacity>

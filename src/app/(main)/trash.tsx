@@ -18,6 +18,10 @@ export default function RemindersScreen() {
         Alert.alert("Function not implemented.");
     }
 
+    function shareTask(text: string): void {
+        Alert.alert("Function not implemented.");
+    }
+
     const renderItem = ({ item }: { item: Task }) => (
         <TaskCard
             task={item}
@@ -34,24 +38,9 @@ export default function RemindersScreen() {
             }
             bottomContent={
                 <>
-                    <Ionicons
-                        name={item.reminderId ? "notifications" : "notifications-off"}
-                        color={item.reminderId ? theme.success : theme.muted}
-                        size={16}
-                    />
-
-                    {item.reminderDateTime && (
-                        <Text
-                            style={{
-                                marginLeft: -120,
-                                fontSize: 12,
-                                fontWeight: '500',
-                                color: theme.success,
-                            }}
-                        >
-                            {dates.format(item.reminderDateTime)}
-                        </Text>
-                    )}
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => shareTask(item.text)}>
+                        <Ionicons name="share-social" size={16} color={theme.muted} />
+                    </TouchableOpacity>
 
                     <Text style={{ color: theme.muted, fontSize: 11 }}>
                         {dates.format(item.updatedAt)}

@@ -3,6 +3,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Label } from "@/types/label.types";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -12,14 +13,16 @@ import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flat
 import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
-  labelId: string;
+  label: Label;
   handleEditModal: (item: Task) => void;
 }
 
-export default function TasksList({ labelId, handleEditModal }: Props) {
+export default function TasksList({ label, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+  const { cancelScheduledNotification } = useNotifications();
 
+  // TaskStore
   const {
     allTasks,
     reloadTasks,
@@ -31,11 +34,12 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
   } = useTaskStore();
 
   // Filter tasks by labelId
-  const tasks = allTasks.filter(t => t.labelId === labelId);
+  const tasks = allTasks.filter(t => t.labelId === label.id);
   const checkedTasks = tasks.filter(t => t.checked);
   const uncheckedTasks = tasks.filter(t => !t.checked);
-
-  const { cancelScheduledNotification } = useNotifications();
+  // Get the last items for styling
+  const lastUnchecked = uncheckedTasks[uncheckedTasks.length - 1];
+  const lastChecked = checkedTasks[checkedTasks.length - 1];
 
   // Toggle task checked/unchecked
   const handleCheckbox = async (value: boolean, taskId: string) => {
@@ -93,22 +97,8 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
       .catch((err) => console.log(err))
   };
 
-  // Get the last items for styling
-  const lastUnchecked = uncheckedTasks[uncheckedTasks.length - 1];
-  const lastChecked = checkedTasks[checkedTasks.length - 1];
-
   // Render Single Task template
   const RenderTask = ({ item, drag, isActive }: RenderItemParams<Task>) => {
-    const itemDateTime = item.reminderDateTime ?? null;
-
-    const hasActiveReminder = (): boolean => {
-      if (!itemDateTime) return false;
-      const currentDateTime = new Date();
-      const reminderDateTime = new Date(itemDateTime);
-      const timeDifferenceInSeconds = Math.max(0, (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000);
-      return timeDifferenceInSeconds > 0;
-    }
-
     return (
       <TouchableOpacity
         onPress={() => handleEditModal(item)}
@@ -188,18 +178,18 @@ export default function TasksList({ labelId, handleEditModal }: Props) {
         {/* Bottom Section */}
         <View style={[styles.tasksListBottom, { backgroundColor: theme.shadow }]}>
           <Ionicons
-            name={hasActiveReminder() ? "notifications" : "notifications-off"}
-            color={hasActiveReminder() ? theme.success : theme.muted}
+            name={item.reminderId ? "notifications" : "notifications-off"}
+            color={item.reminderId ? theme.success : theme.muted}
             size={16}
           />
 
           {/* Reminder dateTime */}
-          {hasActiveReminder() && item.reminderDateTime && (
+          {item.reminderId && item.reminderDateTime && (
             <Text
               style={{
                 marginLeft: -80,
                 fontSize: 11,
-                color: hasActiveReminder() ? theme.success : theme.muted
+                color: item.reminderId ? theme.success : theme.muted
               }}
             >
               {dates.format(item.reminderDateTime)}

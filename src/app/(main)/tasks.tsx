@@ -8,7 +8,6 @@ import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
-import { Label } from "@/types/label.types";
 import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -18,28 +17,24 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 export default function LabelDetailsScreen() {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { labelId } = useLocalSearchParams();
 
+  // LabelStore
   const { isLoading: labelsLoading, labels, deleteLabel } = useLabelStore();
-  // Get the current Label
-  const label = labels.find((label: Label) => label.id === labelId);
+  const label = labels.find((l) => l.id === labelId);
 
-  const {
-    isLoading: tasksLoading,
-    allTasks,
-  } = useTaskStore();
-
-  // Filter by labelId
-  const tasks = allTasks.filter(t => t.labelId === labelId);
+  // TaskStore
+  const { isLoading: tasksLoading, allTasks } = useTaskStore();
+  const tasks = allTasks.filter((t) => t.labelId === labelId);
   const checkedTasks = tasks.filter(t => t.checked);
 
+  // Local State
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // Open modal for editing Task
-  const handleEditModal = (item: Task) => {
-    setTaskToEdit(item);
+  const handleEditModal = (task: Task) => {
+    setSelectedTask(task);
     setEditModalVisible(true);
   };
 
@@ -79,9 +74,7 @@ export default function LabelDetailsScreen() {
           headerTintColor: label?.color,
           headerRight: () => (
             <TouchableOpacity onPress={() => {
-              if (label) {
-                handleDeleteLabel(label.id);
-              }
+              if (label) handleDeleteLabel(label.id);
             }}>
               <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
             </TouchableOpacity>
@@ -91,7 +84,6 @@ export default function LabelDetailsScreen() {
 
       {label && (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-
           {/* Header container */}
           <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
             {/* Header subtitle */}
@@ -102,25 +94,22 @@ export default function LabelDetailsScreen() {
 
           {/* -----Tasks List----- */}
           <TasksList
-            labelId={label.id}
+            label={label}
             handleEditModal={handleEditModal}
           />
 
           {/* -----Edit Task Modal----- */}
           <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>
-            {taskToEdit && (
+            {selectedTask && (
               <EditTask
-                taskToEdit={taskToEdit}
+                task={selectedTask}
                 handleEditModal={setEditModalVisible}
               />
             )}
           </AppModal>
 
           {/* Add Task Input */}
-          <AddTask
-            labelId={label.id}
-            currentLabelColor={label.color}
-          />
+          <AddTask label={label} />
         </View>
       )}
 
@@ -133,7 +122,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
   },
   headerContainer: {
     alignSelf: "stretch",

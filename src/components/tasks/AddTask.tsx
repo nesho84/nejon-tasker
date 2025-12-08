@@ -2,16 +2,16 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Label } from "@/types/label.types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
-  labelId: string;
-  currentLabelColor: string;
+  label: Label;
 }
 
-export default function AddTask({ labelId, currentLabelColor }: Props) {
+export default function AddTask({ label }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -34,7 +34,7 @@ export default function AddTask({ labelId, currentLabelColor }: Props) {
       return false;
     } else {
       // Create Task
-      createTask({ labelId: labelId, text: text });
+      createTask({ labelId: label.id, text: text });
       setText("");
       textInputRef.current?.clear();
       Keyboard.dismiss();
@@ -58,7 +58,7 @@ export default function AddTask({ labelId, currentLabelColor }: Props) {
         onChangeText={(text) => setText(text)}
       />
       <TouchableOpacity
-        style={[styles.addButton, { backgroundColor: currentLabelColor }]}
+        style={[styles.addButton, { backgroundColor: label.color }]}
         onPress={handleAdd}
       >
         <MaterialIcons name="add" size={45} color={theme.light} />
