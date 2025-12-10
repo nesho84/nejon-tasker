@@ -3,7 +3,7 @@ import AppModal from "@/components/AppModal";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
-import LabelsList from "@/components/labels/LabelsList";
+import LabelCard from "@/components/labels/LabelCard";
 import { useLabelStore } from "@/store/labelStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
@@ -16,8 +16,9 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 export default function HomeScreen() {
     const { theme } = useThemeStore();
 
-    const { isLoading: labelsLoading, reloadLabels } = useLabelStore();
-    const { isLoading: tasksLoading, reloadTasks } = useTaskStore();
+    // Reload stores and database
+    const { loadLabels } = useLabelStore();
+    const { loadTasks } = useTaskStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [addModalVisible, setAddModalVisible] = useState(false);
@@ -25,11 +26,12 @@ export default function HomeScreen() {
     const [labelToEdit, setLabelToEdit] = useState<Label | null>(null);
 
     // Refresh Labels manually
-    const handleRefresh = () => {
+    const handleRefresh = async () => {
         setIsLoading(true);
         try {
-            reloadTasks();
-            reloadLabels();
+            // Reload labels and tasks from database
+            await loadLabels();
+            await loadTasks();
         } catch (error) {
             console.log(error);
         } finally {
@@ -47,7 +49,7 @@ export default function HomeScreen() {
     };
 
     // Loading state
-    if (isLoading || labelsLoading || tasksLoading) {
+    if (isLoading) {
         return <AppLoading />;
     }
 
@@ -82,7 +84,7 @@ export default function HomeScreen() {
             {/* Main Content */}
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 {/* Labels List */}
-                <LabelsList handleEditModal={handleEditModal} />
+                <LabelCard handleEditModal={handleEditModal} />
 
                 {/* Edit/Update Label Modal */}
                 <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>

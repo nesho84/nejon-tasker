@@ -21,8 +21,8 @@ export default function EditTask({ task, handleEditModal }: Props) {
   const { keyboardHeight } = useKeyboard();
   const { scheduleNotification, cancelScheduledNotification } = useNotifications();
 
-  // TaskStore
-  const { updateTask } = useTaskStore();
+  // taskStore actions
+  const updateTask = useTaskStore((state) => state.updateTask);
 
   const dateTimeToString = (date: string | null): string => {
     return date ? dates.format(date) : tr.forms.setReminder;

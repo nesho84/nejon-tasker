@@ -14,11 +14,12 @@ interface Props {
 export default function AddTask({ label }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { keyboardHeight } = useKeyboard();
 
-  const { createTask } = useTaskStore();
+  // taskStore actions
+  const createTask = useTaskStore((state) => state.createTask);
 
+  // Local State
   const [text, setText] = useState("");
 
   const textInputRef = useRef<TextInput>(null);

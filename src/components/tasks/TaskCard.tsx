@@ -5,12 +5,12 @@ import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
     task: Task;
-    leftAction?: React.ReactNode;
-    rightActions?: React.ReactNode;
+    topLeftContent?: React.ReactNode;
+    topRightContent?: React.ReactNode;
     bottomContent?: React.ReactNode;
 }
 
-export default function TaskCard({ task, leftAction, rightActions, bottomContent }: Props) {
+export default function TaskCard({ task, topLeftContent, topRightContent, bottomContent }: Props) {
     const { theme } = useThemeStore();
 
     return (
@@ -25,13 +25,13 @@ export default function TaskCard({ task, leftAction, rightActions, bottomContent
         >
             {/* Top Section */}
             <View style={styles.top}>
-                {leftAction && (
+                {topLeftContent && (
                     <View style={styles.leftAction}>
-                        {leftAction}
+                        {topLeftContent}
                     </View>
                 )}
 
-                <View style={styles.textContainer}>
+                <View style={styles.taskText}>
                     <Hyperlink linkDefault={true} linkStyle={{ color: theme.link }}>
                         <Text
                             style={{
@@ -46,9 +46,9 @@ export default function TaskCard({ task, leftAction, rightActions, bottomContent
                     </Hyperlink>
                 </View>
 
-                {rightActions && (
-                    <View style={styles.rightActions}>
-                        {rightActions}
+                {topRightContent && (
+                    <View style={styles.topRight}>
+                        {topRightContent}
                     </View>
                 )}
             </View>
@@ -72,24 +72,27 @@ const styles = StyleSheet.create({
     top: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 8,
-        paddingHorizontal: 10,
+        paddingVertical: 6,
+        paddingHorizontal: 8,
+        gap: 8,
     },
     leftAction: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginRight: 12,
+        alignSelf: "flex-start",
+        marginTop: 3,
+        marginLeft: 2,
         flexShrink: 0,
     },
-    textContainer: {
-        flex: 1,
-        marginRight: 12,
+    taskText: {
+        width: "100%",
+        marginLeft: 2,
+        flexShrink: 1,
     },
-    rightActions: {
+    topRight: {
+        alignSelf: "flex-start",
         flexDirection: "row",
         alignItems: "center",
-        gap: 8,
         flexShrink: 0,
+        gap: 12,
     },
     bottom: {
         flexDirection: "row",

@@ -16,7 +16,8 @@ Notifications.setNotificationHandler({
 });
 
 export default function useNotifications() {
-    const { updateTask } = useTaskStore();
+    // taskStore actions
+    const updateTask = useTaskStore((state) => state.updateTask);
 
     // Set Android notification channel
     const setNotificationChannel = async () => {

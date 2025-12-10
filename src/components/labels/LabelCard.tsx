@@ -6,6 +6,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from "react-native-draggable-flatlist";
 
@@ -13,19 +14,20 @@ interface Props {
   handleEditModal: (item: Label) => void;
 }
 
-export default function LabelsList({ handleEditModal }: Props) {
+export default function LabelCard({ handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
   const { labels, reorderLabels } = useLabelStore();
-  const { allTasks } = useTaskStore();
 
   const lastLabel = labels[labels.length - 1];
 
   // Render Single Label template
   const RenderLabel = ({ item, drag, isActive }: RenderItemParams<Label>) => {
     // Filter tasks by labelId
-    const tasks = allTasks.filter(t => t.labelId === item.id);
+    const allTasks = useTaskStore((state) => state.allTasks);
+    const tasks = useMemo(() => allTasks.filter(t => t.labelId === item.id && !t.isDeleted), [allTasks, item.id]);
+    // Filter tasks
     const checkedTasks = tasks.filter(t => t.checked);
     const uncheckedTasks = tasks.filter(t => !t.checked);
     const reminderTasks = tasks.filter(t => t.reminderDateTime && t.reminderId);
@@ -35,6 +37,10 @@ export default function LabelsList({ handleEditModal }: Props) {
         <TouchableOpacity
           onPress={() => router.push(`/tasks?labelId=${item.id}`)}
           onLongPress={drag}
+          delayLongPress={400}
+          delayPressIn={0}
+          delayPressOut={0}
+          hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
           activeOpacity={0.6}
         >
           <View
@@ -64,7 +70,11 @@ export default function LabelsList({ handleEditModal }: Props) {
               </Text>
 
               {/* Edit Label Icon */}
-              <TouchableOpacity onPress={() => handleEditModal(item)}>
+              <TouchableOpacity
+                onPress={() => handleEditModal(item)}
+                delayPressIn={0}
+                delayPressOut={0}
+              >
                 <MaterialCommunityIcons
                   style={{ marginTop: 2 }}
                   name="playlist-edit"

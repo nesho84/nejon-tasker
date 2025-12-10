@@ -11,7 +11,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function LabelDetailsScreen() {
@@ -20,15 +20,16 @@ export default function LabelDetailsScreen() {
   const { labelId } = useLocalSearchParams();
 
   // LabelStore
-  const { isLoading: labelsLoading, labels, deleteLabel } = useLabelStore();
+  const { labels, deleteLabel } = useLabelStore();
   const label = labels.find((l) => l.id === labelId);
 
   // TaskStore
-  const { isLoading: tasksLoading, allTasks } = useTaskStore();
-  const tasks = allTasks.filter((t) => t.labelId === labelId);
+  const allTasks = useTaskStore((state) => state.allTasks);
+  const tasks = useMemo(() => allTasks.filter(t => t.labelId === labelId && !t.isDeleted), [allTasks, labelId]);
   const checkedTasks = tasks.filter(t => t.checked);
 
   // Local State
+  const [isLoading, setIsLoading] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
@@ -60,7 +61,7 @@ export default function LabelDetailsScreen() {
   };
 
   // Loading state
-  if (labelsLoading || tasksLoading) {
+  if (isLoading) {
     return <AppLoading />;
   }
 

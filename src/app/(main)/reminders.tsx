@@ -3,45 +3,49 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
+import { shareText } from "@/utils/utils";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { useMemo } from "react";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RemindersScreen() {
     const { theme } = useThemeStore();
-    const { reminderTasks } = useTaskStore();
 
-    function shareTask(text: string): void {
-        Alert.alert("Function not implemented.");
-    }
+    // taskStore
+    const allTasks = useTaskStore((state) => state.allTasks);
+    const reminderTasks = useMemo(() => {
+        return allTasks.filter(t => t.reminderDateTime && t.reminderId && !t.isDeleted);
+    }, [allTasks]);
 
     const renderItem = ({ item }: { item: Task }) => (
         <TaskCard
             task={item}
             bottomContent={
                 <>
-                    <Ionicons
-                        name="notifications"
-                        color={theme.success}
-                        size={16}
-                    />
+                    <View style={styles.reminderContainer}>
+                        <Ionicons
+                            name="notifications"
+                            color={theme.success}
+                            size={16}
+                        />
 
-                    {item.reminderDateTime && (
-                        <Text
-                            style={{
-                                marginLeft: -70,
-                                fontSize: 12,
-                                fontWeight: '500',
-                                color: theme.success,
-                            }}
-                        >
-                            {dates.format(item.reminderDateTime)}
-                        </Text>
-                    )}
+                        {item.reminderDateTime && (
+                            <Text
+                                style={{
+                                    fontSize: 12,
+                                    fontWeight: '500',
+                                    color: theme.success,
+                                }}
+                            >
+                                {dates.format(item.reminderDateTime)}
+                            </Text>
+                        )}
+                    </View>
 
-                    <TouchableOpacity activeOpacity={0.7} onPress={() => shareTask(item.text)}>
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => shareText("My Reminder Task", item.text)}>
                         <Ionicons name="share-social" size={16} color={theme.muted} />
                     </TouchableOpacity>
-
                     <Text style={{ color: theme.muted, fontSize: 11 }}>
                         {dates.format(item.updatedAt)}
                     </Text>
@@ -51,19 +55,27 @@ export default function RemindersScreen() {
     );
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <SafeAreaView
+            style={[styles.container, { backgroundColor: theme.background }]}
+            edges={['bottom']}
+        >
             <FlatList
                 data={reminderTasks}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingVertical: 8 }}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
-const styles = {
+const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-};
+    reminderContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+});
