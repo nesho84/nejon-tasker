@@ -14,15 +14,16 @@ interface Props {
 export default function AddLabel({ handleAddModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { isKeyboardVisible } = useKeyboard();
 
-  const { createLabel } = useLabelStore();
+  // labelStore
+  const createLabel = useLabelStore((state) => state.createLabel);
 
+  // Local State
   const [title, setTitle] = useState("");
   const [color, setColor] = useState(labelBgColors[0]);
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (title.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
@@ -33,7 +34,7 @@ export default function AddLabel({ handleAddModal }: Props) {
       return false;
     } else {
       // Create Label
-      createLabel({ title, color });
+      await createLabel({ title: title, color });
       setTitle("");
       // Close Modal
       handleAddModal(false);
@@ -46,7 +47,7 @@ export default function AddLabel({ handleAddModal }: Props) {
         {tr.forms.newLabel}
       </Text>
       <TextInput
-        multiline
+        maxLength={100}
         autoCapitalize="none"
         autoCorrect={false}
         value={title}

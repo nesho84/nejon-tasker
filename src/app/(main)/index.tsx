@@ -17,13 +17,14 @@ export default function HomeScreen() {
     const { theme } = useThemeStore();
 
     // Reload stores and database
-    const { loadLabels } = useLabelStore();
-    const { loadTasks } = useTaskStore();
+    const loadLabels = useLabelStore((state) => state.loadLabels);
+    const loadTasks = useTaskStore((state) => state.loadTasks);
 
+    // Local State
     const [isLoading, setIsLoading] = useState(false);
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [labelToEdit, setLabelToEdit] = useState<Label | null>(null);
+    const [selectedLabel, setSelectedLabel] = useState<Label | null>(null);
 
     // Refresh Labels manually
     const handleRefresh = async () => {
@@ -44,7 +45,7 @@ export default function HomeScreen() {
 
     // Open a modal for editing Label
     const handleEditModal = (item: Label) => {
-        setLabelToEdit(item);
+        setSelectedLabel(item);
         setEditModalVisible(true);
     };
 
@@ -82,15 +83,15 @@ export default function HomeScreen() {
             />
 
             {/* Main Content */}
-            <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={styles.container}>
                 {/* Labels List */}
                 <LabelCard handleEditModal={handleEditModal} />
 
                 {/* Edit/Update Label Modal */}
                 <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>
-                    {labelToEdit && (
+                    {selectedLabel && (
                         <EditLabel
-                            labelToEdit={labelToEdit}
+                            label={selectedLabel}
                             handleEditModal={setEditModalVisible}
                         />
                     )}

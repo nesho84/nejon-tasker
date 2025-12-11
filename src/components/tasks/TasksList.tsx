@@ -26,58 +26,72 @@ export default function TasksList({ label, handleEditModal }: Props) {
 
   // taskStore
   const allTasks = useTaskStore((state) => state.allTasks);
-  const tasks = useMemo(() => allTasks.filter(t => t.labelId === label.id && !t.isDeleted), [allTasks, label.id]);
-  // taskStore actions
   const updateTask = useTaskStore((state) => state.updateTask);
   const deleteTask = useTaskStore((state) => state.deleteTask);
   const toggleTask = useTaskStore((state) => state.toggleTask);
   const toggleFavorite = useTaskStore((state) => state.toggleFavorite);
   const reorderTasks = useTaskStore((state) => state.reorderTasks);
+
   // Filter tasks
+  const tasks = useMemo(() => allTasks.filter(t => t.labelId === label.id && !t.isDeleted), [allTasks, label.id]);
   const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
   const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
-  // Get the last items for styling
+
+  // Get the last item for styling
   const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
   const lastChecked = useMemo(() => checkedTasks[checkedTasks.length - 1], [checkedTasks]);
 
   // Toggle task checked/unchecked
-  const handleCheckbox = async (value: boolean, taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
+  const handleCheckTask = async (value: boolean, task: Task) => {
     // If checking a task with active reminder, cancel notification
     if (value === true && task?.reminderId) {
       await cancelScheduledNotification(task.reminderId);
       // Clear reminder data when checking
-      await updateTask(taskId, {
+      await updateTask(task.id, {
         checked: true,
         reminderDateTime: null,
         reminderId: null,
       });
     } else {
-      await toggleTask(taskId);
+      await toggleTask(task.id);
     }
   };
 
   // Soft Delete task
-  const handleDeleteTask = async (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    // Cancel the existing notification
-    if (task?.reminderId) {
-      await cancelScheduledNotification(task.reminderId);
-      // Clear reminder data when deleting
-      await updateTask(taskId, {
-        reminderDateTime: null,
-        reminderId: null,
-      });
-    }
-    await deleteTask(taskId);
+  const handleDeleteTask = async (task: Task) => {
+    Alert.alert(
+      tr.alerts.deleteTask.title,
+      tr.alerts.deleteTask.message,
+      [
+        {
+          text: tr.buttons.yes,
+          onPress: async () => {
+            // Cancel the existing notification
+            if (task?.reminderId) {
+              await cancelScheduledNotification(task.reminderId);
+              // Clear reminder data when deleting
+              await updateTask(task.id, {
+                reminderDateTime: null,
+                reminderId: null,
+              });
+            }
+            await deleteTask(task.id);
+          },
+        },
+        {
+          text: tr.buttons.no,
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   // Toggle task favorite
-  const handleFavoriteTask = async (taskId: string) => {
-    await toggleFavorite(taskId);
+  const handleFavoriteTask = async (task: Task) => {
+    await toggleFavorite(task.id);
   };
 
-  // Order Tasks
+  // Reorder tasks
   const handleOrderTasks = async (orderedTasks: Task[]) => {
     const taskIds = orderedTasks.map(task => task.id);
     await reorderTasks(taskIds);
@@ -110,7 +124,7 @@ export default function TasksList({ label, handleEditModal }: Props) {
             <Checkbox
               color={item.checked ? theme.border : theme.darkGrey}
               value={!!item.checked}
-              onValueChange={(value) => handleCheckbox(value, item.id)}
+              onValueChange={(value) => handleCheckTask(value, item)}
             />
           </View>
 
@@ -132,7 +146,7 @@ export default function TasksList({ label, handleEditModal }: Props) {
           <View style={styles.topRight}>
             {/* -----Favorite icon----- */}
             <TouchableOpacity
-              onPress={() => handleFavoriteTask(item.id)}
+              onPress={() => handleFavoriteTask(item)}
               delayPressIn={0}
               delayPressOut={0}
               activeOpacity={0.7}
@@ -146,17 +160,7 @@ export default function TasksList({ label, handleEditModal }: Props) {
 
             {/* -----Delete icon----- */}
             <TouchableOpacity
-              onPress={() =>
-                Alert.alert(
-                  tr.alerts.deleteTask.title,
-                  tr.alerts.deleteTask.message,
-                  [
-                    { text: tr.buttons.yes, onPress: () => handleDeleteTask(item.id) },
-                    { text: tr.buttons.no },
-                  ],
-                  { cancelable: false }
-                )
-              }
+              onPress={() => handleDeleteTask(item)}
               delayPressIn={0}
               delayPressOut={0}
               activeOpacity={0.7}

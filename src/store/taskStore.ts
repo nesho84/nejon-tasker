@@ -24,9 +24,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     allTasks: [],
     isLoading: false,
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // LOAD - Called once at app startup
-    // ========================================================================
+    // ------------------------------------------------------------
     loadTasks: async () => {
         try {
             set({ isLoading: true });
@@ -40,16 +40,16 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // Internal helper to get task by ID
-    // ========================================================================
+    // ------------------------------------------------------------
     getTaskById: (id) => {
         return get().allTasks.find(t => t.id === id);
     },
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // CREATE
-    // ========================================================================
+    // ------------------------------------------------------------
     createTask: async (data) => {
         if (!data.labelId) {
             throw new Error("Task must have a labelId");
@@ -63,7 +63,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             const id = uuid.v4() as string;
             const now = new Date().toISOString();
 
-            // Calculate next order position for this label
+            // Calculate next order position
             const labelTasks = get().allTasks.filter(t => t.labelId === data.labelId && !t.isDeleted);
             const maxOrder = labelTasks.length > 0
                 ? Math.max(...labelTasks.map(t => t.order_position))
@@ -86,9 +86,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             };
 
             // Update state
-            set((state) => ({
-                allTasks: [...state.allTasks, newTask]
-            }));
+            set((state) => ({ allTasks: [...state.allTasks, newTask] }));
 
             // Persist to database
             await TasksRepo.insertTask(newTask);
@@ -100,9 +98,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // UPDATE
-    // ========================================================================
+    // ------------------------------------------------------------
     updateTask: async (id, data) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
@@ -127,9 +125,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // SOFT DELETE
-    // ========================================================================
+    // ------------------------------------------------------------
     deleteTask: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
@@ -152,10 +150,31 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // @TODO: What happens if label is also soft deleted? This shoould also restore label?
-    // ========================================================================
+    // ------------------------------------------------------------
+    // HARD DELETE
+    // ------------------------------------------------------------
+    deleteTaskPermanently: async (id) => {
+        const task = get().getTaskById(id);
+        if (!task) throw new Error(`Task not found: ${id}`);
+        const previousTask = { ...task };
+
+        try {
+            // Update state
+            set((state) => ({ allTasks: state.allTasks.filter(t => t.id !== id) }));
+
+            // Persist to database
+            await TasksRepo.deleteTask(id);
+        } catch (error) {
+            // Rollback on failure
+            set(state => ({ allTasks: [...state.allTasks, previousTask] }));
+            console.error('Failed to permanently delete task:', error);
+            throw error;
+        }
+    },
+
+    // ------------------------------------------------------------
     // RESTORE
-    // ========================================================================
+    // ------------------------------------------------------------
     restoreTask: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
@@ -178,31 +197,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // ========================================================================
-    // HARD DELETE
-    // ========================================================================
-    deleteTaskPermanently: async (id) => {
-        const task = get().getTaskById(id);
-        if (!task) throw new Error(`Task not found: ${id}`);
-        const previousTask = { ...task };
-
-        try {
-            // Update state
-            set((state) => ({ allTasks: state.allTasks.filter(t => t.id !== id) }));
-
-            // Persist to database
-            await TasksRepo.deleteTask(id);
-        } catch (error) {
-            // Rollback on failure
-            set(state => ({ allTasks: [...state.allTasks, previousTask] }));
-            console.error('Failed to permanently delete task:', error);
-            throw error;
-        }
-    },
-
-    // ========================================================================
+    // ------------------------------------------------------------
     // TOGGLE CHECKED
-    // ========================================================================
+    // ------------------------------------------------------------
     toggleTask: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
@@ -225,9 +222,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // TOGGLE FAVORITE
-    // ========================================================================
+    // ------------------------------------------------------------
     toggleFavorite: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
@@ -252,9 +249,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
     },
 
-    // ========================================================================
+    // ------------------------------------------------------------
     // REORDER (drag and drop)
-    // ========================================================================
+    // ------------------------------------------------------------
     reorderTasks: async (taskIds) => {
         const previousTasks = [...get().allTasks];
 

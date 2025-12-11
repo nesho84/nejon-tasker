@@ -14,9 +14,8 @@ export default function RemindersScreen() {
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
-    const reminderTasks = useMemo(() => {
-        return allTasks.filter(t => t.reminderDateTime && t.reminderId && !t.isDeleted);
-    }, [allTasks]);
+    // Filter tasks
+    const reminderTasks = useMemo(() => allTasks.filter(t => t.reminderDateTime && t.reminderId && !t.isDeleted), [allTasks]);
 
     const renderItem = ({ item }: { item: Task }) => (
         <TaskCard
@@ -43,7 +42,12 @@ export default function RemindersScreen() {
                         )}
                     </View>
 
-                    <TouchableOpacity activeOpacity={0.7} onPress={() => shareText("My Reminder Task", item.text)}>
+                    <TouchableOpacity
+                        onPress={() => shareText("My Reminder Task", item.text)}
+                        delayPressIn={0}
+                        delayPressOut={0}
+                        activeOpacity={0.7}
+                    >
                         <Ionicons name="share-social" size={16} color={theme.muted} />
                     </TouchableOpacity>
                     <Text style={{ color: theme.muted, fontSize: 11 }}>
@@ -56,7 +60,7 @@ export default function RemindersScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.background }]}
+            style={[styles.container, { backgroundColor: theme.backgroundAlt }]}
             edges={['bottom']}
         >
             <FlatList

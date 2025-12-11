@@ -1,10 +1,14 @@
 import { db } from "@/db/database";
 import { Task } from "@/types/task.types";
 
+// ------------------------------------------------------------
 // Load all tasks from database on app startup
+// ------------------------------------------------------------
 export async function loadAllTasks(): Promise<Task[]> {
     try {
-        const rows = await db.getAllAsync<Task>("SELECT * FROM tasks ORDER BY order_position ASC");
+        const rows = await db.getAllAsync<Task>(
+            "SELECT * FROM tasks ORDER BY order_position ASC"
+        );
         return rows;
     } catch (error) {
         console.error('Failed to load tasks from database:', error);
@@ -12,7 +16,9 @@ export async function loadAllTasks(): Promise<Task[]> {
     }
 }
 
-// Insert a new task into database
+// ------------------------------------------------------------
+// Insert task
+// ------------------------------------------------------------
 export async function insertTask(task: Task): Promise<void> {
     try {
         await db.runAsync(
@@ -43,7 +49,9 @@ export async function insertTask(task: Task): Promise<void> {
     }
 }
 
-// Update an existing task in database
+// ------------------------------------------------------------
+// Update task
+// ------------------------------------------------------------
 export async function updateTask(task: Task): Promise<void> {
     try {
         await db.runAsync(
@@ -73,7 +81,9 @@ export async function updateTask(task: Task): Promise<void> {
     }
 }
 
-// Permanently delete a task from database
+// ------------------------------------------------------------
+// Permanently delete a task
+// ------------------------------------------------------------
 export async function deleteTask(id: string): Promise<void> {
     try {
         await db.runAsync("DELETE FROM tasks WHERE id = ?", [id]);
@@ -83,7 +93,9 @@ export async function deleteTask(id: string): Promise<void> {
     }
 }
 
-// Batch update multiple tasks in a transaction
+// ------------------------------------------------------------
+// Reorder tasks
+// ------------------------------------------------------------
 export async function reorderTasks(taskIds: string[]): Promise<void> {
     try {
         const now = new Date().toISOString();

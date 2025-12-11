@@ -19,7 +19,7 @@ export const LIGHT = {
   surface: "#ffffff",
   surfaceAlt: "#f1f3f4",
   faded: "#f1f3f4",
-  white: "#ffffff",
+  white: "#e9ecef",
 
   // Text colors
   text: "#202124",
@@ -84,12 +84,12 @@ export const DARK = {
   info: "#8ab4f8",
 
   // Background layers
-  background: "#202124",
-  backgroundAlt: "#292a2d",
+  background: "#121212",
+  backgroundAlt: "#1f1f1f",
   surface: "#292a2d",
   surfaceAlt: "#3c4043",
   faded: "#3c4043",
-  white: "#202124",
+  white: "#e9ecef",
 
   // Text colors
   text: "#e8eaed",

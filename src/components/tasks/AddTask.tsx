@@ -16,15 +16,16 @@ export default function AddTask({ label }: Props) {
   const { tr } = useLanguageStore();
   const { keyboardHeight } = useKeyboard();
 
-  // taskStore actions
+  // taskStore
   const createTask = useTaskStore((state) => state.createTask);
+
+  // TextInput reference
+  const textInputRef = useRef<TextInput>(null);
 
   // Local State
   const [text, setText] = useState("");
 
-  const textInputRef = useRef<TextInput>(null);
-
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (text.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
@@ -35,7 +36,7 @@ export default function AddTask({ label }: Props) {
       return false;
     } else {
       // Create Task
-      createTask({ labelId: label.id, text: text });
+      await createTask({ labelId: label.id, text: text });
       setText("");
       textInputRef.current?.clear();
       Keyboard.dismiss();
@@ -49,14 +50,16 @@ export default function AddTask({ label }: Props) {
     }]}>
       <TextInput
         style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.text }]}
+        ref={textInputRef}
         multiline
+        maxLength={5500}
+        scrollEnabled={true}
         autoCapitalize="none"
         autoCorrect={false}
+        onChangeText={(text) => setText(text)}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
-        ref={textInputRef}
         value={text}
-        onChangeText={(text) => setText(text)}
       />
       <TouchableOpacity
         style={[styles.addButton, { backgroundColor: label.color }]}
@@ -85,6 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   addButton: {
+    alignSelf: "flex-start",
     width: 47,
     height: 47,
     borderWidth: StyleSheet.hairlineWidth,

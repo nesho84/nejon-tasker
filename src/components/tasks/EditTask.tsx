@@ -21,7 +21,7 @@ export default function EditTask({ task, handleEditModal }: Props) {
   const { keyboardHeight } = useKeyboard();
   const { scheduleNotification, cancelScheduledNotification } = useNotifications();
 
-  // taskStore actions
+  // taskStore
   const updateTask = useTaskStore((state) => state.updateTask);
 
   const dateTimeToString = (date: string | null): string => {
@@ -93,14 +93,14 @@ export default function EditTask({ task, handleEditModal }: Props) {
           reminderDateTime: selectedDateTime,
         });
         // Update Task
-        updateTask(task.id, {
+        await updateTask(task.id, {
           text: taskInput,
           reminderDateTime: selectedDateTime,
           reminderId: notificationId,
         });
       } else {
         // Update Task
-        updateTask(task.id, {
+        await updateTask(task.id, {
           text: taskInput,
           reminderDateTime: selectedDateTime,
         });
@@ -129,9 +129,10 @@ export default function EditTask({ task, handleEditModal }: Props) {
 
         {/* Single TextInput - always present */}
         <TextInput
-          ref={textInputRef}
           style={[styles.textInput, { color: theme.text }]}
-          multiline={true}
+          ref={textInputRef}
+          multiline
+          maxLength={5500}
           scrollEnabled={true}
           autoCapitalize="none"
           autoCorrect={false}
@@ -139,7 +140,7 @@ export default function EditTask({ task, handleEditModal }: Props) {
           onFocus={() => setIsEditing(true)}
           onBlur={() => setIsEditing(false)}
           placeholder={tr.forms.inputPlaceholder}
-          placeholderTextColor={theme.muted}
+          placeholderTextColor={theme.placeholder}
           value={taskInput}
           selection={isEditing ? undefined : { start: 0, end: 0 }}
         />

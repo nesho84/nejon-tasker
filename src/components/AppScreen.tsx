@@ -1,7 +1,7 @@
 import { useThemeStore } from "@/store/themeStore";
 import { StatusBar } from "expo-status-bar";
 import { ReactNode } from "react";
-import { Keyboard, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type ScreenProps = {
@@ -17,14 +17,11 @@ export default function AppScreen({ children }: ScreenProps) {
     <>
       <StatusBar style={barStyle} />
       <SafeAreaView
-        style={[
-          styles.container, {
-            backgroundColor: theme.background,
-          }]}
+        style={{ flex: 1, backgroundColor: theme.background }}
         edges={['left', 'right', 'bottom']}
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{ flex: 1, backgroundColor: theme.background, }}>
+          <View style={{ flex: 1, backgroundColor: theme.backgroundAlt }}>
             {children}
           </View>
         </TouchableWithoutFeedback>
@@ -32,9 +29,3 @@ export default function AppScreen({ children }: ScreenProps) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

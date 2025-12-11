@@ -24,9 +24,9 @@ export default function LabelDetailsScreen() {
   const label = labels.find((l) => l.id === labelId);
 
   // TaskStore
-  const allTasks = useTaskStore((state) => state.allTasks);
+  const { allTasks } = useTaskStore();
   const tasks = useMemo(() => allTasks.filter(t => t.labelId === labelId && !t.isDeleted), [allTasks, labelId]);
-  const checkedTasks = tasks.filter(t => t.checked);
+  const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
 
   // Local State
   const [isLoading, setIsLoading] = useState(false);
@@ -40,15 +40,17 @@ export default function LabelDetailsScreen() {
   };
 
   // Delete the entire label
-  const handleDeleteLabel = (labelId: string) => {
+  const handleDeleteLabel = async (labelId: string) => {
     Alert.alert(
       tr.alerts.deleteLabel.title,
       tr.alerts.deleteLabel.message,
       [
         {
           text: tr.buttons.yes,
-          onPress: () => {
-            deleteLabel(labelId);
+          onPress: async () => {
+            setIsLoading(true);
+            await deleteLabel(labelId);
+            setIsLoading(false);
             router.back();
           },
         },
@@ -74,9 +76,11 @@ export default function LabelDetailsScreen() {
           title: label?.title,
           headerTintColor: label?.color,
           headerRight: () => (
-            <TouchableOpacity onPress={() => {
-              if (label) handleDeleteLabel(label.id);
-            }}>
+            <TouchableOpacity
+              onPress={() => {
+                if (label) handleDeleteLabel(label.id);
+              }}
+            >
               <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
             </TouchableOpacity>
           ),

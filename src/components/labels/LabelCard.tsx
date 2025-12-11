@@ -18,19 +18,28 @@ export default function LabelCard({ handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
-  const { labels, reorderLabels } = useLabelStore();
+  // labelStore
+  const labels = useLabelStore((state) => state.labels);
+  const reorderLabels = useLabelStore((state) => state.reorderLabels);
+  // Get the label for styling
+  const lastLabel = useMemo(() => labels[labels.length - 1], [labels]);
 
-  const lastLabel = labels[labels.length - 1];
+  // taskStore
+  const allTasks = useTaskStore((state) => state.allTasks);
+
+  // Reordor labels
+  const handleOrderLabels = async (orderedLabels: Label[]) => {
+    const labelIds = orderedLabels.map(label => label.id)
+    await reorderLabels(labelIds);
+  }
 
   // Render Single Label template
   const RenderLabel = ({ item, drag, isActive }: RenderItemParams<Label>) => {
     // Filter tasks by labelId
-    const allTasks = useTaskStore((state) => state.allTasks);
     const tasks = useMemo(() => allTasks.filter(t => t.labelId === item.id && !t.isDeleted), [allTasks, item.id]);
-    // Filter tasks
-    const checkedTasks = tasks.filter(t => t.checked);
-    const uncheckedTasks = tasks.filter(t => !t.checked);
-    const reminderTasks = tasks.filter(t => t.reminderDateTime && t.reminderId);
+    const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
+    const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
+    const reminderTasks = useMemo(() => tasks.filter(t => t.reminderDateTime && t.reminderId), [tasks]);
 
     return (
       <ScaleDecorator>
@@ -41,7 +50,7 @@ export default function LabelCard({ handleEditModal }: Props) {
           delayPressIn={0}
           delayPressOut={0}
           hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-          activeOpacity={0.6}
+          activeOpacity={0.7}
         >
           <View
             style={[
@@ -49,7 +58,7 @@ export default function LabelCard({ handleEditModal }: Props) {
               {
                 backgroundColor: item.color,
                 borderColor: theme.lightMuted,
-                marginBottom: lastLabel === item ? 6 : 0,
+                marginBottom: lastLabel === item ? 10 : 0,
               },
               isActive && { opacity: 0.6 }
             ]}
@@ -61,12 +70,12 @@ export default function LabelCard({ handleEditModal }: Props) {
                 style={{ marginTop: 2, marginRight: 6 }}
                 name="label-outline"
                 size={26}
-                color={theme.text}
+                color={theme.white}
               />
 
               {/* Label title */}
-              <Text style={[styles.labelBoxTitle, { color: theme.text }]}>
-                {item.title}
+              <Text style={[styles.labelBoxTitle, { color: theme.white }]}>
+                {item.title.length > 25 ? item.title.slice(0, 20) + "..." : item.title}
               </Text>
 
               {/* Edit Label Icon */}
@@ -79,7 +88,7 @@ export default function LabelCard({ handleEditModal }: Props) {
                   style={{ marginTop: 2 }}
                   name="playlist-edit"
                   size={31}
-                  color={theme.text}
+                  color={theme.white}
                 />
               </TouchableOpacity>
             </View>
@@ -88,24 +97,24 @@ export default function LabelCard({ handleEditModal }: Props) {
             <View style={styles.summaryContainer}>
               {/* Tasks Remaining count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={[styles.count, { color: theme.text }]}>{uncheckedTasks.length}</Text>
-                <Text style={[styles.subtitle, { color: theme.text }]}>
+                <Text style={[styles.count, { color: theme.white }]}>{uncheckedTasks.length}</Text>
+                <Text style={[styles.subtitle, { color: theme.white }]}>
                   {tr.labels.remaining}
                 </Text>
               </View>
 
               {/* Tasks Reminders count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={[styles.count, { color: theme.text }]}>{reminderTasks.length}</Text>
-                <Text style={[styles.subtitle, { color: theme.text }]}>
+                <Text style={[styles.count, { color: theme.white }]}>{reminderTasks.length}</Text>
+                <Text style={[styles.subtitle, { color: theme.white }]}>
                   {tr.labels.reminders}
                 </Text>
               </View>
 
               {/* Tasks Completed count */}
               <View style={{ alignItems: "center" }}>
-                <Text style={[styles.count, { color: theme.text }]}>{checkedTasks.length}</Text>
-                <Text style={[styles.subtitle, { color: theme.text }]}>
+                <Text style={[styles.count, { color: theme.white }]}>{checkedTasks.length}</Text>
+                <Text style={[styles.subtitle, { color: theme.white }]}>
                   {tr.labels.completed}
                 </Text>
               </View>
@@ -119,28 +128,19 @@ export default function LabelCard({ handleEditModal }: Props) {
 
   return (
     <View style={styles.container}>
+
       {labels && labels.length > 0 ? (
         <DraggableFlatList
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={labelsLoading || tasksLoading}
-          //     onRefresh={handleRefresh}
-          //     tintColor={theme.muted}
-          //     colors={[theme.muted]}
-          //   />
-          // }
           containerStyle={styles.draggableFlatListContainer}
           data={labels}
           renderItem={(params) => <RenderLabel {...params} />}
           keyExtractor={(item) => `draggable-item-${item.id}`}
-          onDragEnd={({ data }) => {
-            const labelIds = data.map(label => label.id)
-            reorderLabels(labelIds);
-          }}
+          onDragEnd={({ data }) => handleOrderLabels(data)}
         />
       ) : (
         <AppNoItems />
       )}
+
     </View>
   );
 }

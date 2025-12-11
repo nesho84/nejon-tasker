@@ -8,22 +8,23 @@ import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface Props {
-  labelToEdit: Label;
+  label: Label;
   handleEditModal: (value: boolean) => void;
 }
 
-export default function EditLabel({ labelToEdit, handleEditModal }: Props) {
+export default function EditLabel({ label, handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-
   const { isKeyboardVisible } = useKeyboard();
 
-  const { updateLabel } = useLabelStore();
+  // labelStore
+  const updateLabel = useLabelStore((state) => state.updateLabel);
 
-  const [labelInput, setLabelInput] = useState(labelToEdit.title);
-  const [labelColor, setLabelColor] = useState(labelToEdit.color);
+  // Local State
+  const [labelInput, setLabelInput] = useState(label.title);
+  const [labelColor, setLabelColor] = useState(label.color);
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     if (labelInput.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
@@ -34,7 +35,7 @@ export default function EditLabel({ labelToEdit, handleEditModal }: Props) {
       return false;
     } else {
       // Update Label
-      updateLabel(labelToEdit.id, {
+      await updateLabel(label.id, {
         title: labelInput,
         color: labelColor,
       });
@@ -51,11 +52,10 @@ export default function EditLabel({ labelToEdit, handleEditModal }: Props) {
       </Text>
 
       <TextInput
-        multiline
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={(text) => setLabelInput(text)}
-        style={[styles.input, { color: theme.textMuted, borderColor: theme.lightMuted }]}
+        style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
         value={labelInput}
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  input: {
+  textInput: {
     minHeight: 50,
     backgroundColor: "#fff",
     fontSize: 20,

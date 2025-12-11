@@ -14,16 +14,25 @@ export default function FavoritesScreen() {
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
-    const favoriteTasks = useMemo(() => {
-        return allTasks.filter(t => !t.isDeleted && t.isFavorite);
-    }, [allTasks]);
     const toggleFavorite = useTaskStore((state) => state.toggleFavorite);
+    // Filter tasks
+    const favoriteTasks = useMemo(() => allTasks.filter(t => !t.isDeleted && t.isFavorite), [allTasks]);
+
+    // Toggle task favorite
+    const handleFavoriteTask = async (task: Task) => {
+        await toggleFavorite(task.id);
+    };
 
     const renderItem = ({ item }: { item: Task }) => (
         <TaskCard
             task={item}
             topRightContent={
-                <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
+                <TouchableOpacity
+                    onPress={() => handleFavoriteTask(item)}
+                    delayPressIn={0}
+                    delayPressOut={0}
+                    activeOpacity={0.7}
+                >
                     <MaterialCommunityIcons name="star" size={22} color={theme.muted} />
                 </TouchableOpacity>
             }
@@ -49,7 +58,12 @@ export default function FavoritesScreen() {
                         )}
                     </View>
 
-                    <TouchableOpacity activeOpacity={0.7} onPress={() => shareText("My Favorite Task", item.text)}>
+                    <TouchableOpacity
+                        onPress={() => shareText("My Favorite Task", item.text)}
+                        delayPressIn={0}
+                        delayPressOut={0}
+                        activeOpacity={0.7}
+                    >
                         <Ionicons name="share-social" size={16} color={theme.muted} />
                     </TouchableOpacity>
 
@@ -63,7 +77,7 @@ export default function FavoritesScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.background }]}
+            style={[styles.container, { backgroundColor: theme.backgroundAlt }]}
             edges={['bottom']}
         >
             <FlatList
