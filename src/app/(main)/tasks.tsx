@@ -1,9 +1,10 @@
 import AppLoading from "@/components/AppLoading";
 import AppModal from "@/components/AppModal";
+import AppNoItems from "@/components/AppNoItems";
 import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
-import TasksList from "@/components/tasks/TasksList";
+import TaskCard from "@/components/tasks/TaskCard";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -13,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 
 export default function TasksScreen() {
   const { theme } = useThemeStore();
@@ -23,10 +25,16 @@ export default function TasksScreen() {
   const { labels, deleteLabel } = useLabelStore();
   const label = labels.find((l) => l.id === labelId);
 
-  // TaskStore
-  const { allTasks } = useTaskStore();
+  // taskStore
+  const allTasks = useTaskStore((state) => state.allTasks);
+  const reorderTasks = useTaskStore((state) => state.reorderTasks);
+  // Filter tasks
   const tasks = useMemo(() => allTasks.filter(t => t.labelId === labelId && !t.isDeleted), [allTasks, labelId]);
   const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
+  const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
+  // Get last task for styling
+  const lastChecked = useMemo(() => checkedTasks[checkedTasks.length - 1], [checkedTasks]);
+  const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
 
   // Local State
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +47,7 @@ export default function TasksScreen() {
     setEditModalVisible(true);
   };
 
-  // Delete the entire label
+  // Hard delete label
   const handleDeleteLabel = async (labelId: string) => {
     Alert.alert(
       tr.alerts.deleteLabel.title,
@@ -62,15 +70,50 @@ export default function TasksScreen() {
     );
   };
 
+  // Reorder tasks
+  const handleOrderTasks = async (orderedTasks: Task[]) => {
+    const taskIds = orderedTasks.map(task => task.id);
+    await reorderTasks(taskIds);
+  };
+
   // Loading state
   if (isLoading) {
     return <AppLoading />;
   }
 
+  // Render Single Task template
+  const RenderTask = ({ item, getIndex, isActive, drag }: RenderItemParams<Task>) => {
+    const lastItemMargin = lastChecked === item || lastUnchecked === item ? 8 : 0;
+    return (
+      <View style={{ marginBottom: lastItemMargin }}>
+        <TouchableOpacity
+          onPress={() => handleEditModal(item)}
+          onLongPress={drag}
+          disabled={isActive}
+          delayLongPress={400}
+          delayPressIn={0}
+          delayPressOut={0}
+          activeOpacity={0.7}
+          hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+        >
+          <TaskCard
+            task={item}
+            index={getIndex()}
+            isActive={isActive}
+            checkAction={true}
+            favoriteAction={true}
+            softDeleteAction={true}
+            shareAction={true}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <AppScreen>
 
-      {/* Navigation bar icons */}
+      {/* Top Navigation bar icons */}
       <Stack.Screen
         options={{
           title: label?.title,
@@ -98,13 +141,39 @@ export default function TasksScreen() {
             </Text>
           </View>
 
-          {/* -----Tasks List----- */}
-          <TasksList
-            label={label}
-            handleEditModal={handleEditModal}
-          />
+          {/* Tasks */}
+          <View style={styles.tasksContainer}>
+            {/* ----- Unchecked tasks ----- */}
+            {uncheckedTasks.length > 0 ? (
+              <DraggableFlatList
+                containerStyle={{ flex: 3, opacity: 1 }}
+                data={uncheckedTasks}
+                renderItem={RenderTask}
+                keyExtractor={(item) => item.id}
+                onDragEnd={({ data }) => handleOrderTasks(data)}
+              />
+            ) : (
+              <AppNoItems type="task" />
+            )}
+            {/* ----- Checked tasks ----- */}
+            {checkedTasks.length > 0 && (
+              <>
+                <View style={[styles.tasksDivider, { borderColor: theme.border }]} />
+                <Text style={[styles.tasksDividerText, { color: theme.muted, borderBottomColor: label.color }]}>
+                  {`${checkedTasks.length} ${tr.labels.checkedItems}`}
+                </Text>
+                <DraggableFlatList
+                  containerStyle={{ flex: 1, opacity: 0.4 }}
+                  data={checkedTasks}
+                  renderItem={RenderTask}
+                  keyExtractor={(item) => item.id}
+                  onDragEnd={({ data }) => handleOrderTasks(data)}
+                />
+              </>
+            )}
+          </View>
 
-          {/* -----Edit Task Modal----- */}
+          {/* Edit Task Modal */}
           <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>
             {selectedTask && (
               <EditTask
@@ -127,14 +196,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   headerContainer: {
     alignSelf: "stretch",
-    paddingTop: 8,
-    paddingBottom: 6,
+    paddingVertical: 4,
     borderBottomWidth: 1,
   },
   headerText: {
-    fontSize: 14,
+    fontSize: 13,
     paddingHorizontal: 8,
-  }
+  },
+
+  tasksContainer: {
+    flex: 1,
+  },
+  tasksDivider: {
+    width: "100%",
+    borderWidth: 1,
+  },
+  tasksDividerText: {
+    alignSelf: "flex-start",
+    fontSize: 13,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    width: "100%",
+    borderBottomWidth: 1,
+  },
 });

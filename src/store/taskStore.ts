@@ -11,11 +11,11 @@ interface TaskState {
     getTaskById: (id: string) => Task | undefined;
     createTask: (data: Partial<Task>) => Promise<string>;
     updateTask: (id: string, data: Partial<Task>) => Promise<void>;
-    deleteTask: (id: string) => Promise<void>;
+    softDeleteTask: (id: string) => Promise<void>;
+    hardDeleteTask: (id: string) => Promise<void>;
     restoreTask: (id: string) => Promise<void>;
-    deleteTaskPermanently: (id: string) => Promise<void>;
     toggleTask: (id: string) => Promise<void>;
-    toggleFavorite: (id: string) => Promise<void>;
+    toggleFavoriteTask: (id: string) => Promise<void>;
     reorderTasks: (taskIds: string[]) => Promise<void>;
 }
 
@@ -128,7 +128,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     // ------------------------------------------------------------
     // SOFT DELETE
     // ------------------------------------------------------------
-    deleteTask: async (id) => {
+    softDeleteTask: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
         const previousTask = { ...task };
@@ -153,7 +153,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     // ------------------------------------------------------------
     // HARD DELETE
     // ------------------------------------------------------------
-    deleteTaskPermanently: async (id) => {
+    hardDeleteTask: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
         const previousTask = { ...task };
@@ -225,7 +225,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     // ------------------------------------------------------------
     // TOGGLE FAVORITE
     // ------------------------------------------------------------
-    toggleFavorite: async (id) => {
+    toggleFavoriteTask: async (id) => {
         const task = get().getTaskById(id);
         if (!task) throw new Error(`Task not found: ${id}`);
         const previousTask = { ...task };

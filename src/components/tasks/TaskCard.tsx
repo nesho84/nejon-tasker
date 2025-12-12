@@ -1,19 +1,137 @@
+import useNotifications from "@/hooks/useNotifications";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
-import { StyleSheet, Text, View } from "react-native";
+import { dates } from "@/utils/dates";
+import { shareText } from "@/utils/utils";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Checkbox } from "expo-checkbox";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
     task: Task;
-    getIndex?: () => number | undefined;
-    isActive?: boolean;
-    topLeftContent?: React.ReactNode;
-    topRightContent?: React.ReactNode;
-    bottomContent?: React.ReactNode;
+    index?: number;
+    isActive?: boolean | undefined;
+    // Top left actions
+    checkAction?: boolean;
+    // Top right actions
+    favoriteAction?: boolean;
+    softDeleteAction?: boolean;
+    hardDeleteAction?: boolean;
+    restoreAction?: boolean;
+    // Bottom actions
+    shareAction?: boolean;
 }
 
-export default function TaskCard({ task, getIndex, isActive, topLeftContent, topRightContent, bottomContent }: Props) {
+export default function TaskCard({
+    task,
+    index,
+    isActive,
+    checkAction,
+    favoriteAction,
+    softDeleteAction,
+    hardDeleteAction,
+    restoreAction,
+    shareAction
+}: Props) {
     const { theme } = useThemeStore();
+    const { tr } = useLanguageStore();
+    const { cancelScheduledNotification } = useNotifications();
+
+    // taskStore
+    const updateTask = useTaskStore((state) => state.updateTask);
+    const toggleTask = useTaskStore((state) => state.toggleTask);
+    const toggleFavoriteTask = useTaskStore((state) => state.toggleFavoriteTask);
+    const softDeleteTask = useTaskStore((state) => state.softDeleteTask);
+    const hardDeleteTask = useTaskStore((state) => state.hardDeleteTask);
+    const restoreTask = useTaskStore((state) => state.restoreTask);
+
+    // ------------------------------------------------------------
+    // Toggle task checked/unchecked
+    // ------------------------------------------------------------
+    const handleToggleCheck = async (value: boolean, task: Task) => {
+        // If checking a task with active reminder, cancel notification
+        if (value === true && task?.reminderId) {
+            await cancelScheduledNotification(task.reminderId);
+            // Clear reminder data when checking
+            await updateTask(task.id, {
+                checked: true,
+                reminderDateTime: null,
+                reminderId: null,
+            });
+        } else {
+            await toggleTask(task.id);
+        }
+    };
+
+    // ------------------------------------------------------------
+    // Toggle task favorite
+    // ------------------------------------------------------------
+    const handleToggleFavorite = async (id: string) => {
+        await toggleFavoriteTask(id);
+    };
+
+    // ------------------------------------------------------------
+    // Soft delete task
+    // ------------------------------------------------------------
+    const handleSoftDelete = async (task: Task) => {
+        Alert.alert(
+            tr.alerts.deleteTask.title,
+            tr.alerts.deleteTask.message,
+            [
+                {
+                    text: tr.buttons.yes,
+                    onPress: async () => {
+                        // Cancel the existing notification
+                        if (task?.reminderId) {
+                            await cancelScheduledNotification(task.reminderId);
+                            // Clear reminder data when deleting
+                            await updateTask(task.id, {
+                                reminderDateTime: null,
+                                reminderId: null,
+                            });
+                        }
+                        await softDeleteTask(task.id);
+                    },
+                },
+                {
+                    text: tr.buttons.no,
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    // ------------------------------------------------------------
+    // Hard delete task
+    // ------------------------------------------------------------
+    const handleHardDelete = async (id: string) => {
+        Alert.alert(
+            tr.alerts.deleteTask.title,
+            tr.alerts.deleteTask.message,
+            [
+                {
+                    text: tr.buttons.yes,
+                    onPress: async () => {
+                        await hardDeleteTask(id);
+                    },
+                },
+                {
+                    text: tr.buttons.no,
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    // ------------------------------------------------------------
+    // Restore task
+    // ------------------------------------------------------------
+    const handleRestore = async (id: string) => {
+        await restoreTask(id);
+    };
 
     return (
         <View
@@ -24,56 +142,159 @@ export default function TaskCard({ task, getIndex, isActive, topLeftContent, top
                     borderColor: task.checked ? theme.faded : theme.border,
                     opacity: isActive ? 0.5 : 1,
                     borderWidth: isActive ? 3 : 1,
-                    marginTop: getIndex && getIndex() === 0 ? 8 : 0,
+                    // marginTop: index === 0 ? 4 : 0,
                 },
             ]}
         >
-            {/* Top Section */}
+
+            {/* ----- Top Section ----- */}
             <View style={styles.top}>
-                {topLeftContent && (
-                    <View style={styles.topLeft}>
-                        {topLeftContent}
+                {/* Task checkbox */}
+                {checkAction && (
+                    <View style={styles.checkBoxContainer}>
+                        <Checkbox
+                            color={task.checked ? theme.border : theme.darkGrey}
+                            value={!!task.checked}
+                            onValueChange={(value) => handleToggleCheck(value, task)}
+                        />
                     </View>
                 )}
 
-                <View style={styles.taskText}>
+                {/* Task Text */}
+                <View style={styles.taskTextContainer}>
                     <Hyperlink linkDefault={true} linkStyle={{ color: theme.link }}>
                         <Text
-                            style={{
+                            style={[styles.teaskText, {
                                 color: task.checked ? theme.muted : theme.text,
                                 textDecorationLine: !!task.checked ? "line-through" : "none",
-                                fontSize: 15,
-                                lineHeight: 22,
-                            }}
+                            }]}
                         >
                             {task.text}
                         </Text>
                     </Hyperlink>
                 </View>
 
-                {topRightContent && (
-                    <View style={styles.topRight}>
-                        {topRightContent}
-                    </View>
-                )}
+                {/* Top right actions */}
+                <View style={styles.topRight}>
+                    {/* Favorite icon */}
+                    {favoriteAction && (
+                        <TouchableOpacity
+                            onPress={() => handleToggleFavorite(task.id)}
+                            delayPressIn={0}
+                            delayPressOut={0}
+                            activeOpacity={0.7}
+                        >
+                            <MaterialCommunityIcons
+                                name={task.isFavorite ? "star" : "star-outline"}
+                                color={theme.muted}
+                                size={23}
+                            />
+                        </TouchableOpacity>
+                    )}
+
+                    {/* Restore icon */}
+                    {restoreAction && (
+                        <TouchableOpacity
+                            onPress={() => handleRestore(task.id)}
+                            delayPressIn={0}
+                            delayPressOut={0}
+                            activeOpacity={0.7}
+                        >
+                            <MaterialCommunityIcons
+                                name="backup-restore"
+                                color={theme.muted}
+                                size={23}
+                            />
+                        </TouchableOpacity>
+                    )}
+
+                    {/* Delete icon */}
+                    {softDeleteAction && (
+                        <TouchableOpacity
+                            onPress={() => handleSoftDelete(task)}
+                            delayPressIn={0}
+                            delayPressOut={0}
+                            activeOpacity={0.7}
+                        >
+                            <MaterialCommunityIcons
+                                name="close"
+                                color={theme.muted}
+                                size={24}
+                            />
+                        </TouchableOpacity>
+                    )}
+
+                    {/* Hard Delete icon */}
+                    {hardDeleteAction && (
+                        <TouchableOpacity
+                            onPress={() => handleHardDelete(task.id)}
+                            delayPressIn={0}
+                            delayPressOut={0}
+                            activeOpacity={0.7}
+                        >
+                            <MaterialCommunityIcons
+                                name="close"
+                                color={theme.muted}
+                                size={24}
+                            />
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
 
-            {bottomContent && (
-                <View style={[styles.bottom, { backgroundColor: theme.shadow }]}>
-                    {bottomContent}
+            {/* ----- Bottom Section ----- */}
+            <View style={[styles.bottom, { backgroundColor: theme.shadow }]}>
+                {/* Reminder */}
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    {/* Reminder icon */}
+                    <Ionicons
+                        name={task.reminderId ? "notifications" : "notifications-off"}
+                        color={task.reminderId ? theme.success : theme.muted}
+                        size={16}
+                    />
+
+                    {/* Reminder dateTime */}
+                    {task.reminderId && task.reminderDateTime && (
+                        <Text style={{ fontSize: 11, color: task.reminderId ? theme.success : theme.muted }}>
+                            {dates.format(task.reminderDateTime)}
+                        </Text>
+                    )}
                 </View>
-            )}
+
+                {/* Share icon */}
+                {shareAction && (
+                    <TouchableOpacity
+                        onPress={() => shareText("My Task", task.text)}
+                        delayPressIn={0}
+                        delayPressOut={0}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons
+                            name="share-social"
+                            color={theme.muted}
+                            size={16}
+                        />
+                    </TouchableOpacity>
+                )}
+
+                {/* Task dateTime */}
+                <Text style={[{ color: theme.muted, fontSize: 11 }]}>
+                    {dates.format(task.updatedAt)}
+                </Text>
+            </View>
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 8,
-        marginHorizontal: 8,
-        borderRadius: 5,
+        marginTop: 6,
+        marginHorizontal: 6,
+        borderRadius: 4,
         borderWidth: 1,
     },
+
     top: {
         flexDirection: "row",
         alignItems: "center",
@@ -81,16 +302,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         gap: 8,
     },
-    topLeft: {
+    checkBoxContainer: {
         alignSelf: "flex-start",
         marginTop: 3,
-        marginLeft: 2,
+        marginLeft: 3,
         flexShrink: 0,
     },
-    taskText: {
+    taskTextContainer: {
         width: "100%",
-        marginLeft: 2,
         flexShrink: 1,
+        marginLeft: 2,
+    },
+    teaskText: {
+        fontSize: 15,
+        lineHeight: 22,
     },
     topRight: {
         alignSelf: "flex-start",
@@ -99,6 +324,7 @@ const styles = StyleSheet.create({
         flexShrink: 0,
         gap: 12,
     },
+
     bottom: {
         flexDirection: "row",
         alignItems: "center",

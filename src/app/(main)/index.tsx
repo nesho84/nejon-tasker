@@ -9,7 +9,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -57,7 +57,7 @@ export default function LabelsScreen() {
     return (
         <AppScreen>
 
-            {/* Navigation bar icons */}
+            {/* Top Navigation bar icons */}
             <Stack.Screen
                 options={{
                     headerRight: () => (
@@ -72,10 +72,18 @@ export default function LabelsScreen() {
 
                             {/* Refresh Labels */}
                             <TouchableOpacity
-                                style={{ top: 1, marginRight: -3 }}
+                                style={{ top: 1, marginRight: 26 }}
                                 onPress={handleRefresh}
                             >
                                 <MaterialCommunityIcons name="refresh" size={26} color={theme.text} />
+                            </TouchableOpacity>
+
+                            {/* Settings */}
+                            <TouchableOpacity
+                                style={{ top: 1, marginRight: -3 }}
+                                onPress={() => router.push("/(main)/settings")}
+                            >
+                                <MaterialCommunityIcons name="cog-outline" size={26} color={theme.text} />
                             </TouchableOpacity>
                         </>
                     ),
@@ -87,7 +95,7 @@ export default function LabelsScreen() {
                 {/* Labels List */}
                 <LabelCard handleEditModal={handleEditModal} />
 
-                {/* Edit/Update Label Modal */}
+                {/* Edit Label Modal */}
                 <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>
                     {selectedLabel && (
                         <EditLabel
