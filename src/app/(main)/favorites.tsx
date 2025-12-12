@@ -23,7 +23,7 @@ export default function FavoritesScreen() {
         await toggleFavorite(task.id);
     };
 
-    const renderItem = ({ item }: { item: Task }) => (
+    const RenderTask = ({ item }: { item: Task }) => (
         <TaskCard
             task={item}
             topRightContent={
@@ -33,12 +33,12 @@ export default function FavoritesScreen() {
                     delayPressOut={0}
                     activeOpacity={0.7}
                 >
-                    <MaterialCommunityIcons name="star" size={22} color={theme.muted} />
+                    <MaterialCommunityIcons name="star" size={24} color={theme.muted} />
                 </TouchableOpacity>
             }
             bottomContent={
                 <>
-                    <View style={styles.reminderContainer}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                         <Ionicons
                             name={item.reminderId ? "notifications" : "notifications-off"}
                             color={item.reminderId ? theme.success : theme.muted}
@@ -82,7 +82,7 @@ export default function FavoritesScreen() {
         >
             <FlatList
                 data={favoriteTasks}
-                renderItem={renderItem}
+                renderItem={RenderTask}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingVertical: 8 }}
             />
@@ -93,11 +93,6 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    reminderContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
     },
 });
 

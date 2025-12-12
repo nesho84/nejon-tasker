@@ -12,7 +12,7 @@ import { Checkbox } from "expo-checkbox";
 import { useMemo } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
-import Hyperlink from 'react-native-hyperlink';
+import TaskCard from "./TaskCard";
 
 interface Props {
   label: Label;
@@ -36,10 +36,6 @@ export default function TasksList({ label, handleEditModal }: Props) {
   const tasks = useMemo(() => allTasks.filter(t => t.labelId === label.id && !t.isDeleted), [allTasks, label.id]);
   const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
   const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
-
-  // Get the last item for styling
-  const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
-  const lastChecked = useMemo(() => checkedTasks[checkedTasks.length - 1], [checkedTasks]);
 
   // Toggle task checked/unchecked
   const handleCheckTask = async (value: boolean, task: Task) => {
@@ -98,121 +94,104 @@ export default function TasksList({ label, handleEditModal }: Props) {
   };
 
   // Render Single Task template
-  const RenderTask = ({ item, drag, isActive }: RenderItemParams<Task>) => {
+  const RenderTask = ({ item, getIndex, isActive, drag }: RenderItemParams<Task>) => {
     return (
       <TouchableOpacity
         onPress={() => handleEditModal(item)}
         onLongPress={drag}
+        disabled={isActive}
         delayLongPress={400}
         delayPressIn={0}
         delayPressOut={0}
-        // hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-        activeOpacity={0.6}
-        style={[
-          styles.container,
-          {
-            backgroundColor: item.checked ? theme.faded : theme.backgroundAlt,
-            borderColor: item.checked ? theme.faded : theme.border,
-          },
-          isActive && { opacity: 0.5, borderWidth: 3 },
-        ]}
+        activeOpacity={0.7}
+        hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
       >
-        {/* Top Section */}
-        <View style={styles.top}>
-          {/* -----Task checkbox----- */}
-          <View style={styles.topLeft}>
-            <Checkbox
-              color={item.checked ? theme.border : theme.darkGrey}
-              value={!!item.checked}
-              onValueChange={(value) => handleCheckTask(value, item)}
-            />
-          </View>
-
-          {/* -----Task text----- */}
-          <View style={styles.taskText}>
-            <Hyperlink linkDefault={true} linkStyle={{ color: theme.link }}>
-              <Text
-                style={{
-                  color: !!item.checked ? theme.muted : theme.text,
-                  textDecorationLine: !!item.checked ? "line-through" : "none",
-                  fontSize: 15,
-                }}
-              >
-                {item.text}
-              </Text>
-            </Hyperlink>
-          </View>
-
-          <View style={styles.topRight}>
-            {/* -----Favorite icon----- */}
-            <TouchableOpacity
-              onPress={() => handleFavoriteTask(item)}
-              delayPressIn={0}
-              delayPressOut={0}
-              activeOpacity={0.7}
-            >
-              <MaterialCommunityIcons
-                name={item.isFavorite ? "star" : "star-outline"}
-                color={theme.muted}
-                size={24}
+        <TaskCard
+          task={item}
+          isActive={isActive}
+          getIndex={getIndex}
+          topLeftContent={
+            <>
+              {/* -----Task checkbox----- */}
+              <Checkbox
+                color={item.checked ? theme.border : theme.darkGrey}
+                value={!!item.checked}
+                onValueChange={(value) => handleCheckTask(value, item)}
               />
-            </TouchableOpacity>
-
-            {/* -----Delete icon----- */}
-            <TouchableOpacity
-              onPress={() => handleDeleteTask(item)}
-              delayPressIn={0}
-              delayPressOut={0}
-              activeOpacity={0.7}
-            >
-              <MaterialCommunityIcons
-                name="close"
-                color={theme.muted}
-                size={24}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Bottom Section */}
-        <View style={[styles.bottom, { backgroundColor: theme.shadow }]}>
-          {/* -----Reminder icon and dateTime----- */}
-          <View style={styles.reminderContainer}>
-            {/* Reminder icon */}
-            <Ionicons
-              name={item.reminderId ? "notifications" : "notifications-off"}
-              color={item.reminderId ? theme.success : theme.muted}
-              size={16}
-            />
-
-            {/* Reminder dateTime */}
-            {item.reminderId && item.reminderDateTime && (
-              <Text
-                style={{
-                  fontSize: 11,
-                  color: item.reminderId ? theme.success : theme.muted
-                }}
+            </>
+          }
+          topRightContent={
+            <>
+              {/* -----Favorite icon----- */}
+              <TouchableOpacity
+                onPress={() => handleFavoriteTask(item)}
+                delayPressIn={0}
+                delayPressOut={0}
+                activeOpacity={0.7}
               >
-                {dates.format(item.reminderDateTime)}
+                <MaterialCommunityIcons
+                  name={item.isFavorite ? "star" : "star-outline"}
+                  color={theme.muted}
+                  size={24}
+                />
+              </TouchableOpacity>
+
+              {/* -----Delete icon----- */}
+              <TouchableOpacity
+                onPress={() => handleDeleteTask(item)}
+                delayPressIn={0}
+                delayPressOut={0}
+                activeOpacity={0.7}
+              >
+                <MaterialCommunityIcons
+                  name="close"
+                  color={theme.muted}
+                  size={24}
+                />
+              </TouchableOpacity>
+            </>
+          }
+          bottomContent={
+            <>
+              {/* -----Reminder icon and dateTime----- */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                {/* Reminder icon */}
+                <Ionicons
+                  name={item.reminderId ? "notifications" : "notifications-off"}
+                  color={item.reminderId ? theme.success : theme.muted}
+                  size={16}
+                />
+
+                {/* Reminder dateTime */}
+                {item.reminderId && item.reminderDateTime && (
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      color: item.reminderId ? theme.success : theme.muted
+                    }}
+                  >
+                    {dates.format(item.reminderDateTime)}
+                  </Text>
+                )}
+              </View>
+
+              {/* -----Share icon----- */}
+              <TouchableOpacity
+                onPress={() => shareText("My Task", item.text)}
+                delayPressIn={0}
+                delayPressOut={0}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="share-social" size={16} color={theme.muted} />
+              </TouchableOpacity>
+
+              {/* -----Task dateTime----- */}
+              <Text style={[{ color: theme.muted, fontSize: 11 }]}>
+                {dates.format(item.updatedAt)}
               </Text>
-            )}
-          </View>
-
-          {/* -----Share icon----- */}
-          <TouchableOpacity
-            onPress={() => shareText("My Task", item.text)}
-            delayPressIn={0}
-            delayPressOut={0}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="share-social" size={16} color={theme.muted} />
-          </TouchableOpacity>
-
-          {/* -----Task dateTime----- */}
-          <Text style={[{ color: theme.muted, fontSize: 11 }]}>
-            {dates.format(item.updatedAt)}
-          </Text>
-        </View>
+            </>
+          }
+        />
       </TouchableOpacity>
     );
   };
@@ -220,20 +199,15 @@ export default function TasksList({ label, handleEditModal }: Props) {
   return (
     <>
       {uncheckedTasks.length > 0 ? (
-        <View style={{ flex: 2 }}>
-          <DraggableFlatList
-            data={uncheckedTasks}
-            renderItem={(params) => (
-              <View style={{ marginBottom: lastUnchecked === params.item ? 3 : 0 }}>
-                <RenderTask {...params} />
-              </View>
-            )}
-            keyExtractor={(item) => `draggable-item-${item.id}`}
-            onDragEnd={({ data }) => handleOrderTasks(data)}
-          />
-        </View>
+        <DraggableFlatList
+          containerStyle={{ flex: 3, opacity: 1 }}
+          data={uncheckedTasks}
+          renderItem={RenderTask}
+          keyExtractor={(item) => item.id}
+          onDragEnd={({ data }) => handleOrderTasks(data)}
+        />
       ) : (
-        <AppNoItems />
+        <AppNoItems type="task" />
       )}
 
       {checkedTasks.length > 0 && (
@@ -243,18 +217,13 @@ export default function TasksList({ label, handleEditModal }: Props) {
             {`${checkedTasks.length} ${tr.labels.checkedItems}`}
           </Text>
 
-          <View style={{ flex: 1, opacity: 0.4 }}>
-            <DraggableFlatList
-              data={checkedTasks}
-              renderItem={(params) => (
-                <View style={{ marginBottom: lastChecked === params.item ? 6 : 0 }}>
-                  <RenderTask {...params} />
-                </View>
-              )}
-              keyExtractor={(item) => `draggable-item-${item.id}`}
-              onDragEnd={({ data }) => handleOrderTasks(data)}
-            />
-          </View>
+          <DraggableFlatList
+            containerStyle={{ flex: 1, opacity: 0.4 }}
+            data={checkedTasks}
+            renderItem={RenderTask}
+            keyExtractor={(item) => item.id}
+            onDragEnd={({ data }) => handleOrderTasks(data)}
+          />
         </>
       )}
     </>
@@ -262,63 +231,14 @@ export default function TasksList({ label, handleEditModal }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 8,
-    marginHorizontal: 8,
-    borderRadius: 5,
-    borderWidth: 1,
-  },
-  top: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    gap: 8,
-  },
-  topLeft: {
-    alignSelf: "flex-start",
-    marginTop: 3,
-    marginLeft: 2,
-    flexShrink: 0,
-  },
-  taskText: {
-    width: "100%",
-    marginLeft: 2,
-    flexShrink: 1,
-  },
-  topRight: {
-    alignSelf: "flex-start",
-    flexDirection: "row",
-    alignItems: "center",
-    flexShrink: 0,
-    gap: 12,
-  },
-
-  bottom: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottomLeftRadius: 5,
-    borderBottomRightRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderTopWidth: 0.5,
-    borderTopColor: 'rgba(0, 0, 0, 0.05)',
-  },
-  reminderContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
   divider: {
     width: "100%",
     borderWidth: 1,
-    marginVertical: 2,
   },
   dividerText: {
     alignSelf: "flex-start",
     fontSize: 13,
     paddingHorizontal: 8,
-    paddingBottom: 3,
+    paddingVertical: 2,
   },
 });

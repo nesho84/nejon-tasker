@@ -14,7 +14,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function LabelDetailsScreen() {
+export default function TasksScreen() {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
   const { labelId } = useLocalSearchParams();
@@ -87,12 +87,13 @@ export default function LabelDetailsScreen() {
         }}
       />
 
+      {/* Main Content */}
       {label && (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
           {/* Header container */}
           <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
-            {/* Header subtitle */}
-            <Text style={{ fontSize: 14, color: theme.muted, paddingHorizontal: 8 }}>
+            {/* Header text */}
+            <Text style={[styles.headerText, { color: theme.muted }]}>
               {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
             </Text>
           </View>
@@ -125,14 +126,15 @@ export default function LabelDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
   headerContainer: {
     alignSelf: "stretch",
     paddingTop: 8,
     paddingBottom: 6,
-    marginBottom: 1,
     borderBottomWidth: 1,
   },
+  headerText: {
+    fontSize: 14,
+    paddingHorizontal: 8,
+  }
 });

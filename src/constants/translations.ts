@@ -103,6 +103,7 @@ export const TRANSLATIONS = {
         // Empty states
         empty: {
             noTasks: "No Tasks to show. \n\n You can use the plus button (+) to create new tasks.",
+            noLabels: "No Labels to show. \n\n You can use the plus button (+) to create new labels.",
         },
 
         // Settings screen specific
@@ -208,6 +209,7 @@ export const TRANSLATIONS = {
 
         empty: {
             noTasks: "Keine Aufgaben zu zeigen. \n\n Mit der Plus-Taste (+) können Sie neue Aufgaben erstellen.",
+            noLabels: "Keine Etiketten zu zeigen. \n\n Mit der Plus-Taste (+) können Sie neue Etiketten erstellen.",
         },
 
         settings: {
@@ -312,6 +314,7 @@ export const TRANSLATIONS = {
 
         empty: {
             noTasks: "Asnjë detyrë për të shfaqur. \n\n Përdorni butonin plus (+) për të krijuar detyra të reja.",
+            noLabels: "Asnjë etiketë për të shfaqur. \n\n Përdorni butonin plus (+) për të krijuar etiketa të reja.",
         },
 
         settings: {

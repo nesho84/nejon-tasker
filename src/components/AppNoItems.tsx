@@ -1,15 +1,19 @@
-import { StyleSheet, View, Text } from "react-native";
-import { useThemeStore } from "@/store/themeStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useThemeStore } from "@/store/themeStore";
+import { StyleSheet, Text, View } from "react-native";
 
-export default function AppNoItems() {
+interface Props {
+  type?: "task" | "label";
+}
+
+export default function AppNoItems({ type = "task" }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
   return (
     <View style={[styles.container, { borderColor: theme.border }]}>
       <Text style={[styles.text, { color: theme.muted }]}>
-        {tr.empty.noTasks}
+        {type === "task" ? tr.empty.noTasks : tr.empty.noLabels}
       </Text>
     </View>
   );

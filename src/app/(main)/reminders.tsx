@@ -17,12 +17,12 @@ export default function RemindersScreen() {
     // Filter tasks
     const reminderTasks = useMemo(() => allTasks.filter(t => t.reminderDateTime && t.reminderId && !t.isDeleted), [allTasks]);
 
-    const renderItem = ({ item }: { item: Task }) => (
+    const RenderTask = ({ item }: { item: Task }) => (
         <TaskCard
             task={item}
             bottomContent={
                 <>
-                    <View style={styles.reminderContainer}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                         <Ionicons
                             name="notifications"
                             color={theme.success}
@@ -65,7 +65,7 @@ export default function RemindersScreen() {
         >
             <FlatList
                 data={reminderTasks}
-                renderItem={renderItem}
+                renderItem={RenderTask}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingVertical: 8 }}
             />
@@ -76,10 +76,5 @@ export default function RemindersScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    reminderContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
     },
 });

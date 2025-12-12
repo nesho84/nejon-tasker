@@ -5,12 +5,14 @@ import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
     task: Task;
+    getIndex?: () => number | undefined;
+    isActive?: boolean;
     topLeftContent?: React.ReactNode;
     topRightContent?: React.ReactNode;
     bottomContent?: React.ReactNode;
 }
 
-export default function TaskCard({ task, topLeftContent, topRightContent, bottomContent }: Props) {
+export default function TaskCard({ task, getIndex, isActive, topLeftContent, topRightContent, bottomContent }: Props) {
     const { theme } = useThemeStore();
 
     return (
@@ -20,13 +22,16 @@ export default function TaskCard({ task, topLeftContent, topRightContent, bottom
                 {
                     backgroundColor: task.checked ? theme.faded : theme.backgroundAlt,
                     borderColor: task.checked ? theme.faded : theme.border,
+                    opacity: isActive ? 0.5 : 1,
+                    borderWidth: isActive ? 3 : 1,
+                    marginTop: getIndex && getIndex() === 0 ? 8 : 0,
                 },
             ]}
         >
             {/* Top Section */}
             <View style={styles.top}>
                 {topLeftContent && (
-                    <View style={styles.leftAction}>
+                    <View style={styles.topLeft}>
                         {topLeftContent}
                     </View>
                 )}
@@ -36,7 +41,7 @@ export default function TaskCard({ task, topLeftContent, topRightContent, bottom
                         <Text
                             style={{
                                 color: task.checked ? theme.muted : theme.text,
-                                textDecorationLine: task.checked ? "line-through" : "none",
+                                textDecorationLine: !!task.checked ? "line-through" : "none",
                                 fontSize: 15,
                                 lineHeight: 22,
                             }}
@@ -76,7 +81,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         gap: 8,
     },
-    leftAction: {
+    topLeft: {
         alignSelf: "flex-start",
         marginTop: 3,
         marginLeft: 2,

@@ -41,7 +41,7 @@ export default function TrashScreen() {
         );
     };
 
-    const renderItem = ({ item }: { item: Task }) => (
+    const RenderTask = ({ item }: { item: Task }) => (
         <TaskCard
             task={item}
             topRightContent={
@@ -52,7 +52,7 @@ export default function TrashScreen() {
                         delayPressOut={0}
                         activeOpacity={0.7}
                     >
-                        <MaterialCommunityIcons name="backup-restore" size={22} color={theme.muted} style={{ marginRight: 12 }} />
+                        <MaterialCommunityIcons name="backup-restore" size={23} color={theme.muted} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => handleHardDeleteTask(item.id)}
@@ -60,7 +60,7 @@ export default function TrashScreen() {
                         delayPressOut={0}
                         activeOpacity={0.7}
                     >
-                        <MaterialCommunityIcons name="close" size={22} color={theme.muted} style={{ marginRight: 3 }} />
+                        <MaterialCommunityIcons name="close" size={23} color={theme.muted} />
                     </TouchableOpacity>
                 </>
             }
@@ -89,7 +89,7 @@ export default function TrashScreen() {
         >
             <FlatList
                 data={deletedTasks}
-                renderItem={renderItem}
+                renderItem={RenderTask}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ paddingVertical: 8 }}
             />

@@ -13,7 +13,7 @@ import { Stack } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
-export default function HomeScreen() {
+export default function LabelsScreen() {
     const { theme } = useThemeStore();
 
     // Reload stores and database
