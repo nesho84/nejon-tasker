@@ -37,9 +37,7 @@ export default function LabelsScreen() {
             console.log(error);
         } finally {
             // Delay for smoother UX
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 500);
+            setTimeout(() => setIsLoading(false), 500);
         }
     };
 

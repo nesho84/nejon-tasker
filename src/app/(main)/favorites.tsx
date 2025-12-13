@@ -1,19 +1,36 @@
+import AppLoading from "@/components/AppLoading";
 import TaskCard from "@/components/tasks/TaskCard";
+import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FavoritesScreen() {
     const { theme } = useThemeStore();
+    const { tr } = useLanguageStore();
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
     // Filter tasks
     const favoriteTasks = useMemo(() => {
-        return allTasks.filter(t => !t.isDeleted && t.isFavorite);
+        return allTasks.filter(t => !t.isDeleted && t.isFavorite)
     }, [allTasks]);
+
+    // Local State
+    const [isReady, setIsReady] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Wait for instant navigation
+    useEffect(() => {
+        requestAnimationFrame(() => setIsReady(true));
+    }, []);
+
+    // Loading state
+    if (!isReady || isLoading) {
+        return <AppLoading />;
+    }
 
     return (
         <SafeAreaView

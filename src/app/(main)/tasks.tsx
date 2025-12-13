@@ -12,13 +12,14 @@ import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 
 export default function TasksScreen() {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
   const { labelId } = useLocalSearchParams();
 
   // LabelStore
@@ -37,6 +38,7 @@ export default function TasksScreen() {
   const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
 
   // Local State
+  const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -76,14 +78,20 @@ export default function TasksScreen() {
     await reorderTasks(taskIds);
   };
 
+  // Wait for instant navigation
+  useEffect(() => {
+    requestAnimationFrame(() => setIsReady(true));
+  }, []);
+
   // Loading state
-  if (isLoading) {
+  if (!isReady || isLoading) {
     return <AppLoading />;
   }
 
   // Render Single Task template
   const RenderTask = ({ item, getIndex, isActive, drag }: RenderItemParams<Task>) => {
     const lastItemMargin = lastChecked === item || lastUnchecked === item ? 8 : 0;
+
     return (
       <View style={{ marginBottom: lastItemMargin }}>
         <TouchableOpacity

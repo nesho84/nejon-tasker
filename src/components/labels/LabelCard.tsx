@@ -6,9 +6,10 @@ import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
+import AppLoading from "../AppLoading";
 
 interface Props {
   handleEditModal: (item: Label) => void;
@@ -25,10 +26,24 @@ export default function LabelCard({ handleEditModal }: Props) {
   // taskStore
   const allTasks = useTaskStore((state) => state.allTasks);
 
+  // Local State
+  const [isReady, setIsReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   // Reordor labels
   const handleOrderLabels = async (orderedLabels: Label[]) => {
     const labelIds = orderedLabels.map(label => label.id)
     await reorderLabels(labelIds);
+  }
+
+  // Wait for instant navigation
+  useEffect(() => {
+    requestAnimationFrame(() => setIsReady(true));
+  }, []);
+
+  // Loading state
+  if (!isReady || isLoading) {
+    return <AppLoading />;
   }
 
   // Render Single Label template
@@ -39,9 +54,13 @@ export default function LabelCard({ handleEditModal }: Props) {
     const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
     const reminderTasks = useMemo(() => tasks.filter(t => t.reminderDateTime && t.reminderId), [tasks]);
 
+    const handlePress = () => {
+      router.push(`/tasks?labelId=${item.id}`);
+    };
+
     return (
       <TouchableOpacity
-        onPress={() => router.push(`/tasks?labelId=${item.id}`)}
+        onPress={handlePress}
         onLongPress={drag}
         disabled={isActive}
         delayLongPress={400}
