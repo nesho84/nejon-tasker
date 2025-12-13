@@ -1,4 +1,4 @@
-import * as TasksRepo from '@/db/tasks.repo';
+import * as TasksRepo from '@/db/task.repo';
 import { Task } from '@/types/task.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';

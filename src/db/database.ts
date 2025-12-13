@@ -1,8 +1,17 @@
 import * as SQLite from "expo-sqlite";
 
-export const db = SQLite.openDatabaseSync("tasks.db");
+let db: SQLite.SQLiteDatabase | null = null;
+
+export async function getDB(): Promise<SQLite.SQLiteDatabase> {
+  if (!db) {
+    db = await SQLite.openDatabaseAsync("tasks.db");
+  }
+  return db;
+}
 
 export async function setupDatabase(): Promise<void> {
+  const db = await getDB();
+
   try {
     await db.execAsync("PRAGMA foreign_keys = ON;");
 

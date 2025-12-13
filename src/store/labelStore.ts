@@ -1,4 +1,4 @@
-import * as LabelsRepo from '@/db/labels.repo';
+import * as LabelsRepo from '@/db/label.repo';
 import { Label } from '@/types/label.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';

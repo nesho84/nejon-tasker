@@ -50,35 +50,40 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="reminders"
                     options={{
-                        title: tr.labels.reminders
+                        title: tr.labels.reminders,
+                        animation: "none"
                     }}
                 />
 
                 <Stack.Screen
                     name="favorites"
                     options={{
-                        title: tr.labels.favorites
+                        title: tr.labels.favorites,
+                        animation: "none"
                     }}
                 />
 
                 <Stack.Screen
                     name="trash"
                     options={{
-                        title: tr.labels.trash
+                        title: tr.labels.trash,
+                        animation: "none"
                     }}
                 />
 
                 <Stack.Screen
                     name="settings"
                     options={{
-                        title: tr.labels.settings
+                        title: tr.labels.settings,
+                        animation: "none"
                     }}
                 />
 
                 <Stack.Screen
                     name="about"
                     options={{
-                        title: tr.labels.settings
+                        title: tr.labels.settings,
+                        animation: "none"
                     }}
                 />
 

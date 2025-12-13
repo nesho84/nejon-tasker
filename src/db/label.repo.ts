@@ -1,10 +1,11 @@
-import { db } from "@/db/database";
+import { getDB } from "@/db/database";
 import { Label } from "@/types/label.types";
 
 // ------------------------------------------------------------
 // Load all labels from database on app startup
 // ------------------------------------------------------------
 export async function loadAllLabels(): Promise<Label[]> {
+    const db = await getDB();
     try {
         const rows = await db.getAllAsync<Label>(
             "SELECT * FROM labels ORDER BY order_position ASC"
@@ -20,6 +21,7 @@ export async function loadAllLabels(): Promise<Label[]> {
 // Insert label
 // ------------------------------------------------------------
 export async function insertLabel(label: Label): Promise<void> {
+    const db = await getDB();
     try {
         await db.runAsync(
             `INSERT INTO labels (
@@ -49,6 +51,7 @@ export async function insertLabel(label: Label): Promise<void> {
 // Update label
 // ------------------------------------------------------------
 export async function updateLabel(label: Label): Promise<void> {
+    const db = await getDB();
     try {
         await db.runAsync(
             `UPDATE labels SET
@@ -77,6 +80,7 @@ export async function updateLabel(label: Label): Promise<void> {
 // Delete a label (only if no active tasks)
 // ------------------------------------------------------------
 export async function deleteLabel(id: string): Promise<void> {
+    const db = await getDB();
     try {
         // This will cascade-delete tasks via FK ON DELETE CASCADE
         await db.runAsync("DELETE FROM labels WHERE id = ?", [id]);
@@ -90,6 +94,7 @@ export async function deleteLabel(id: string): Promise<void> {
 // Reorder labels
 // ------------------------------------------------------------
 export async function reorderLabels(labelIds: string[]): Promise<void> {
+    const db = await getDB();
     try {
         const now = new Date().toISOString();
         await db.withTransactionAsync(async () => {

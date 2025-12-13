@@ -1,10 +1,11 @@
-import { db } from "@/db/database";
+import { getDB } from "@/db/database";
 import { Task } from "@/types/task.types";
 
 // ------------------------------------------------------------
 // Load all tasks from database on app startup
 // ------------------------------------------------------------
 export async function loadAllTasks(): Promise<Task[]> {
+    const db = await getDB();
     try {
         const rows = await db.getAllAsync<Task>(
             "SELECT * FROM tasks ORDER BY order_position ASC"
@@ -20,6 +21,7 @@ export async function loadAllTasks(): Promise<Task[]> {
 // Insert task
 // ------------------------------------------------------------
 export async function insertTask(task: Task): Promise<void> {
+    const db = await getDB();
     try {
         await db.runAsync(
             `INSERT INTO tasks (
@@ -53,6 +55,7 @@ export async function insertTask(task: Task): Promise<void> {
 // Update task
 // ------------------------------------------------------------
 export async function updateTask(task: Task): Promise<void> {
+    const db = await getDB();
     try {
         await db.runAsync(
             `UPDATE tasks SET
@@ -85,6 +88,7 @@ export async function updateTask(task: Task): Promise<void> {
 // Permanently delete a task
 // ------------------------------------------------------------
 export async function deleteTask(id: string): Promise<void> {
+    const db = await getDB();
     try {
         await db.runAsync("DELETE FROM tasks WHERE id = ?", [id]);
     } catch (error) {
@@ -97,6 +101,7 @@ export async function deleteTask(id: string): Promise<void> {
 // Reorder tasks
 // ------------------------------------------------------------
 export async function reorderTasks(taskIds: string[]): Promise<void> {
+    const db = await getDB();
     try {
         const now = new Date().toISOString();
         await db.withTransactionAsync(async () => {
