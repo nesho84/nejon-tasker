@@ -1,8 +1,8 @@
 import * as LabelsRepo from '@/db/label.repo';
+import { useTaskStore } from '@/store/taskStore';
 import { Label } from '@/types/label.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';
-import { useTaskStore } from './taskStore';
 
 interface LabelState {
     labels: Label[];

@@ -1,9 +1,9 @@
+import { BackupSection } from "@/components/BackupSection";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Button, StyleSheet, Text, View } from "react-native";
 
@@ -39,8 +39,7 @@ export default function SettingsScreen() {
                     {
                         text: tr.buttons.yes,
                         onPress: () => {
-                            // clearStorage();
-                            router.back();
+                            Alert.alert("This feature is under development.");
                         },
                     },
                     { text: tr.buttons.no },
@@ -93,6 +92,11 @@ export default function SettingsScreen() {
                 </Picker>
             </View>
 
+            {/* Backup Section */}
+            <View style={styles.backupSection}>
+                <BackupSection />
+            </View>
+
             {/* Delete All */}
             <View style={[styles.menu, { borderColor: theme.border }]}>
                 <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
@@ -139,6 +143,18 @@ const styles = StyleSheet.create({
     },
     languagePicker: {
         marginLeft: -8,
+    },
+    backupSection: {
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    backupSectionTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 12,
+        color: '#333',
     },
     deleteButton: {
         fontSize: 10,
