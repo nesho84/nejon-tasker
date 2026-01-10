@@ -12,10 +12,10 @@ import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flat
 import AppLoading from "../AppLoading";
 
 interface Props {
-  handleEditModal: (item: Label) => void;
+  handleEdit: (item: Label) => void;
 }
 
-export default function LabelCard({ handleEditModal }: Props) {
+export default function LabelCard({ handleEdit: handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 

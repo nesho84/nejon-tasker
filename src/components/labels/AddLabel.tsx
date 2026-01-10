@@ -4,16 +4,26 @@ import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
-import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
+  useBottomSheetModal,
+} from '@gorhom/bottom-sheet';
+import { forwardRef, useCallback, useMemo, useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface Props {
-  handleAddModal: (value: boolean) => void;
-}
+interface Props { }
 
-export default function AddLabel({ handleAddModal }: Props) {
+type Ref = BottomSheetModal;
+
+const AddLabel = forwardRef<Ref, Props>((props, ref) => {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const insets = useSafeAreaInsets();
   const { isKeyboardVisible } = useKeyboard();
 
   // labelStore
@@ -22,6 +32,22 @@ export default function AddLabel({ handleAddModal }: Props) {
   // Local State
   const [title, setTitle] = useState("");
   const [color, setColor] = useState(labelBgColors[0]);
+
+  const { dismiss } = useBottomSheetModal();
+  const snapPoints = useMemo(() => ['50%', '75%'], []);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.5}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
 
   const handleAdd = async () => {
     if (title.length < 1) {
@@ -36,42 +62,63 @@ export default function AddLabel({ handleAddModal }: Props) {
       // Create Label
       await createLabel({ title: title, color });
       setTitle("");
-      // Close Modal
-      handleAddModal(false);
+      // Close BottomSheetModal
+      dismiss();
     }
   };
 
   return (
-    <View style={[styles.container, { marginBottom: isKeyboardVisible ? 80 : 0 }]}>
-      <Text style={[styles.title, { color: color }]}>
-        {tr.forms.newLabel}
-      </Text>
-      <TextInput
-        maxLength={100}
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={title}
-        onChangeText={(text) => setTitle(text)}
-        style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
-        placeholder={tr.forms.inputPlaceholder}
-        placeholderTextColor={theme.placeholder}
-      />
-      <ColorPicker labelColor={color} handleLabelColor={setColor} />
-      <TouchableOpacity
-        style={[styles.btnAdd, { backgroundColor: color }]}
-        onPress={handleAdd}
+    <BottomSheetModal
+      ref={ref}
+      index={1}
+      snapPoints={snapPoints}
+      enablePanDownToClose={true}
+      enableDynamicSizing={true}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: theme.surface }}
+      handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+    >
+      <BottomSheetView
+        style={[
+          styles.container,
+          { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }
+        ]}
       >
-        <Text style={styles.btnAddText}>
-          {tr.buttons.save}
+        <Text style={[styles.title, { color: color }]}>
+          {tr.forms.newLabel}
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        <TextInput
+          maxLength={100}
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={title}
+          onChangeText={(text) => setTitle(text)}
+          style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
+          placeholder={tr.forms.inputPlaceholder}
+          placeholderTextColor={theme.placeholder}
+        />
+
+        <ColorPicker labelColor={color} handleLabelColor={setColor} />
+
+        <TouchableOpacity
+          style={[styles.btnAdd, { backgroundColor: color }]}
+          onPress={handleAdd}
+        >
+          <Text style={styles.btnAddText}>
+            {tr.buttons.save}
+          </Text>
+        </TouchableOpacity>
+
+      </BottomSheetView>
+    </BottomSheetModal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    // width: "100%",
+    paddingHorizontal: 10,
   },
   title: {
     marginBottom: 16,
@@ -101,3 +148,5 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
+
+export default AddLabel;

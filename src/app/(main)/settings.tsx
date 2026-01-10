@@ -1,4 +1,4 @@
-import { BackupSection } from "@/components/BackupSection";
+// import { BackupSection } from "@/components/BackupSection";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -94,7 +94,7 @@ export default function SettingsScreen() {
 
             {/* Backup Section */}
             <View style={styles.backupSection}>
-                <BackupSection />
+                {/* <BackupSection /> */}
             </View>
 
             {/* Delete All */}

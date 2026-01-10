@@ -1,5 +1,4 @@
 import AppLoading from "@/components/AppLoading";
-import AppModal from "@/components/AppModal";
 import AppNoItems from "@/components/AppNoItems";
 import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
@@ -11,8 +10,9 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 
@@ -37,16 +37,18 @@ export default function TasksScreen() {
   const lastChecked = useMemo(() => checkedTasks[checkedTasks.length - 1], [checkedTasks]);
   const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
 
+  // Refs for bottomSheet Modals
+  const editTaskRef = useRef<BottomSheetModal>(null);
+
   // Local State
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  // Open modal for editing Task
-  const handleEditModal = (task: Task) => {
+  // Open BottomSheetModal for editing Task
+  const handleEdit = (task: Task) => {
     setSelectedTask(task);
-    setEditModalVisible(true);
+    editTaskRef.current?.present();
   };
 
   // Hard delete label
@@ -95,7 +97,7 @@ export default function TasksScreen() {
     return (
       <View style={{ marginBottom: lastItemMargin }}>
         <TouchableOpacity
-          onPress={() => handleEditModal(item)}
+          onPress={() => handleEdit(item)}
           onLongPress={drag}
           disabled={isActive}
           delayLongPress={400}
@@ -149,7 +151,6 @@ export default function TasksScreen() {
             </Text>
           </View>
 
-          {/* Tasks */}
           <View style={styles.tasksContainer}>
             {/* ----- Unchecked tasks ----- */}
             {uncheckedTasks.length > 0 ? (
@@ -163,6 +164,7 @@ export default function TasksScreen() {
             ) : (
               <AppNoItems type="task" />
             )}
+
             {/* ----- Checked tasks ----- */}
             {checkedTasks.length > 0 && (
               <>
@@ -181,17 +183,10 @@ export default function TasksScreen() {
             )}
           </View>
 
-          {/* Edit Task Modal */}
-          <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>
-            {selectedTask && (
-              <EditTask
-                task={selectedTask}
-                handleEditModal={setEditModalVisible}
-              />
-            )}
-          </AppModal>
+          {/* EditTask BottomSheetModal */}
+          <EditTask ref={editTaskRef} task={selectedTask} />
 
-          {/* Add Task Input */}
+          {/* AddTask TextInput */}
           <AddTask label={label} />
         </View>
       )}

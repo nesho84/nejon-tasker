@@ -4,27 +4,63 @@ import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
-import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
+  useBottomSheetModal
+} from "@gorhom/bottom-sheet";
+import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {
-  label: Label;
-  handleEditModal: (value: boolean) => void;
+  label: Label | null;
 }
 
-export default function EditLabel({ label, handleEditModal }: Props) {
+type Ref = BottomSheetModal;
+
+const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+  const insets = useSafeAreaInsets();
   const { isKeyboardVisible } = useKeyboard();
 
   // labelStore
   const updateLabel = useLabelStore((state) => state.updateLabel);
 
   // Local State
-  const [labelInput, setLabelInput] = useState(label.title);
-  const [labelColor, setLabelColor] = useState(label.color);
+  const [labelInput, setLabelInput] = useState(props.label?.title || "");
+  const [labelColor, setLabelColor] = useState(props.label?.color || "#3b82f6");
+
+  const { dismiss } = useBottomSheetModal();
+  const snapPoints = useMemo(() => ['50%', '75%'], []);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.5}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
+
+  // Update state when label prop changes
+  useEffect(() => {
+    if (props.label) {
+      setLabelInput(props.label.title);
+      setLabelColor(props.label.color);
+    }
+  }, [props.label]);
 
   const handleEdit = async () => {
+    if (!props.label) return;
+
     if (labelInput.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
@@ -35,49 +71,63 @@ export default function EditLabel({ label, handleEditModal }: Props) {
       return false;
     } else {
       // Update Label
-      await updateLabel(label.id, {
+      await updateLabel(props.label.id, {
         title: labelInput,
         color: labelColor,
       });
       setLabelInput("");
-      // Close Modal
-      handleEditModal(false);
+      // Close BottomSheetModal
+      dismiss();
     }
   };
 
   return (
-    <View style={[styles.container, { marginBottom: isKeyboardVisible ? 80 : 0 }]}>
-      <Text style={[styles.title, { color: labelColor }]}>
-        {tr.forms.editLabel}
-      </Text>
-
-      <TextInput
-        autoCapitalize="none"
-        autoCorrect={false}
-        onChangeText={(text) => setLabelInput(text)}
-        style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
-        placeholder={tr.forms.inputPlaceholder}
-        placeholderTextColor={theme.placeholder}
-        value={labelInput}
-      />
-
-      <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
-
-      <TouchableOpacity
-        style={[styles.btnEdit, { backgroundColor: labelColor }]}
-        onPress={handleEdit}
-      >
-        <Text style={styles.btnEditText}>
-          {tr.buttons.save}
+    <BottomSheetModal
+      ref={ref}
+      index={1}
+      snapPoints={snapPoints}
+      enablePanDownToClose={true}
+      enableDynamicSizing={true}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: theme.surface }}
+      handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+    >
+      <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }]}>
+        <Text style={[styles.title, { color: labelColor }]}>
+          {tr.forms.editLabel}
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(text) => setLabelInput(text)}
+          style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
+          placeholder={tr.forms.inputPlaceholder}
+          placeholderTextColor={theme.placeholder}
+          value={labelInput}
+        />
+
+        <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
+
+        {/* Save button */}
+        <TouchableOpacity
+          style={[styles.btnEdit, { backgroundColor: labelColor }]}
+          onPress={handleEdit}
+        >
+          <Text style={styles.btnEditText}>
+            {tr.buttons.save}
+          </Text>
+        </TouchableOpacity>
+
+      </BottomSheetView>
+    </BottomSheetModal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    // width: "100%",
+    padding: 10,
   },
   title: {
     marginBottom: 16,
@@ -112,3 +162,5 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
+
+export default EditLabel;

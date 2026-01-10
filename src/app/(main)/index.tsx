@@ -1,5 +1,4 @@
 import AppLoading from "@/components/AppLoading";
-import AppModal from "@/components/AppModal";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
@@ -9,8 +8,9 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router, Stack } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LabelsScreen() {
@@ -20,10 +20,12 @@ export default function LabelsScreen() {
     const loadLabels = useLabelStore((state) => state.loadLabels);
     const loadTasks = useTaskStore((state) => state.loadTasks);
 
+    // Refs for bottomSheet Modals
+    const addLabelRef = useRef<BottomSheetModal>(null);
+    const editLabelRef = useRef<BottomSheetModal>(null);
+
     // Local State
     const [isLoading, setIsLoading] = useState(false);
-    const [addModalVisible, setAddModalVisible] = useState(false);
-    const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedLabel, setSelectedLabel] = useState<Label | null>(null);
 
     // Refresh Labels manually
@@ -41,10 +43,10 @@ export default function LabelsScreen() {
         }
     };
 
-    // Open a modal for editing Label
-    const handleEditModal = (item: Label) => {
+    // Open a BottomSheetModal for editing Label
+    const handleEdit = (item: Label) => {
         setSelectedLabel(item);
-        setEditModalVisible(true);
+        editLabelRef.current?.present();
     };
 
     // Loading state
@@ -63,7 +65,7 @@ export default function LabelsScreen() {
                             {/* Add Label */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: 26 }}
-                                onPress={() => setAddModalVisible(true)}
+                                onPress={() => addLabelRef.current?.present()}
                             >
                                 <MaterialCommunityIcons name="folder-plus-outline" size={26} color={theme.text} />
                             </TouchableOpacity>
@@ -91,22 +93,13 @@ export default function LabelsScreen() {
             {/* Main Content */}
             <View style={styles.container}>
                 {/* Labels List */}
-                <LabelCard handleEditModal={handleEditModal} />
+                <LabelCard handleEdit={handleEdit} />
 
-                {/* Edit Label Modal */}
-                <AppModal modalVisible={editModalVisible} setModalVisible={setEditModalVisible}>
-                    {selectedLabel && (
-                        <EditLabel
-                            label={selectedLabel}
-                            handleEditModal={setEditModalVisible}
-                        />
-                    )}
-                </AppModal>
+                {/* EditLabel BottomSheetModal */}
+                <EditLabel ref={editLabelRef} label={selectedLabel} />
 
-                {/* Add Label Modal */}
-                <AppModal modalVisible={addModalVisible} setModalVisible={setAddModalVisible}>
-                    <AddLabel handleAddModal={setAddModalVisible} />
-                </AppModal>
+                {/* AddLabel BottomSheetModal */}
+                <AddLabel ref={addLabelRef} />
             </View>
 
         </AppScreen>

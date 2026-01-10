@@ -4,6 +4,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { useLabelStore } from "@/store/labelStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTaskStore } from "@/store/taskStore";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
@@ -69,7 +70,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <RootStack />
+        <BottomSheetModalProvider>
+          <RootStack />
+        </BottomSheetModalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

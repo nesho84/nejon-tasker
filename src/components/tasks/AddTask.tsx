@@ -1,4 +1,3 @@
-import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -14,7 +13,6 @@ interface Props {
 export default function AddTask({ label }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
-  const { keyboardHeight } = useKeyboard();
 
   // taskStore
   const createTask = useTaskStore((state) => state.createTask);
@@ -44,10 +42,7 @@ export default function AddTask({ label }: Props) {
   };
 
   return (
-    <View style={[styles.container, {
-      marginBottom: keyboardHeight,
-      borderTopColor: theme.border
-    }]}>
+    <View style={[styles.container, { borderTopColor: theme.border }]}>
       <TextInput
         style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.text }]}
         ref={textInputRef}
