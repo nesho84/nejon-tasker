@@ -24,7 +24,7 @@
       "softwareKeyboardLayoutMode": "pan",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.nesho84.nejontasker",
+      "package": "com.nesho84.nejontasker"
     },
     "web": {
       "output": "static",
@@ -50,6 +50,19 @@
         {
           "icon": "./assets/images/icon.png",
           "color": "#ffffff"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
         }
       ]
     ],

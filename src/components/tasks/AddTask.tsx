@@ -4,7 +4,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
-import { Alert, Keyboard, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Keyboard, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 interface Props {
   label: Label;
@@ -21,10 +21,10 @@ export default function AddTask({ label }: Props) {
   const textInputRef = useRef<TextInput>(null);
 
   // Local State
-  const [text, setText] = useState("");
+  const [taskText, setTaskText] = useState("");
 
   const handleAdd = async () => {
-    if (text.length < 1) {
+    if (taskText.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
@@ -34,8 +34,8 @@ export default function AddTask({ label }: Props) {
       return false;
     } else {
       // Create Task
-      await createTask({ labelId: label.id, text: text });
-      setText("");
+      await createTask({ labelId: label.id, text: taskText });
+      setTaskText("");
       textInputRef.current?.clear();
       Keyboard.dismiss();
     }
@@ -51,17 +51,17 @@ export default function AddTask({ label }: Props) {
         scrollEnabled={true}
         autoCapitalize="none"
         autoCorrect={false}
-        onChangeText={(text) => setText(text)}
+        onChangeText={(text) => setTaskText(text)}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
-        value={text}
+        value={taskText}
       />
-      <TouchableOpacity
+      <Pressable
         style={[styles.addButton, { backgroundColor: label.color }]}
         onPress={handleAdd}
       >
         <MaterialIcons name="add" size={45} color={theme.light} />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

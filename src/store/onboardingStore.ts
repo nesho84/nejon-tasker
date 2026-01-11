@@ -1,4 +1,4 @@
-import { mmkvStorage } from "@/store/storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -17,7 +17,7 @@ export const useOnboardingStore = create<OnboardingState>()(
         }),
         {
             name: "onboarding-store",
-            storage: createJSONStorage(() => mmkvStorage),
+            storage: createJSONStorage(() => AsyncStorage),
             partialize: (state) => ({ onboardingComplete: state.onboardingComplete }),
         }
     )

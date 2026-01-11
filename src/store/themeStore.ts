@@ -1,5 +1,5 @@
 import { DARK, LIGHT } from "@/constants/colors";
-import { mmkvStorage } from "@/store/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -31,7 +31,7 @@ export const useThemeStore = create<ThemeState>()(
         }),
         {
             name: 'theme-store',
-            storage: createJSONStorage(() => mmkvStorage),
+            storage: createJSONStorage(() => AsyncStorage),
             partialize: (state) => ({ mode: state.mode }), // persist only mode
             onRehydrateStorage: () => (state) => {
                 // After rehydration, set theme based on persisted mode

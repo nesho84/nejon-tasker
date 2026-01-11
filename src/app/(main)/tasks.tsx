@@ -15,6 +15,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 export default function TasksScreen() {
   const { theme } = useThemeStore();
@@ -122,75 +123,81 @@ export default function TasksScreen() {
 
   return (
     <AppScreen>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={"padding"}
+        keyboardVerticalOffset={100}
+      >
 
-      {/* Top Navigation bar icons */}
-      <Stack.Screen
-        options={{
-          title: label?.title,
-          headerTintColor: label?.color,
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => {
-                if (label) handleDeleteLabel(label.id);
-              }}
-            >
-              <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+        {/* Top Navigation bar icons */}
+        <Stack.Screen
+          options={{
+            title: label?.title,
+            headerTintColor: label?.color,
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => {
+                  if (label) handleDeleteLabel(label.id);
+                }}
+              >
+                <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
 
-      {/* Main Content */}
-      {label && (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-          {/* Header container */}
-          <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
-            {/* Header text */}
-            <Text style={[styles.headerText, { color: theme.muted }]}>
-              {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
-            </Text>
-          </View>
+        {/* Main Content */}
+        {label && (
+          <View style={[styles.container, { backgroundColor: theme.background }]}>
+            {/* Header container */}
+            <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
+              {/* Header text */}
+              <Text style={[styles.headerText, { color: theme.muted }]}>
+                {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
+              </Text>
+            </View>
 
-          <View style={styles.tasksContainer}>
-            {/* ----- Unchecked tasks ----- */}
-            {uncheckedTasks.length > 0 ? (
-              <DraggableFlatList
-                containerStyle={{ flex: 3, opacity: 1 }}
-                data={uncheckedTasks}
-                renderItem={RenderTask}
-                keyExtractor={(item) => item.id}
-                onDragEnd={({ data }) => handleOrderTasks(data)}
-              />
-            ) : (
-              <AppNoItems type="task" />
-            )}
-
-            {/* ----- Checked tasks ----- */}
-            {checkedTasks.length > 0 && (
-              <>
-                <View style={[styles.tasksDivider, { borderColor: theme.border }]} />
-                <Text style={[styles.tasksDividerText, { color: theme.muted, borderBottomColor: label.color }]}>
-                  {`${checkedTasks.length} ${tr.labels.checkedItems}`}
-                </Text>
+            <View style={styles.tasksContainer}>
+              {/* ----- Unchecked tasks ----- */}
+              {uncheckedTasks.length > 0 ? (
                 <DraggableFlatList
-                  containerStyle={{ flex: 1, opacity: 0.4 }}
-                  data={checkedTasks}
+                  containerStyle={{ flex: 3, opacity: 1 }}
+                  data={uncheckedTasks}
                   renderItem={RenderTask}
                   keyExtractor={(item) => item.id}
                   onDragEnd={({ data }) => handleOrderTasks(data)}
                 />
-              </>
-            )}
+              ) : (
+                <AppNoItems type="task" />
+              )}
+
+              {/* ----- Checked tasks ----- */}
+              {checkedTasks.length > 0 && (
+                <>
+                  <View style={[styles.tasksDivider, { borderColor: theme.border }]} />
+                  <Text style={[styles.tasksDividerText, { color: theme.muted, borderBottomColor: label.color }]}>
+                    {`${checkedTasks.length} ${tr.labels.checkedItems}`}
+                  </Text>
+                  <DraggableFlatList
+                    containerStyle={{ flex: 1, opacity: 0.4 }}
+                    data={checkedTasks}
+                    renderItem={RenderTask}
+                    keyExtractor={(item) => item.id}
+                    onDragEnd={({ data }) => handleOrderTasks(data)}
+                  />
+                </>
+              )}
+            </View>
+
+            {/* EditTask BottomSheetModal */}
+            <EditTask ref={editTaskRef} task={selectedTask} />
+
+            {/* AddTask TextInput */}
+            <AddTask label={label} />
           </View>
+        )}
 
-          {/* EditTask BottomSheetModal */}
-          <EditTask ref={editTaskRef} task={selectedTask} />
-
-          {/* AddTask TextInput */}
-          <AddTask label={label} />
-        </View>
-      )}
-
+      </KeyboardAvoidingView>
     </AppScreen>
   );
 }
