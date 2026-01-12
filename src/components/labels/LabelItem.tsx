@@ -15,7 +15,7 @@ interface Props {
   handleEdit: (item: Label) => void;
 }
 
-export default function LabelCard({ handleEdit: handleEditModal }: Props) {
+export default function LabelItem({ handleEdit: handleEditModal }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 

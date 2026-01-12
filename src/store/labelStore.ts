@@ -1,5 +1,4 @@
 import * as LabelsRepo from '@/db/label.repo';
-import { useTaskStore } from '@/store/taskStore';
 import { Label } from '@/types/label.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';
@@ -107,31 +106,18 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     },
 
     // ------------------------------------------------------------
-    // DELETE (with validation)
+    // DELETE
     // ------------------------------------------------------------
     deleteLabel: async (id) => {
         const label = get().labels.find(l => l.id === id);
         if (!label) throw new Error(`Label not found: ${id}`);
         const previousLabel = { ...label };
 
-        // Check if label has active tasks
-        const taskStore = useTaskStore.getState();
-        const activeTasks = taskStore.allTasks.filter(t => t.labelId === id && !t.isDeleted);
-
-        if (activeTasks.length > 0) {
-            throw new Error(`Cannot delete label. It has ${activeTasks.length} active task(s).`);
-        }
-
         try {
-            // Update state
             set(state => ({ labels: state.labels.filter(l => l.id !== id) }));
-
-            // Persist (will cascade delete any deleted tasks via FK)
             await LabelsRepo.deleteLabel(id);
         } catch (error) {
-            // Rollback on failure
             set(state => ({ labels: [...state.labels, previousLabel] }));
-            console.error('Failed to delete label:', error);
             throw error;
         }
     },

@@ -1,5 +1,5 @@
 import AppLoading from "@/components/AppLoading";
-import TaskCard from "@/components/tasks/TaskCard";
+import TaskItem from "@/components/tasks/TaskItem";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
@@ -40,7 +40,7 @@ export default function RemindersScreen() {
             <FlatList
                 data={reminderTasks}
                 renderItem={({ item }) => (
-                    <TaskCard
+                    <TaskItem
                         task={item}
                         shareAction={true}
                     />

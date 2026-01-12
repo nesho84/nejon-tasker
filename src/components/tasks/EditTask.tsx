@@ -163,6 +163,11 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      onDismiss={() => {
+        setTaskInput(props.task?.text || "");
+        setSelectedDateTime(props.task?.reminderDateTime || null);
+        setReminderInput(dateTimeToString(props.task?.reminderDateTime || null));
+      }}
     >
       <BottomSheetView
         style={[
@@ -227,7 +232,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
 
         {/* Save button */}
         <TouchableOpacity
-          style={[styles.btnEdit, { backgroundColor: theme.lightMuted }]}
+          style={[styles.btnEdit, { backgroundColor: theme.active }]}
           onPress={handleEdit}
         >
           <Text style={styles.btnEditText}>
@@ -244,7 +249,7 @@ const styles = StyleSheet.create({
   container: {
     // width: "100%",
     padding: 10,
-    gap: 10,
+    gap: 12,
   },
   textInputContainer: {
     borderWidth: StyleSheet.hairlineWidth,

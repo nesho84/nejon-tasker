@@ -25,7 +25,7 @@ interface Props {
     shareAction?: boolean;
 }
 
-export default function TaskCard({
+export default function TaskItem({
     task,
     index,
     isActive,

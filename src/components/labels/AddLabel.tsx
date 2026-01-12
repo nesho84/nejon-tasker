@@ -77,6 +77,10 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      onDismiss={() => {
+        setTitle("");
+        setColor(labelBgColors[0]);
+      }}
     >
       <BottomSheetView
         style={[
@@ -118,7 +122,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
 const styles = StyleSheet.create({
   container: {
     // width: "100%",
-    paddingHorizontal: 10,
+    padding: 10,
   },
   title: {
     marginBottom: 16,

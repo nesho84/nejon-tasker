@@ -91,6 +91,10 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      onDismiss={() => {
+        setLabelInput(props.label?.title || "");
+        setLabelColor(props.label?.color || "#3b82f6");
+      }}
     >
       <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }]}>
         <Text style={[styles.title, { color: labelColor }]}>

@@ -60,7 +60,7 @@ export default function AddTask({ label }: Props) {
         style={[styles.addButton, { backgroundColor: label.color }]}
         onPress={handleAdd}
       >
-        <MaterialIcons name="add" size={45} color={theme.light} />
+        <MaterialIcons name="add" size={38} color={theme.light} />
       </Pressable>
     </View>
   );
@@ -84,6 +84,8 @@ const styles = StyleSheet.create({
   },
   addButton: {
     alignSelf: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
     width: 47,
     height: 47,
     borderWidth: StyleSheet.hairlineWidth,

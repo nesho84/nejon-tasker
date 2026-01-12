@@ -3,7 +3,7 @@ import AppNoItems from "@/components/AppNoItems";
 import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
-import TaskCard from "@/components/tasks/TaskCard";
+import TaskItem from "@/components/tasks/TaskItem";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -54,24 +54,57 @@ export default function TasksScreen() {
 
   // Hard delete label
   const handleDeleteLabel = async (labelId: string) => {
+    if (!label) return;
+
     Alert.alert(
       tr.alerts.deleteLabel.title,
       tr.alerts.deleteLabel.message,
       [
         {
           text: tr.buttons.yes,
+          style: 'destructive',
           onPress: async () => {
-            setIsLoading(true);
-            await deleteLabel(labelId);
-            setIsLoading(false);
-            router.back();
+            // If there are tasks, show second confirmation
+            if (tasks.length > 0) {
+              Alert.alert(
+                tr.alerts.deleteLabel.title,
+                tr.alerts.deleteLabel.message2,
+                [
+                  {
+                    text: 'Delete All',
+                    style: 'destructive',
+                    onPress: async () => {
+                      try {
+                        setIsLoading(true);
+                        await deleteLabel(labelId);
+                        router.back();
+                      } catch (error) {
+                        Alert.alert('Error', `Failed to delete: ${error}`);
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    },
+                  },
+                  { text: 'Cancel', style: 'cancel' },
+                ]
+              );
+            } else {
+              // No tasks, delete immediately
+              try {
+                setIsLoading(true);
+                await deleteLabel(labelId);
+                router.back();
+              } catch (error) {
+                Alert.alert('Error', `Failed to delete: ${error}`);
+              } finally {
+                setIsLoading(false);
+              }
+            }
           },
         },
-        {
-          text: tr.buttons.no,
-        },
+        { text: tr.buttons.no, style: 'cancel' },
       ],
-      { cancelable: false }
+      { cancelable: true }
     );
   };
 
@@ -107,7 +140,7 @@ export default function TasksScreen() {
           activeOpacity={0.7}
           hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
         >
-          <TaskCard
+          <TaskItem
             task={item}
             index={getIndex()}
             isActive={isActive}
@@ -123,30 +156,30 @@ export default function TasksScreen() {
 
   return (
     <AppScreen>
+
+      {/* Top Navigation bar icons */}
+      <Stack.Screen
+        options={{
+          title: label?.title,
+          headerTintColor: label?.color,
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => {
+                if (label) handleDeleteLabel(label.id);
+              }}
+            >
+              <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
+      {/* Main Content with KeyboardAvoidingView */}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={"padding"}
         keyboardVerticalOffset={100}
       >
-
-        {/* Top Navigation bar icons */}
-        <Stack.Screen
-          options={{
-            title: label?.title,
-            headerTintColor: label?.color,
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  if (label) handleDeleteLabel(label.id);
-                }}
-              >
-                <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
-              </TouchableOpacity>
-            ),
-          }}
-        />
-
-        {/* Main Content */}
         {label && (
           <View style={[styles.container, { backgroundColor: theme.background }]}>
             {/* Header container */}
@@ -196,8 +229,8 @@ export default function TasksScreen() {
             <AddTask label={label} />
           </View>
         )}
-
       </KeyboardAvoidingView>
+
     </AppScreen>
   );
 }

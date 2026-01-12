@@ -39,7 +39,7 @@ export const TRANSLATIONS = {
         forms: {
             inputPlaceholder: "Enter text...",
             setReminder: "Set Reminder...",
-            newLabel: "Create New Label",
+            newLabel: "Create new Label",
             editLabel: "Edit Label",
             editTask: "Edit Task",
         },
@@ -61,21 +61,18 @@ export const TRANSLATIONS = {
 
         // Alert dialogs
         alerts: {
-            appExit: {
-                title: "Hold on!",
-                message: "Are you sure you want to exit?",
-            },
             deleteLabel: {
-                title: "Delete Label and all of its tasks!",
-                message: "Are you sure?",
+                title: "Are you sure?",
+                message: "Delete Label and all of its tasks!",
+                message2: "This will permanently delete all associated tasks. This action cannot be undone.",
             },
             deleteTask: {
-                title: "Delete Task!",
-                message: "Are you sure?",
+                title: "Are you sure?",
+                message: "Delete Task!",
             },
             deleteAll: {
-                title: "Delete all items in the Storage!",
-                message: "Are you sure?",
+                title: "Are you sure?",
+                message: "Delete all items in the Storage!",
             },
             requiredField: {
                 title: "Required field",
@@ -90,8 +87,12 @@ export const TRANSLATIONS = {
                 message: "You have denied notification permission. Please enable it in your device settings to receive notifications.",
             },
             appUpdate: {
-                title: "Update Success",
+                title: "Update",
                 message: "Update was successful.",
+            },
+            appExit: {
+                title: "Hold on!",
+                message: "Are you sure you want to exit?",
             },
         },
 
@@ -169,21 +170,18 @@ export const TRANSLATIONS = {
         },
 
         alerts: {
-            appExit: {
-                title: "Warten Sie mal!",
-                message: "Sie sind sicher, dass Sie beenden wollen?",
-            },
             deleteLabel: {
-                title: "Etikett und alle seine Aufgaben löschen!",
-                message: "Sind Sie sicher?",
+                title: "Sind Sie sicher?",
+                message: "Etikett und alle seine Aufgaben löschen!",
+                message2: "Dies löscht alle zugehörigen Aufgaben dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
             },
             deleteTask: {
-                title: "Aufgabe löschen!",
-                message: "Sind Sie sicher?",
+                title: "Sind Sie sicher?",
+                message: "Aufgabe löschen!",
             },
             deleteAll: {
-                title: "Alle Elemente im Speicher löschen!",
-                message: "Sind Sie sicher?",
+                title: "Sind Sie sicher?",
+                message: "Alle Elemente im Speicher löschen!",
             },
             requiredField: {
                 title: "Pflichtfeld",
@@ -198,8 +196,12 @@ export const TRANSLATIONS = {
                 message: "Sie haben die Benachrichtigungsberechtigung verweigert. Bitte aktivieren Sie es in Ihren Geräteeinstellungen, um Benachrichtigungen zu erhalten.",
             },
             appUpdate: {
-                title: "Erfolgreich aktualisiert",
+                title: "Update",
                 message: "Update war erfolgreich.",
+            },
+            appExit: {
+                title: "Warten Sie mal!",
+                message: "Sie sind sicher, dass Sie beenden wollen?",
             },
         },
 
@@ -274,21 +276,18 @@ export const TRANSLATIONS = {
         },
 
         alerts: {
-            appExit: {
-                title: "Prit!",
-                message: "Jeni të sigurt që dëshironi të dilni?",
-            },
             deleteLabel: {
-                title: "Fshij etiketën dhe të gjitha detyrat e saj!",
-                message: "A jeni të sigurt?",
+                title: "A jeni të sigurt?",
+                message: "Fshij etiketën dhe të gjitha detyrat!",
+                message2: "Kjo do të fshijë përgjithmonë të gjitha detyrat. Kjo veprim nuk mund të zhbëhet.",
             },
             deleteTask: {
-                title: "Fshij detyrën!",
-                message: "A jeni të sigurt?",
+                title: "A jeni të sigurt?",
+                message: "Fshij detyrën!",
             },
             deleteAll: {
-                title: "Fshij bazën e të dhënave!",
-                message: "A jeni të sigurt?",
+                title: "A jeni të sigurt?",
+                message: "Fshij bazën e të dhënave!",
             },
             requiredField: {
                 title: "Fushë e detyrueshme",
@@ -303,8 +302,12 @@ export const TRANSLATIONS = {
                 message: "Ju keni refuzuar lejen e njoftimit. Ju lutemi aktivizoni atë në opsionet e pajisjes tuaj për të marrë njoftime.",
             },
             appUpdate: {
-                title: "Aktualizimi me sukses",
+                title: "Aktualizimi",
                 message: "Aktualizimi ishte i suksesshëm.",
+            },
+            appExit: {
+                title: "Prit!",
+                message: "Jeni të sigurt që dëshironi të dilni?",
             },
         },
 

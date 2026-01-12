@@ -2,7 +2,7 @@ import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
-import LabelCard from "@/components/labels/LabelCard";
+import LabelItem from "@/components/labels/LabelItem";
 import { useLabelStore } from "@/store/labelStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
@@ -93,7 +93,7 @@ export default function LabelsScreen() {
             {/* Main Content */}
             <View style={styles.container}>
                 {/* Labels List */}
-                <LabelCard handleEdit={handleEdit} />
+                <LabelItem handleEdit={handleEdit} />
 
                 {/* EditLabel BottomSheetModal */}
                 <EditLabel ref={editLabelRef} label={selectedLabel} />
