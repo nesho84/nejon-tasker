@@ -3,7 +3,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
-import { dates } from "@/utils/dates";
+import { dates, isReminderActive } from "@/utils/dates";
 import { shareText } from "@/utils/utils";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Checkbox } from "expo-checkbox";
@@ -38,7 +38,6 @@ export default function TaskItem({
 }: Props) {
     const { theme } = useThemeStore();
     const { tr } = useLanguageStore();
-    const { cancelScheduledNotification } = useNotifications();
 
     // taskStore
     const updateTask = useTaskStore((state) => state.updateTask);
@@ -47,6 +46,12 @@ export default function TaskItem({
     const softDeleteTask = useTaskStore((state) => state.softDeleteTask);
     const hardDeleteTask = useTaskStore((state) => state.hardDeleteTask);
     const restoreTask = useTaskStore((state) => state.restoreTask);
+
+    // Notifications hook
+    const { notificationsEnabled, cancelScheduledNotification } = useNotifications();
+
+    // Check if reminder is active (has reminderId AND datetime is in the future)
+    const reminderIsActive = isReminderActive(task.reminderDateTime, task.reminderId);
 
     // ------------------------------------------------------------
     // Toggle task checked/unchecked
@@ -247,15 +252,23 @@ export default function TaskItem({
                 {/* Reminder */}
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                     {/* Reminder icon */}
-                    <Ionicons
-                        name={task.reminderId ? "notifications" : "notifications-off"}
-                        color={task.reminderId ? theme.success : theme.muted}
-                        size={16}
-                    />
-
-                    {/* Reminder dateTime */}
                     {task.reminderId && task.reminderDateTime && (
-                        <Text style={{ fontSize: 11, color: task.reminderId ? theme.success : theme.muted }}>
+                        <Ionicons
+                            name={(notificationsEnabled || reminderIsActive) ? "notifications" : "notifications-off"}
+                            color={reminderIsActive ? theme.success : theme.muted}
+                            size={16}
+                        />
+                    )}
+
+                    {/* Reminder dateTime - show it even if passed, but with different styling */}
+                    {task.reminderId && task.reminderDateTime && (
+                        <Text
+                            style={{
+                                fontSize: 11,
+                                color: reminderIsActive ? theme.success : theme.muted,
+                                textDecorationLine: reminderIsActive ? 'none' : 'line-through'
+                            }}
+                        >
                             {dates.format(task.reminderDateTime)}
                         </Text>
                     )}

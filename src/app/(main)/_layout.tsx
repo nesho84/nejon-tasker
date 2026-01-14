@@ -206,7 +206,7 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="index"
                     options={{
-                        title: tr.labels.labels,
+                        // title: tr.labels.labels,
                         headerShadowVisible: true,
                         headerLeft: () => (
                             <TouchableOpacity

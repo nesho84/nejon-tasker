@@ -15,7 +15,7 @@ interface Props {
   handleEdit: (item: Label) => void;
 }
 
-export default function LabelItem({ handleEdit: handleEditModal }: Props) {
+export default function LabelItem({ handleEdit }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -28,21 +28,24 @@ export default function LabelItem({ handleEdit: handleEditModal }: Props) {
 
   // Local State
   const [isReady, setIsReady] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
+  // ------------------------------------------------------------
   // Reordor labels
+  // ------------------------------------------------------------
   const handleOrderLabels = async (orderedLabels: Label[]) => {
     const labelIds = orderedLabels.map(label => label.id)
     await reorderLabels(labelIds);
   }
 
+  // ------------------------------------------------------------
   // Wait for instant navigation
+  // ------------------------------------------------------------
   useEffect(() => {
     requestAnimationFrame(() => setIsReady(true));
   }, []);
 
   // Loading state
-  if (!isReady || isLoading) {
+  if (!isReady) {
     return <AppLoading />;
   }
 
@@ -98,7 +101,7 @@ export default function LabelItem({ handleEdit: handleEditModal }: Props) {
 
             {/* Edit Label Icon */}
             <TouchableOpacity
-              onPress={() => handleEditModal(item)}
+              onPress={() => handleEdit(item)}
               delayPressIn={0}
               delayPressOut={0}
             >

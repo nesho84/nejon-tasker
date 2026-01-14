@@ -46,13 +46,17 @@ export default function TasksScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
+  // ------------------------------------------------------------
   // Open BottomSheetModal for editing Task
+  // ------------------------------------------------------------
   const handleEdit = (task: Task) => {
     setSelectedTask(task);
     editTaskRef.current?.present();
   };
 
+  // ------------------------------------------------------------
   // Hard delete label
+  // ------------------------------------------------------------
   const handleDeleteLabel = async (labelId: string) => {
     if (!label) return;
 
@@ -108,13 +112,17 @@ export default function TasksScreen() {
     );
   };
 
+  // ------------------------------------------------------------
   // Reorder tasks
+  // ------------------------------------------------------------
   const handleOrderTasks = async (orderedTasks: Task[]) => {
     const taskIds = orderedTasks.map(task => task.id);
     await reorderTasks(taskIds);
   };
 
+  // ------------------------------------------------------------
   // Wait for instant navigation
+  // ------------------------------------------------------------
   useEffect(() => {
     requestAnimationFrame(() => setIsReady(true));
   }, []);

@@ -16,11 +16,17 @@ export default function SettingsScreen() {
 
     const [selectedLanguage, setSelectedLanguage] = useState<Language | string>(language);
 
+    // ------------------------------------------------------------
+    // Handle Language Change
+    // ------------------------------------------------------------
     const handleLanguage = (lang: Language) => {
         setSelectedLanguage(lang);
         setLanguage(lang);
     };
 
+    // ------------------------------------------------------------
+    // Handle Delete All Data
+    // ------------------------------------------------------------
     const handleDeleteAll = () => {
         if (labels === null) {
             Alert.alert(

@@ -13,19 +13,3 @@ export interface Task {
     createdAt: string;
     updatedAt: string;
 }
-
-export type TaskRow = {
-    id: string;
-    labelId: string;
-    text: string;
-    date: string;
-    checked: number;
-    order_position: number;
-    reminderDateTime: string | null;
-    reminderId: string | null;
-    isFavorite: number;
-    isDeleted: number;
-    deletedAt: string | null;
-    createdAt: string;
-    updatedAt: string;
-};

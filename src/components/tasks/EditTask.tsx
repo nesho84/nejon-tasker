@@ -4,7 +4,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
-import { dates } from "@/utils/dates";
+import { dates, isReminderActive } from "@/utils/dates";
 import { Ionicons } from '@expo/vector-icons';
 import {
   BottomSheetBackdrop,
@@ -37,6 +37,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     return date ? dates.format(date) : tr.forms.setReminder;
   }
 
+  // Notifications hook
   const { scheduleNotification, cancelScheduledNotification } = useNotifications();
 
   // Local State
@@ -46,8 +47,14 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   const [reminderInput, setReminderInput] = useState(dateTimeToString(props.task?.reminderDateTime || null));
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(props.task?.reminderDateTime || null);
 
+  // Check if reminder is active (has reminderId AND datetime is in the future)
+  const reminderIsActive = isReminderActive(props.task?.reminderDateTime || null, props.task?.reminderId || null);
+
   const textInputRef = useRef<TextInput>(null);
 
+  // ------------------------------------------------------------
+  // Handle keyboard hide to blur TextInput
+  // ------------------------------------------------------------
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
       textInputRef.current?.blur();
@@ -59,8 +66,11 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     };
   }, []);
 
+  // ------------------------------------------------------------
+  // BottomSheetModal setup
+  // ------------------------------------------------------------
   const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['25%', '75%', '95%'], []);
+  const snapPoints = useMemo(() => ['25%', '75%', '90%'], []);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -75,7 +85,9 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     []
   );
 
+  // ------------------------------------------------------------
   // Update state when task prop changes
+  // ------------------------------------------------------------
   useEffect(() => {
     if (props.task) {
       setTaskInput(props.task.text);
@@ -84,6 +96,9 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     }
   }, [props.task]);
 
+  // ------------------------------------------------------------
+  // Handle DateTime picker confirm
+  // ------------------------------------------------------------
   const handleDateConfirm = (dateTime: Date) => {
     const currentDateTime = new Date();
     const reminderDateTime = new Date(dateTime);
@@ -105,6 +120,9 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     }
   };
 
+  // ------------------------------------------------------------
+  // Handle Edit Task
+  // ------------------------------------------------------------
   const handleEdit = async () => {
     if (!props.task) return;
 
@@ -208,14 +226,17 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
           onPress={() => setDatePickerVisible(true)}>
           <TextInput
-            style={{ color: props.task?.reminderId ? theme.success : theme.lightMuted }}
+            style={{
+              color: reminderIsActive ? theme.success : theme.muted,
+              textDecorationLine: (!props.task?.reminderDateTime || reminderIsActive) ? 'none' : 'line-through'
+            }}
             placeholder={tr.forms.setReminder}
             value={reminderInput}
             editable={false}
           />
           <Ionicons
-            name={props.task?.reminderId ? "notifications" : "notifications-off"}
-            color={props.task?.reminderId ? theme.success : theme.lightMuted}
+            name={reminderIsActive ? "notifications" : "notifications-off"}
+            color={reminderIsActive ? theme.success : theme.muted}
             size={20}
           />
         </TouchableOpacity>

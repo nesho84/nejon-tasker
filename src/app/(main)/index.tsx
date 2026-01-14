@@ -4,6 +4,7 @@ import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
 import LabelItem from "@/components/labels/LabelItem";
 import { useLabelStore } from "@/store/labelStore";
+import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
@@ -15,6 +16,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LabelsScreen() {
     const { theme } = useThemeStore();
+    const { tr } = useLanguageStore();
 
     // Reload stores and database
     const loadLabels = useLabelStore((state) => state.loadLabels);
@@ -28,7 +30,9 @@ export default function LabelsScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedLabel, setSelectedLabel] = useState<Label | null>(null);
 
+    // ------------------------------------------------------------
     // Refresh Labels manually
+    // ------------------------------------------------------------
     const handleRefresh = async () => {
         setIsLoading(true);
         try {
@@ -43,7 +47,9 @@ export default function LabelsScreen() {
         }
     };
 
+    // ------------------------------------------------------------
     // Open a BottomSheetModal for editing Label
+    // ------------------------------------------------------------
     const handleEdit = (item: Label) => {
         setSelectedLabel(item);
         editLabelRef.current?.present();
@@ -51,7 +57,11 @@ export default function LabelsScreen() {
 
     // Loading state
     if (isLoading) {
-        return <AppLoading />;
+        return (
+            <AppScreen>
+                <AppLoading />
+            </AppScreen>
+        );
     }
 
     return (
@@ -60,16 +70,9 @@ export default function LabelsScreen() {
             {/* Top Navigation bar icons */}
             <Stack.Screen
                 options={{
+                    title: tr.labels.labels,
                     headerRight: () => (
                         <>
-                            {/* Add Label */}
-                            <TouchableOpacity
-                                style={{ top: 1, marginRight: 26 }}
-                                onPress={() => addLabelRef.current?.present()}
-                            >
-                                <MaterialCommunityIcons name="folder-plus-outline" size={26} color={theme.text} />
-                            </TouchableOpacity>
-
                             {/* Refresh Labels */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: 26 }}
@@ -95,6 +98,15 @@ export default function LabelsScreen() {
                 {/* Labels List */}
                 <LabelItem handleEdit={handleEdit} />
 
+                {/* Floating Action Button */}
+                <TouchableOpacity
+                    style={[styles.fab, { backgroundColor: theme.link }]}
+                    onPress={() => addLabelRef.current?.present()}
+                    activeOpacity={0.8}
+                >
+                    <MaterialCommunityIcons name="plus" size={28} color={theme.light} />
+                </TouchableOpacity>
+
                 {/* EditLabel BottomSheetModal */}
                 <EditLabel ref={editLabelRef} label={selectedLabel} />
 
@@ -109,5 +121,21 @@ export default function LabelsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        position: "relative",
+    },
+    fab: {
+        position: "absolute",
+        bottom: 24,
+        right: 12,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
     },
 });

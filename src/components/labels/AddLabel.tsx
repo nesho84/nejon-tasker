@@ -33,8 +33,11 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
   const [title, setTitle] = useState("");
   const [color, setColor] = useState(labelBgColors[0]);
 
+  // ------------------------------------------------------------
+  // BottomSheetModal setup
+  // ------------------------------------------------------------
   const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['50%', '75%'], []);
+  const snapPoints = useMemo(() => ['50%', '75%', '90%'], []);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -49,6 +52,9 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
     []
   );
 
+  // ------------------------------------------------------------
+  // Handle adding new label
+  // ------------------------------------------------------------
   const handleAdd = async () => {
     if (title.length < 1) {
       Alert.alert(

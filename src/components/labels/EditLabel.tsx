@@ -34,8 +34,11 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   const [labelInput, setLabelInput] = useState(props.label?.title || "");
   const [labelColor, setLabelColor] = useState(props.label?.color || "#3b82f6");
 
+  // ------------------------------------------------------------
+  // BottomSheetModal setup
+  // ------------------------------------------------------------
   const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['50%', '75%'], []);
+  const snapPoints = useMemo(() => ['50%', '75%', '90%'], []);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -50,7 +53,9 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
     []
   );
 
+  // ------------------------------------------------------------
   // Update state when label prop changes
+  // ------------------------------------------------------------
   useEffect(() => {
     if (props.label) {
       setLabelInput(props.label.title);
@@ -58,6 +63,9 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
     }
   }, [props.label]);
 
+  // ------------------------------------------------------------
+  // Handle editing label
+  // ------------------------------------------------------------
   const handleEdit = async () => {
     if (!props.label) return;
 

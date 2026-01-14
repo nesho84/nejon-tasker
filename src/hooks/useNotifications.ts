@@ -2,12 +2,11 @@ import { useLanguageStore } from '@/store/languageStore';
 import { useTaskStore } from "@/store/taskStore";
 import { Task } from '@/types/task.types';
 import * as Notifications from 'expo-notifications';
-import { useEffect } from 'react';
-import { Alert, Linking, Platform } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, AppState, AppStateStatus, Linking, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
@@ -19,7 +18,13 @@ export default function useNotifications() {
     // taskStore actions
     const updateTask = useTaskStore((state) => state.updateTask);
 
+    // Notifications enabled state
+    const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
+    const appStateListenerRef = useRef<any>(null);
+
+    // ------------------------------------------------------------
     // Set Android notification channel
+    // ------------------------------------------------------------
     const setNotificationChannel = async () => {
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('default', {
@@ -31,7 +36,9 @@ export default function useNotifications() {
         }
     }
 
+    // ------------------------------------------------------------
     // Schedule a notification
+    // ------------------------------------------------------------
     const scheduleNotification = async (task: Task) => {
         const { tr } = useLanguageStore.getState();
 
@@ -79,7 +86,9 @@ export default function useNotifications() {
         }
     };
 
+    // ------------------------------------------------------------
     // Cancel a scheduled notification
+    // ------------------------------------------------------------
     const cancelScheduledNotification = async (notificationId: string) => {
         try {
             await Notifications.cancelScheduledNotificationAsync(notificationId);
@@ -88,7 +97,9 @@ export default function useNotifications() {
         }
     };
 
+    // ------------------------------------------------------------
     // Request notification permission
+    // ------------------------------------------------------------
     const requestPermission = async () => {
         // Get tr at call time, not hook initialization
         const { tr } = useLanguageStore.getState();
@@ -108,6 +119,38 @@ export default function useNotifications() {
         }
     };
 
+    // ------------------------------------------------------------
+    // Check notification permissions on mount and app state change
+    // ------------------------------------------------------------
+    useEffect(() => {
+        // Initial check
+        const checkPermissions = async () => {
+            const { status } = await Notifications.getPermissionsAsync();
+            setNotificationsEnabled(status === 'granted');
+        };
+        checkPermissions();
+
+        // Listen to app state changes
+        if (!appStateListenerRef.current) {
+            let appState = AppState.currentState;
+
+            appStateListenerRef.current = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+                if (appState.match(/inactive|background/) && nextAppState === 'active') {
+                    checkPermissions();
+                }
+                appState = nextAppState;
+                console.log('👁‍🗨 AppState →', nextAppState);
+            });
+        }
+
+        return () => {
+            appStateListenerRef.current.remove();
+        }
+    }, []);
+
+    // ------------------------------------------------------------
+    // Handle incoming notifications
+    // ------------------------------------------------------------
     useEffect(() => {
         // Handle received notifications
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
@@ -150,6 +193,7 @@ export default function useNotifications() {
 
     return {
         requestPermission,
+        notificationsEnabled,
         setNotificationChannel,
         scheduleNotification,
         cancelScheduledNotification,

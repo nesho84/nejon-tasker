@@ -22,7 +22,9 @@ export default function TrashScreen() {
     const [isReady, setIsReady] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    // ------------------------------------------------------------
     // Wait for instant navigation
+    // ------------------------------------------------------------
     useEffect(() => {
         requestAnimationFrame(() => setIsReady(true));
     }, []);

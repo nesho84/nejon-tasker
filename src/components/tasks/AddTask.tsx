@@ -23,6 +23,9 @@ export default function AddTask({ label }: Props) {
   // Local State
   const [taskText, setTaskText] = useState("");
 
+  // ------------------------------------------------------------
+  // Handle adding new Task
+  // ------------------------------------------------------------
   const handleAdd = async () => {
     if (taskText.length < 1) {
       Alert.alert(

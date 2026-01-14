@@ -31,3 +31,13 @@ export const dates = {
         });
     }
 };
+
+export const isReminderActive = (dateTime: string | Date | null, reminderId: string | null): boolean => {
+    if (!dateTime || !reminderId) return false;
+
+    const currentDateTime = new Date();
+    const reminderDateTime = new Date(dateTime);
+    const timeDifferenceInSeconds = (reminderDateTime.getTime() - currentDateTime.getTime()) / 1000;
+
+    return timeDifferenceInSeconds > 0;
+};
