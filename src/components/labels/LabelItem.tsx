@@ -7,15 +7,17 @@ import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import AppLoading from "../AppLoading";
 
 interface Props {
   handleEdit: (item: Label) => void;
+  refreshing: boolean;
+  onRefresh: () => void;
 }
 
-export default function LabelItem({ handleEdit }: Props) {
+export default function LabelItem({ handleEdit, refreshing, onRefresh }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -147,17 +149,21 @@ export default function LabelItem({ handleEdit }: Props) {
   };
 
   return (
-    labels && labels.length > 0 ? (
-      <DraggableFlatList
-        containerStyle={{ flex: 1, paddingHorizontal: 5 }}
-        data={labels}
-        renderItem={RenderLabel}
-        keyExtractor={(item) => item.id}
-        onDragEnd={({ data }) => handleOrderLabels(data)}
-      />
-    ) : (
-      <AppNoItems type={"label"} />
-    )
+    <DraggableFlatList
+      data={labels}
+      renderItem={RenderLabel}
+      keyExtractor={(item) => item.id}
+      ListEmptyComponent={<AppNoItems type="label" />}
+      onDragEnd={({ data }) => handleOrderLabels(data)}
+      activationDistance={24}
+      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 5 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+    />
   );
 }
 

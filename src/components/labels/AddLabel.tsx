@@ -31,7 +31,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
 
   // Local State
   const [title, setTitle] = useState("");
-  const [color, setColor] = useState(labelBgColors[0]);
+  const [labelColor, setLabelColor] = useState(labelBgColors[0]);
 
   // ------------------------------------------------------------
   // BottomSheetModal setup
@@ -66,7 +66,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
       return false;
     } else {
       // Create Label
-      await createLabel({ title: title, color });
+      await createLabel({ title: title, color: labelColor });
       setTitle("");
       // Close BottomSheetModal
       dismiss();
@@ -85,7 +85,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
       onDismiss={() => {
         setTitle("");
-        setColor(labelBgColors[0]);
+        setLabelColor(labelBgColors[0]);
       }}
     >
       <BottomSheetView
@@ -94,7 +94,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
           { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }
         ]}
       >
-        <Text style={[styles.title, { color: color }]}>
+        <Text style={[styles.title, { color: labelColor }]}>
           {tr.forms.newLabel}
         </Text>
 
@@ -109,10 +109,10 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
           placeholderTextColor={theme.placeholder}
         />
 
-        <ColorPicker labelColor={color} handleLabelColor={setColor} />
+        <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
 
         <TouchableOpacity
-          style={[styles.btnAdd, { backgroundColor: color }]}
+          style={[styles.btnAdd, { backgroundColor: labelColor }]}
           onPress={handleAdd}
         >
           <Text style={styles.btnAddText}>

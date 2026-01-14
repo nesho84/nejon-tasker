@@ -77,6 +77,6 @@ export default function RootLayout() {
           </BottomSheetModalProvider>
         </KeyboardProvider>
       </SafeAreaProvider>
-    </GestureHandlerRootView >
+    </GestureHandlerRootView>
   );
 }

@@ -1,4 +1,3 @@
-import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
@@ -10,6 +9,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
 import { useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -55,22 +55,15 @@ export default function LabelsScreen() {
         editLabelRef.current?.present();
     };
 
-    // Loading state
-    if (isLoading) {
-        return (
-            <AppScreen>
-                <AppLoading />
-            </AppScreen>
-        );
-    }
-
     return (
         <AppScreen>
 
             {/* Top Navigation bar icons */}
             <Stack.Screen
                 options={{
-                    title: tr.labels.labels,
+                    // title: tr.labels.labels,
+                    title: Constants?.expoConfig?.name,
+                    headerTitleStyle: { fontSize: 22, fontWeight: 'bold' },
                     headerRight: () => (
                         <>
                             {/* Refresh Labels */}
@@ -78,7 +71,7 @@ export default function LabelsScreen() {
                                 style={{ top: 1, marginRight: 26 }}
                                 onPress={handleRefresh}
                             >
-                                <MaterialCommunityIcons name="refresh" size={26} color={theme.text} />
+                                <MaterialCommunityIcons name="refresh" size={28} color={theme.text} />
                             </TouchableOpacity>
 
                             {/* Settings */}
@@ -96,7 +89,11 @@ export default function LabelsScreen() {
             {/* Main Content */}
             <View style={styles.container}>
                 {/* Labels List */}
-                <LabelItem handleEdit={handleEdit} />
+                <LabelItem
+                    handleEdit={handleEdit}
+                    refreshing={isLoading}
+                    onRefresh={handleRefresh}
+                />
 
                 {/* Floating Action Button */}
                 <TouchableOpacity
@@ -104,7 +101,7 @@ export default function LabelsScreen() {
                     onPress={() => addLabelRef.current?.present()}
                     activeOpacity={0.8}
                 >
-                    <MaterialCommunityIcons name="plus" size={28} color={theme.light} />
+                    <MaterialCommunityIcons name="plus" size={28} color="#121212" />
                 </TouchableOpacity>
 
                 {/* EditLabel BottomSheetModal */}
@@ -125,8 +122,8 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: "absolute",
-        bottom: 24,
-        right: 12,
+        bottom: 14,
+        right: 10,
         width: 56,
         height: 56,
         borderRadius: 28,

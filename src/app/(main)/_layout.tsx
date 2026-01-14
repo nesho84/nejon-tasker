@@ -104,7 +104,9 @@ export default function StackLayout() {
                                     }}
                                 >
                                     <MaterialCommunityIcons name="label-outline" size={22} color={theme.text} />
-                                    <Text style={[styles.menuLabel, { color: theme.text }]}>{item.title}</Text>
+                                    <Text style={[styles.menuLabel, { color: theme.text }]}>
+                                        {item.title.length > 25 ? item.title.slice(0, 20) + "..." : item.title}
+                                    </Text>
                                 </TouchableOpacity>
                             )
                         })
@@ -212,7 +214,7 @@ export default function StackLayout() {
                             <TouchableOpacity
                                 style={{ top: 1, paddingRight: 15 }}
                                 onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}>
-                                <MaterialCommunityIcons name="menu" size={28} color={theme.text} />
+                                <MaterialCommunityIcons name="menu" size={30} color={theme.text} />
                             </TouchableOpacity>
                         ),
                     }}
