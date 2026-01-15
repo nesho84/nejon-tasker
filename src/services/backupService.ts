@@ -1,9 +1,10 @@
 import { getDB } from "@/db/database";
 import { useLabelStore } from '@/store/labelStore';
 import { useTaskStore } from '@/store/taskStore';
+import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
-import { File, Paths } from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system/legacy';
+import { Platform } from "react-native";
 
 const BACKUP_INFO_KEY = 'last_backup_info';
 const BACKUP_VERSION = '1.0';
@@ -28,8 +29,10 @@ interface BackupInfo {
 async function saveBackupInfo(info: BackupInfo): Promise<void> {
     try {
         const jsonInfo = JSON.stringify(info);
-        const file = new File(Paths.document, `${BACKUP_INFO_KEY}.json`);
-        await file.write(jsonInfo);
+        await FileSystem.writeAsStringAsync(
+            `${FileSystem.documentDirectory}${BACKUP_INFO_KEY}.json`,
+            jsonInfo
+        );
     } catch (error) {
         console.error('Failed to save backup info:', error);
     }
@@ -40,13 +43,14 @@ async function saveBackupInfo(info: BackupInfo): Promise<void> {
 // ------------------------------------------------------------
 export async function getLastBackupInfo(): Promise<BackupInfo | null> {
     try {
-        const file = new File(Paths.document, `${BACKUP_INFO_KEY}.json`);
+        const fileUri = `${FileSystem.documentDirectory}${BACKUP_INFO_KEY}.json`;
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
-        if (!file.exists) {
+        if (!fileInfo.exists) {
             return null;
         }
 
-        const content = await file.text();
+        const content = await FileSystem.readAsStringAsync(fileUri);
         return JSON.parse(content);
     } catch (error) {
         console.error('Failed to read backup info:', error);
@@ -55,24 +59,24 @@ export async function getLastBackupInfo(): Promise<BackupInfo | null> {
 }
 
 // ------------------------------------------------------------
-// Create and share backup
+// Create and save backup (lets user choose location)
 // ------------------------------------------------------------
 export async function createBackup(): Promise<void> {
     const db = await getDB();
     try {
         // Get all data from database
-        const labels = db.getAllSync('SELECT * FROM labels');
-        const tasks = db.getAllSync('SELECT * FROM tasks');
+        const labels = await db.getAllAsync('SELECT * FROM labels');
+        const tasks = await db.getAllAsync('SELECT * FROM tasks');
 
         // Check if there's any data
         if (labels.length === 0 && tasks.length === 0) {
             throw new Error('No data to backup');
         }
 
-        // Create backup object with app identifier
+        // Create backup object
         const backup: BackupData = {
             version: BACKUP_VERSION,
-            appName: 'YourAppName', // Change this to your app name
+            appName: `${Constants?.expoConfig?.name}`,
             exportDate: new Date().toISOString(),
             labels,
             tasks,
@@ -80,30 +84,56 @@ export async function createBackup(): Promise<void> {
 
         // Convert to JSON
         const jsonData = JSON.stringify(backup, null, 2);
-
-        // Create file
         const fileName = `backup_${new Date().getTime()}.json`;
-        const file = new File(Paths.document, fileName);
 
-        // Write to file
-        await file.write(jsonData);
+        if (Platform.OS === 'android') {
+            // Android: Use Storage Access Framework to let user pick save location
+            const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
 
-        // Save backup info
-        await saveBackupInfo({
-            date: new Date().toISOString(),
-            labelsCount: labels.length,
-            tasksCount: tasks.length,
-        });
+            if (!permissions.granted) {
+                throw new Error('Permission denied');
+            }
 
-        // Share the file
-        const isAvailable = await Sharing.isAvailableAsync();
-        if (isAvailable) {
-            await Sharing.shareAsync(file.uri, {
+            // Create file in user-selected directory
+            const uri = await FileSystem.StorageAccessFramework.createFileAsync(
+                permissions.directoryUri,
+                fileName,
+                'application/json'
+            );
+
+            // Write data to file
+            await FileSystem.writeAsStringAsync(uri, jsonData);
+
+            // Save backup info
+            await saveBackupInfo({
+                date: new Date().toISOString(),
+                labelsCount: labels.length,
+                tasksCount: tasks.length,
+            });
+        } else {
+            // iOS: Create temp file and use share sheet
+            const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+            await FileSystem.writeAsStringAsync(fileUri, jsonData);
+
+            // For iOS, we'll need expo-sharing
+            const Sharing = require('expo-sharing');
+            const isAvailable = await Sharing.isAvailableAsync();
+
+            if (!isAvailable) {
+                throw new Error('Sharing not available');
+            }
+
+            await Sharing.shareAsync(fileUri, {
                 mimeType: 'application/json',
                 dialogTitle: 'Save Backup',
             });
-        } else {
-            throw new Error('Sharing not available');
+
+            // Save backup info
+            await saveBackupInfo({
+                date: new Date().toISOString(),
+                labelsCount: labels.length,
+                tasksCount: tasks.length,
+            });
         }
     } catch (error) {
         console.error('Backup failed:', error);
@@ -115,22 +145,18 @@ export async function createBackup(): Promise<void> {
 // Validate backup file format
 // ------------------------------------------------------------
 function validateBackup(backup: any): backup is BackupData {
-    // Check required fields
     if (!backup.version || !backup.appName || !backup.exportDate) {
         return false;
     }
 
-    // Check app name matches (prevent importing other app's backups)
-    if (backup.appName !== 'YourAppName') {
+    if (backup.appName !== Constants?.expoConfig?.name) {
         return false;
     }
 
-    // Check arrays exist
     if (!Array.isArray(backup.labels) || !Array.isArray(backup.tasks)) {
         return false;
     }
 
-    // Validate label structure (check at least one label if exists)
     if (backup.labels.length > 0) {
         const label = backup.labels[0];
         if (!label.id || !label.title || !label.color) {
@@ -138,7 +164,6 @@ function validateBackup(backup: any): backup is BackupData {
         }
     }
 
-    // Validate task structure (check at least one task if exists)
     if (backup.tasks.length > 0) {
         const task = backup.tasks[0];
         if (!task.id || !task.labelId || !task.text) {
@@ -166,8 +191,7 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
         }
 
         // Read the file
-        const file = new File(result.assets[0].uri);
-        const fileContent = await file.text();
+        const fileContent = await FileSystem.readAsStringAsync(result.assets[0].uri);
 
         // Parse JSON
         let backup: any;

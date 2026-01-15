@@ -1,20 +1,26 @@
-// import { BackupSection } from "@/components/BackupSection";
-import { useLabelStore } from "@/store/labelStore";
+import { BackupSection } from "@/components/BackupSection";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
-import { Alert, Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export type Language = "en" | "de" | "al";
 
 export default function SettingsScreen() {
-    const { labels } = useLabelStore();
     const { theme, mode, toggleTheme } = useThemeStore();
     const { language, tr, setLanguage } = useLanguageStore();
 
+    // Local State
     const [selectedLanguage, setSelectedLanguage] = useState<Language | string>(language);
+
+    // ------------------------------------------------------------
+    // Handle Theme Toggle
+    // ------------------------------------------------------------
+    const handleTheme = () => {
+        toggleTheme();
+    }
 
     // ------------------------------------------------------------
     // Handle Language Change
@@ -22,37 +28,6 @@ export default function SettingsScreen() {
     const handleLanguage = (lang: Language) => {
         setSelectedLanguage(lang);
         setLanguage(lang);
-    };
-
-    // ------------------------------------------------------------
-    // Handle Delete All Data
-    // ------------------------------------------------------------
-    const handleDeleteAll = () => {
-        if (labels === null) {
-            Alert.alert(
-                "",
-                tr.messages.nothingToDelete,
-                [{ text: "OK", onPress: () => { } },
-                ],
-                { cancelable: false }
-            );
-            return;
-        } else {
-            Alert.alert(
-                tr.alerts.deleteAll.title,
-                tr.alerts.deleteAll.message,
-                [
-                    {
-                        text: tr.buttons.yes,
-                        onPress: () => {
-                            Alert.alert("This feature is under development.");
-                        },
-                    },
-                    { text: tr.buttons.no },
-                ],
-                { cancelable: false }
-            );
-        }
     };
 
     return (
@@ -66,16 +41,16 @@ export default function SettingsScreen() {
                     <Text style={[styles.action, { color: theme.muted }]}>
                         Theme
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                    <View style={styles.themeContainer}>
                         <Text style={{ color: theme.muted }}>
                             {mode === "light" ? "Light" : "Dark"}
                         </Text>
                         <MaterialCommunityIcons
                             color={theme.lightDodgerBlue}
                             type="FontAwesome5"
-                            size={40}
+                            size={44}
                             name={mode === "light" ? "toggle-switch-off" : "toggle-switch"}
-                            onPress={toggleTheme}
+                            onPress={handleTheme}
                         />
                     </View>
                 </View>
@@ -99,25 +74,11 @@ export default function SettingsScreen() {
             </View>
 
             {/* Backup Section */}
-            <View style={styles.backupSection}>
-                {/* <BackupSection /> */}
-            </View>
-
-            {/* Delete All */}
             <View style={[styles.menu, { borderColor: theme.border }]}>
                 <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
-                    {tr.labels.tasks}
+                    Backup
                 </Text>
-                <View style={styles.actionContainer}>
-                    <Text style={[styles.action, { color: theme.muted }]}>
-                        {tr.settings.clearStorage}
-                    </Text>
-                    <Button
-                        color={theme.danger}
-                        title={tr.buttons.delete}
-                        onPress={handleDeleteAll}
-                    />
-                </View>
+                <BackupSection />
             </View>
         </View>
     );
@@ -138,6 +99,11 @@ const styles = StyleSheet.create({
         fontSize: 15,
         paddingBottom: 10,
     },
+    themeContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
     actionContainer: {
         display: "flex",
         flexDirection: "row",
@@ -149,18 +115,6 @@ const styles = StyleSheet.create({
     },
     languagePicker: {
         marginLeft: -8,
-    },
-    backupSection: {
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-    },
-    backupSectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        marginBottom: 12,
-        color: '#333',
     },
     deleteButton: {
         fontSize: 10,
