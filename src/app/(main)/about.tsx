@@ -9,7 +9,7 @@ export default function AboutScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Image style={styles.logo} source={require("../../../assets/images/icon.png")} />
+            <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
             <Text style={styles.title}>{Constants?.expoConfig?.name}</Text>
             <Text style={styles.versionText}>Version {Constants?.expoConfig?.version}</Text>
             <TouchableOpacity

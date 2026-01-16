@@ -227,7 +227,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           onPress={() => setDatePickerVisible(true)}>
           <TextInput
             style={{
-              color: reminderIsActive ? theme.success : theme.muted,
+              color: reminderIsActive ? theme.success : theme.lightMuted,
               textDecorationLine: (!props.task?.reminderDateTime || reminderIsActive) ? 'none' : 'line-through'
             }}
             placeholder={tr.forms.setReminder}
@@ -236,7 +236,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           />
           <Ionicons
             name={reminderIsActive ? "notifications" : "notifications-off"}
-            color={reminderIsActive ? theme.success : theme.muted}
+            color={reminderIsActive ? theme.success : theme.lightMuted}
             size={20}
           />
         </TouchableOpacity>

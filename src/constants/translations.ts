@@ -17,6 +17,10 @@ export const TRANSLATIONS = {
             reminders: "Reminders",
             favorites: "Favorites",
             trash: "Trash",
+            lastBackup: "Last Backup",
+            restore: "Restore",
+            success: "Success",
+            backupHelp: "Create some labels and tasks first",
             of: "of",
             displayOptions: "Display Options",
             checkedItems: "Checked Items",
@@ -86,6 +90,37 @@ export const TRANSLATIONS = {
                 title: "Notification Permission",
                 message: "You have denied notification permission. Please enable it in your device settings to receive notifications.",
             },
+            // Backup alerts
+            backup: {
+                error1: {
+                    title: "No Data",
+                    message: "There is no data to backup.",
+                },
+                error2: {
+                    title: "Error",
+                    message: "Failed to create backup. Please try again.",
+                },
+                error3: {
+                    title: "Error",
+                    message: "The selected file is not a valid backup file.",
+                },
+                error4: {
+                    title: "Error",
+                    message: "This backup file is not compatible with this app.",
+                },
+                error5: {
+                    title: "Error",
+                    message: "Failed to restore backup. Please try again.",
+                },
+                success1: {
+                    title: "Success",
+                    message: "Backup file has been successfully created. Make sure to save it to a safe location!",
+                },
+                info1: {
+                    title: "Restore Backup",
+                    message: "This will restore data from a backup file. Existing data with the same IDs will be replaced. Continue?",
+                },
+            },
             appUpdate: {
                 title: "Update",
                 message: "Update was successful.",
@@ -131,6 +166,10 @@ export const TRANSLATIONS = {
             reminders: "Erinnerungen",
             favorites: "Favoriten",
             trash: "Gelöscht",
+            lastBackup: "Letzte Backup",
+            restore: "Wiederherstellen",
+            success: "Erfolg",
+            backupHelp: "Erstellen Sie zuerst einige Etiketten und Aufgaben",
             of: "von",
             displayOptions: "Anzeigeoptionen",
             checkedItems: "Abgeschlossene Aufgaben",
@@ -195,13 +234,43 @@ export const TRANSLATIONS = {
                 title: "Benachrichtigungsberechtigung",
                 message: "Sie haben die Benachrichtigungsberechtigung verweigert. Bitte aktivieren Sie es in Ihren Geräteeinstellungen, um Benachrichtigungen zu erhalten.",
             },
+            backup: {
+                error1: {
+                    title: "Keine Daten",
+                    message: "Es gibt keine Daten zum Sichern.",
+                },
+                error2: {
+                    title: "Fehler",
+                    message: "Backup konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+                },
+                error3: {
+                    title: "Fehler",
+                    message: "Die ausgewählte Datei ist keine gültige Backup-Datei.",
+                },
+                error4: {
+                    title: "Fehler",
+                    message: "Diese Backup-Datei ist mit dieser App nicht kompatibel.",
+                },
+                error5: {
+                    title: "Fehler",
+                    message: "Backup konnte nicht wiederhergestellt werden. Bitte versuchen Sie es erneut.",
+                },
+                success1: {
+                    title: "Erfolg",
+                    message: "Die Backup-Datei wurde erfolgreich erstellt. Stellen Sie sicher, dass Sie sie an einem sicheren Ort speichern!",
+                },
+                info1: {
+                    title: "Backup wiederherstellen",
+                    message: "Dadurch werden Daten aus einer Backup-Datei wiederhergestellt. Vorhandene Daten mit denselben IDs werden ersetzt. Fortfahren?",
+                },
+            },
             appUpdate: {
                 title: "Update",
                 message: "Update war erfolgreich.",
             },
             appExit: {
                 title: "Warten Sie mal!",
-                message: "Sie sind sicher, dass Sie beenden wollen?",
+                message: "Sind Sie sicher, dass Sie beenden wollen?",
             },
         },
 
@@ -231,13 +300,17 @@ export const TRANSLATIONS = {
             about: "Rreth nesh",
             language: "Gjuha",
             tasks: "Detyra",
-            labels: "Etiketat",
+            labels: "Etiketa",
             remaining: "Të mbetura",
             completed: "Përfunduar",
             reminders: "Kujtesa",
             favorites: "Të preferuarat",
             trash: "Të fshirë",
+            lastBackup: "Backup i fundit",
+            restore: "Rikthe",
+            success: "Sukses",
             of: "prej",
+            backupHelp: "Së pari Krijo disa etiketa dhe detyra",
             displayOptions: "Opsionet e shfaqjes",
             checkedItems: "Detyra të kryera",
         },
@@ -265,7 +338,7 @@ export const TRANSLATIONS = {
         messages: {
             loading: "Ngarkohet...",
             updateSuccess: "Aktualizimi ishte i suksesshëm",
-            updateAvailable: "Update available",
+            updateAvailable: "Përditësim i disponueshëm",
             nothingToDelete: "Asgjë për të fshirë",
         },
 
@@ -300,6 +373,36 @@ export const TRANSLATIONS = {
             notificationPermission: {
                 title: "Leja e njoftimit",
                 message: "Ju keni refuzuar lejen e njoftimit. Ju lutemi aktivizoni atë në opsionet e pajisjes tuaj për të marrë njoftime.",
+            },
+            backup: {
+                error1: {
+                    title: "Asnjë të dhënë",
+                    message: "Nuk ka të dhëna për të bërë backup.",
+                },
+                error2: {
+                    title: "Gabim",
+                    message: "Backup nuk mund të krijohet. Ju lutemi provoni përsëri.",
+                },
+                error3: {
+                    title: "Gabim",
+                    message: "Skedari i zgjedhur nuk është valid.",
+                },
+                error4: {
+                    title: "Gabim",
+                    message: "Ky skedar nuk është valid për këtë aplikacion.",
+                },
+                error5: {
+                    title: "Gabim",
+                    message: "Backup nuk mund të rikthehet. Ju lutemi provoni përsëri.",
+                },
+                success1: {
+                    title: "Sukses",
+                    message: "Skedari i backup është krijuar me sukses. Sigurohuni që ta ruani në një vend të sigurt!",
+                },
+                info1: {
+                    title: "Rikthe Backup",
+                    message: "Kjo do të rikthejë të dhënat nga një skedar backup. Të dhënat ekzistuese me të njëjtat ID do të zëvendësohen. Vazhdo?",
+                },
             },
             appUpdate: {
                 title: "Aktualizimi",

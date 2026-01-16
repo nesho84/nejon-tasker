@@ -6,6 +6,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { Label } from '@/types/label.types';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import Constants from 'expo-constants';
 import { router, Stack } from "expo-router";
 import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -44,7 +45,7 @@ export default function StackLayout() {
 
                     {/* Header */}
                     <View style={styles.header}>
-                        <Text style={[styles.headerText, { color: theme.text }]}>Nejon Tasker</Text>
+                        <Text style={[styles.headerText, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
                     </View>
 
                     {/* Selected item (Home) */}

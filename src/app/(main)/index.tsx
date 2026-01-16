@@ -63,7 +63,7 @@ export default function LabelsScreen() {
                 options={{
                     // title: tr.labels.labels,
                     title: Constants?.expoConfig?.name,
-                    headerTitleStyle: { fontSize: 22, fontWeight: 'bold' },
+                    headerTitleStyle: { fontSize: 24, fontWeight: '700' },
                     headerRight: () => (
                         <>
                             {/* Refresh Labels */}
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: "absolute",
-        bottom: 14,
+        bottom: 22,
         right: 10,
         width: 56,
         height: 56,

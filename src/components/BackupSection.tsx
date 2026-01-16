@@ -4,6 +4,7 @@ import { useLanguageStore } from '@/store/languageStore';
 import { useTaskStore } from '@/store/taskStore';
 import { useThemeStore } from '@/store/themeStore';
 import { dates } from '@/utils/dates';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -24,13 +25,6 @@ export function BackupSection() {
     const hasData = labels.length > 0 || allTasks.length > 0;
 
     // ------------------------------------------------------------
-    // Load last backup info on mount
-    // ------------------------------------------------------------
-    useEffect(() => {
-        loadBackupInfo();
-    }, []);
-
-    // ------------------------------------------------------------
     // Load Backup Info
     // ------------------------------------------------------------
     const loadBackupInfo = async () => {
@@ -39,11 +33,18 @@ export function BackupSection() {
     };
 
     // ------------------------------------------------------------
+    // Load last backup info on mount
+    // ------------------------------------------------------------
+    useEffect(() => {
+        loadBackupInfo();
+    }, []);
+
+    // ------------------------------------------------------------
     // Handle Create Backup
     // ------------------------------------------------------------
     const handleCreateBackup = async () => {
         if (!hasData) {
-            Alert.alert('No Data', 'There is no data to backup.');
+            Alert.alert(tr.alerts.backup.error1.title, tr.alerts.backup.error1.message);
             return;
         }
 
@@ -56,15 +57,15 @@ export function BackupSection() {
 
             // Show success alert
             Alert.alert(
-                'Success',
-                'Backup file has been successfully created. Make sure to save it to a safe location!'
+                tr.alerts.backup.success1.title,
+                tr.alerts.backup.success1.message
             );
         } catch (error: any) {
             if (error.message === 'Permission denied') {
                 // User cancelled the folder picker
                 return;
             }
-            Alert.alert('Error', 'Failed to create backup. Please try again.');
+            Alert.alert(tr.alerts.backup.error2.title, tr.alerts.backup.error2.message);
         } finally {
             setIsCreatingBackup(false);
         }
@@ -75,12 +76,12 @@ export function BackupSection() {
     // ------------------------------------------------------------
     const handleRestoreBackup = async () => {
         Alert.alert(
-            'Restore Backup',
-            'This will restore data from a backup file. Existing data with the same IDs will be replaced. Continue?',
+            tr.alerts.backup.info1.title,
+            tr.alerts.backup.info1.message,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
-                    text: 'Restore',
+                    text: tr.labels.restore,
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -88,7 +89,7 @@ export function BackupSection() {
                             const result = await restoreBackup();
 
                             Alert.alert(
-                                'Success',
+                                tr.labels.success,
                                 `Restored ${result.labelsCount} labels and ${result.tasksCount} tasks!`
                             );
                         } catch (error: any) {
@@ -114,15 +115,15 @@ export function BackupSection() {
         <View style={styles.container}>
             {/* Last Backup Info */}
             {lastBackup ? (
-                <View style={[styles.infoCard, { backgroundColor: theme.borderLight }]}>
-                    <Text style={[styles.infoLabel, { color: theme.info }]}>Last Backup</Text>
+                <View style={[styles.infoCard, { borderColor: theme.border }]}>
+                    <Text style={[styles.infoLabel, { color: theme.info }]}>{tr.labels.lastBackup}</Text>
                     <Text style={[styles.infoDate, { color: theme.muted }]}>{dates.format(lastBackup.date)}</Text>
                     <Text style={[styles.infoDetails, { color: theme.text }]}>
-                        {lastBackup.labelsCount} labels • {lastBackup.tasksCount} tasks
+                        {lastBackup.labelsCount} {tr.labels.labels} • {lastBackup.tasksCount} {tr.labels.tasks}
                     </Text>
                 </View>
             ) : (
-                <View style={[styles.infoCard, { backgroundColor: theme.borderLight }]}>
+                <View style={[styles.infoCard, { borderColor: theme.border }]}>
                     <Text style={[styles.noBackupText, { color: theme.warning }]}>No backup yet</Text>
                 </View>
             )}
@@ -139,8 +140,8 @@ export function BackupSection() {
                         <ActivityIndicator color={theme.info} size="small" />
                     ) : (
                         <>
-                            <Text style={styles.buttonIcon}>💾</Text>
-                            <Text style={styles.buttonText}>Backup</Text>
+                            <MaterialIcons name="save-alt" size={20} color={theme.success} />
+                            <Text style={[styles.buttonText, { color: theme.text }]}>Backup</Text>
                         </>
                     )}
                 </TouchableOpacity>
@@ -152,11 +153,11 @@ export function BackupSection() {
                     disabled={isCreatingBackup || isRestoring}
                 >
                     {isRestoring ? (
-                        <ActivityIndicator color="#fff" size="small" />
+                        <ActivityIndicator color={theme.info} size="small" />
                     ) : (
                         <>
-                            <Text style={styles.buttonIcon}>📥</Text>
-                            <Text style={styles.buttonText}>Restore</Text>
+                            <MaterialCommunityIcons name="backup-restore" size={20} color={theme.danger} />
+                            <Text style={[styles.buttonText, { color: theme.text }]}>{tr.labels.restore}</Text>
                         </>
                     )}
                 </TouchableOpacity>
@@ -165,7 +166,7 @@ export function BackupSection() {
             {/* Help Text */}
             {!hasData && (
                 <Text style={styles.helpText}>
-                    Create some labels and tasks first
+                    {tr.labels.backupHelp}
                 </Text>
             )}
         </View>
@@ -180,6 +181,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 8,
         marginBottom: 12,
+        borderWidth: 1,
     },
     infoLabel: {
         fontSize: 12,
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-        paddingVertical: 12,
+        paddingVertical: 10,
         paddingHorizontal: 16,
         borderRadius: 8,
         flexDirection: 'row',
@@ -215,13 +217,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 8,
     },
-    buttonIcon: {
-        fontSize: 18,
-    },
     buttonText: {
-        color: '#fff',
         fontSize: 16,
-        fontWeight: '600',
     },
     helpText: {
         fontSize: 12,
