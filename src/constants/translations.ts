@@ -120,6 +120,12 @@ export const TRANSLATIONS = {
                     title: "Restore Backup",
                     message: "This will restore data from a backup file. Existing data with the same IDs will be replaced. Continue?",
                 },
+                info2: {
+                    title: "Save Backup",
+                    message1: "Choose how to save your backup:",
+                    message2: "Save to Device",
+                    message3: "Share/Upload",
+                },
             },
             appUpdate: {
                 title: "Update",
@@ -263,6 +269,12 @@ export const TRANSLATIONS = {
                     title: "Backup wiederherstellen",
                     message: "Dadurch werden Daten aus einer Backup-Datei wiederhergestellt. Vorhandene Daten mit denselben IDs werden ersetzt. Fortfahren?",
                 },
+                info2: {
+                    title: "Backup speichern",
+                    message1: "Wählen Sie aus, wie Sie Ihr Backup speichern möchten:",
+                    message2: "Auf Gerät speichern",
+                    message3: "Teilen/Hochladen",
+                },
             },
             appUpdate: {
                 title: "Update",
@@ -371,8 +383,8 @@ export const TRANSLATIONS = {
                 message: "Data dhe ora nuk mond të jenë në të kaluarën.",
             },
             notificationPermission: {
-                title: "Leja e njoftimit",
-                message: "Ju keni refuzuar lejen e njoftimit. Ju lutemi aktivizoni atë në opsionet e pajisjes tuaj për të marrë njoftime.",
+                title: "Leja e njoftimeve",
+                message: "Ju keni refuzuar lejen e njoftimeve. Ju lutemi aktivizoni atë në opsionet e pajisjes tuaj për të marrë njoftime.",
             },
             backup: {
                 error1: {
@@ -402,6 +414,12 @@ export const TRANSLATIONS = {
                 info1: {
                     title: "Rikthe Backup",
                     message: "Kjo do të rikthejë të dhënat nga një skedar backup. Të dhënat ekzistuese me të njëjtat ID do të zëvendësohen. Vazhdo?",
+                },
+                info2: {
+                    title: "Ruaj Backup",
+                    message1: "Zgjidhni se si dëshironi të ruani backup-in tuaj:",
+                    message2: "Ruaj në Pajisje",
+                    message3: "Shpërndaj/Ngarko",
                 },
             },
             appUpdate: {

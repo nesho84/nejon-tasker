@@ -6,7 +6,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { dates } from '@/utils/dates';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function BackupSection() {
     const { theme } = useThemeStore();
@@ -25,19 +25,19 @@ export function BackupSection() {
     const hasData = labels.length > 0 || allTasks.length > 0;
 
     // ------------------------------------------------------------
+    // Load last backup info on mount
+    // ------------------------------------------------------------
+    useEffect(() => {
+        loadBackupInfo();
+    }, []);
+
+    // ------------------------------------------------------------
     // Load Backup Info
     // ------------------------------------------------------------
     const loadBackupInfo = async () => {
         const info = await getLastBackupInfo();
         setLastBackup(info);
     };
-
-    // ------------------------------------------------------------
-    // Load last backup info on mount
-    // ------------------------------------------------------------
-    useEffect(() => {
-        loadBackupInfo();
-    }, []);
 
     // ------------------------------------------------------------
     // Handle Create Backup
@@ -48,21 +48,48 @@ export function BackupSection() {
             return;
         }
 
+        // Give user choice on Android
+        if (Platform.OS === 'android') {
+            Alert.alert(
+                tr.alerts.backup.info2.title,
+                tr.alerts.backup.info2.message1,
+                [
+                    {
+                        text: tr.buttons.cancel,
+                        style: 'cancel'
+                    },
+                    {
+                        text: tr.alerts.backup.info2.message2,
+                        onPress: () => performBackup(false)
+                    },
+                    {
+                        text: tr.alerts.backup.info2.message3,
+                        onPress: () => performBackup(true)
+                    }
+                ]
+            );
+        } else {
+            // iOS always uses share sheet
+            performBackup(true);
+        }
+    };
+
+    // ------------------------------------------------------------
+    // Perform Backup
+    // ------------------------------------------------------------
+    const performBackup = async (sharing: boolean) => {
         try {
             setIsCreatingBackup(true);
-            await createBackup();
+            await createBackup(sharing);
 
-            // Reload backup info only after successful share
+            // Reload backup info after successful save
             await loadBackupInfo();
 
             // Show success alert
-            Alert.alert(
-                tr.alerts.backup.success1.title,
-                tr.alerts.backup.success1.message
-            );
+            Alert.alert(tr.alerts.backup.success1.title, tr.alerts.backup.success1.message);
         } catch (error: any) {
             if (error.message === 'Permission denied') {
-                // User cancelled the folder picker
+                // User cancelled or denied the folder picker
                 return;
             }
             Alert.alert(tr.alerts.backup.error2.title, tr.alerts.backup.error2.message);
@@ -165,7 +192,7 @@ export function BackupSection() {
 
             {/* Help Text */}
             {!hasData && (
-                <Text style={styles.helpText}>
+                <Text style={[styles.helpText, { color: theme.danger }]}>
                     {tr.labels.backupHelp}
                 </Text>
             )}
@@ -185,22 +212,18 @@ const styles = StyleSheet.create({
     },
     infoLabel: {
         fontSize: 12,
-        color: '#666',
         marginBottom: 4,
     },
     infoDate: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#333',
         marginBottom: 4,
     },
     infoDetails: {
         fontSize: 14,
-        color: '#666',
     },
     noBackupText: {
         fontSize: 14,
-        color: '#999',
         textAlign: 'center',
     },
     buttonsContainer: {
@@ -222,7 +245,6 @@ const styles = StyleSheet.create({
     },
     helpText: {
         fontSize: 12,
-        color: '#999',
         textAlign: 'center',
         marginTop: 8,
     },

@@ -4,6 +4,7 @@ import { useTaskStore } from '@/store/taskStore';
 import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 import { Platform } from "react-native";
 
 const BACKUP_INFO_KEY = 'last_backup_info';
@@ -11,7 +12,7 @@ const BACKUP_VERSION = '1.0';
 
 interface BackupData {
     version: string;
-    appName: string; // To identify your app's backup
+    appName: string;
     exportDate: string;
     labels: any[];
     tasks: any[];
@@ -61,7 +62,7 @@ export async function getLastBackupInfo(): Promise<BackupInfo | null> {
 // ------------------------------------------------------------
 // Create and save backup (lets user choose location)
 // ------------------------------------------------------------
-export async function createBackup(): Promise<void> {
+export async function createBackup(useShareSheet: boolean = false): Promise<void> {
     const db = await getDB();
     try {
         // Get all data from database
@@ -86,8 +87,30 @@ export async function createBackup(): Promise<void> {
         const jsonData = JSON.stringify(backup, null, 2);
         const fileName = `backup_${new Date().getTime()}.json`;
 
-        if (Platform.OS === 'android') {
-            // Android: Use Storage Access Framework to let user pick save location
+        if (useShareSheet || Platform.OS === 'ios') {
+            // Use share sheet for cloud storage (Google Drive, Gmail, etc.)
+            const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+            await FileSystem.writeAsStringAsync(fileUri, jsonData);
+
+            const isAvailable = await Sharing.isAvailableAsync();
+            if (!isAvailable) {
+                throw new Error('Sharing not available');
+            }
+
+            await Sharing.shareAsync(fileUri, {
+                mimeType: 'application/json',
+                dialogTitle: 'Save Backup',
+                UTI: 'public.json',
+            });
+
+            // Save backup info
+            await saveBackupInfo({
+                date: new Date().toISOString(),
+                labelsCount: labels.length,
+                tasksCount: tasks.length,
+            });
+        } else {
+            // Android: Use Storage Access Framework for local storage
             const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
 
             if (!permissions.granted) {
@@ -103,30 +126,6 @@ export async function createBackup(): Promise<void> {
 
             // Write data to file
             await FileSystem.writeAsStringAsync(uri, jsonData);
-
-            // Save backup info
-            await saveBackupInfo({
-                date: new Date().toISOString(),
-                labelsCount: labels.length,
-                tasksCount: tasks.length,
-            });
-        } else {
-            // iOS: Create temp file and use share sheet
-            const fileUri = `${FileSystem.documentDirectory}${fileName}`;
-            await FileSystem.writeAsStringAsync(fileUri, jsonData);
-
-            // For iOS, we'll need expo-sharing
-            const Sharing = require('expo-sharing');
-            const isAvailable = await Sharing.isAvailableAsync();
-
-            if (!isAvailable) {
-                throw new Error('Sharing not available');
-            }
-
-            await Sharing.shareAsync(fileUri, {
-                mimeType: 'application/json',
-                dialogTitle: 'Save Backup',
-            });
 
             // Save backup info
             await saveBackupInfo({
@@ -182,8 +181,10 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
     try {
         // Let user pick a file
         const result = await DocumentPicker.getDocumentAsync({
-            type: 'application/json',
+            // type: 'application/json',
+            type: '*/*',
             copyToCacheDirectory: true,
+            multiple: false,
         });
 
         if (result.canceled) {
@@ -207,12 +208,12 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
         }
 
         // Import data with transaction
-        db.withTransactionSync(() => {
+        await db.withTransactionAsync(async () => {
             // Import labels
-            backup.labels.forEach((label: any) => {
-                db.runSync(
+            for (const label of backup.labels) {
+                await db.runAsync(
                     `INSERT OR REPLACE INTO labels (id, title, color, category, order_position, isFavorite, isDeleted, createdAt, updatedAt)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         label.id,
                         label.title,
@@ -225,13 +226,13 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
                         label.updatedAt,
                     ]
                 );
-            });
+            }
 
             // Import tasks
-            backup.tasks.forEach((task: any) => {
-                db.runSync(
-                    `INSERT OR REPLACE INTO tasks (id, labelId, text, date, checked, reminderDateTime, reminderId, isFavorite, isDeleted, order_position, createdAt, updatedAt)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            for (const task of backup.tasks) {
+                await db.runAsync(
+                    `INSERT OR REPLACE INTO tasks (id, labelId, text, date, checked, reminderDateTime, reminderId, isFavorite, isDeleted,   order_position, createdAt, updatedAt)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         task.id,
                         task.labelId,
@@ -247,7 +248,7 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
                         task.updatedAt,
                     ]
                 );
-            });
+            }
         });
 
         // Reload stores

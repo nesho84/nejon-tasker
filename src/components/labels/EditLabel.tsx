@@ -138,7 +138,6 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
 
 const styles = StyleSheet.create({
   container: {
-    // width: "100%",
     padding: 10,
   },
   title: {

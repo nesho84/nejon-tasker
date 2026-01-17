@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {
   task: Task | null;
+  labelColor: string;
 }
 
 type Ref = BottomSheetModal;
@@ -38,7 +39,12 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   }
 
   // Notifications hook
-  const { scheduleNotification, cancelScheduledNotification } = useNotifications();
+  const {
+    notificationsEnabled,
+    requestPermission,
+    scheduleNotification,
+    cancelScheduledNotification
+  } = useNotifications();
 
   // Local State
   const [isEditing, setIsEditing] = useState(false);
@@ -46,11 +52,12 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [reminderInput, setReminderInput] = useState(dateTimeToString(props.task?.reminderDateTime || null));
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(props.task?.reminderDateTime || null);
+  const [isReminderUpdated, setIsReminderUpdated] = useState(false);
+
+  const textInputRef = useRef<TextInput>(null);
 
   // Check if reminder is active (has reminderId AND datetime is in the future)
   const reminderIsActive = isReminderActive(props.task?.reminderDateTime || null, props.task?.reminderId || null);
-
-  const textInputRef = useRef<TextInput>(null);
 
   // ------------------------------------------------------------
   // Handle keyboard hide to blur TextInput
@@ -97,6 +104,17 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   }, [props.task]);
 
   // ------------------------------------------------------------
+  // Handle DateTime picker open
+  // ------------------------------------------------------------
+  const handleDateTimePicker = async () => {
+    if (!notificationsEnabled) {
+      await requestPermission();
+      return;
+    }
+    setDatePickerVisible(true);
+  };
+
+  // ------------------------------------------------------------
   // Handle DateTime picker confirm
   // ------------------------------------------------------------
   const handleDateConfirm = (dateTime: Date) => {
@@ -116,6 +134,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       const dateTimeString = dateTime.toISOString();
       setSelectedDateTime(dateTimeString);
       setReminderInput(dateTimeToString(dateTimeString));
+      setIsReminderUpdated(true);
       setDatePickerVisible(false);
     }
   };
@@ -158,7 +177,6 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
         // Update Task
         await updateTask(props.task.id, {
           text: taskInput,
-          reminderDateTime: selectedDateTime,
         });
       }
 
@@ -185,22 +203,20 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
         setTaskInput(props.task?.text || "");
         setSelectedDateTime(props.task?.reminderDateTime || null);
         setReminderInput(dateTimeToString(props.task?.reminderDateTime || null));
+        setIsReminderUpdated(false);
       }}
     >
-      <BottomSheetView
-        style={[
-          styles.container,
-          { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? keyboardHeight : 0) }
-        ]}
-      >
+      <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? keyboardHeight : 0) }]}>
         {/* TextInput Container */}
-        <View style={[
-          styles.textInputContainer,
-          {
-            backgroundColor: isEditing ? theme.faded : theme.shadow,
-            borderColor: theme.uncheckedItemDark,
-          }
-        ]}>
+        <View
+          style={[
+            styles.textInputContainer,
+            {
+              backgroundColor: isEditing ? theme.faded : theme.shadow,
+              borderColor: theme.uncheckedItemDark,
+            }
+          ]}
+        >
 
           {/* Single TextInput - always present */}
           <TextInput
@@ -224,10 +240,11 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
         {/* DateTime picker Input */}
         <TouchableOpacity
           style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
-          onPress={() => setDatePickerVisible(true)}>
+          onPress={handleDateTimePicker}>
           <TextInput
             style={{
-              color: reminderIsActive ? theme.success : theme.lightMuted,
+              fontWeight: '600',
+              color: (reminderIsActive || isReminderUpdated) ? theme.success : theme.lightMuted,
               textDecorationLine: (!props.task?.reminderDateTime || reminderIsActive) ? 'none' : 'line-through'
             }}
             placeholder={tr.forms.setReminder}
@@ -235,8 +252,8 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
             editable={false}
           />
           <Ionicons
-            name={reminderIsActive ? "notifications" : "notifications-off"}
-            color={reminderIsActive ? theme.success : theme.lightMuted}
+            name={(reminderIsActive || isReminderUpdated) ? "notifications" : "notifications-off"}
+            color={(reminderIsActive || isReminderUpdated) ? theme.success : theme.lightMuted}
             size={20}
           />
         </TouchableOpacity>
@@ -253,7 +270,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
 
         {/* Save button */}
         <TouchableOpacity
-          style={[styles.btnEdit, { backgroundColor: theme.active }]}
+          style={[styles.btnEdit, { backgroundColor: props.labelColor }]}
           onPress={handleEdit}
         >
           <Text style={styles.btnEditText}>
@@ -268,11 +285,12 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
 
 const styles = StyleSheet.create({
   container: {
-    // width: "100%",
     padding: 10,
     gap: 12,
   },
   textInputContainer: {
+    backgroundColor: "white",
+    marginTop: 12,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
   },

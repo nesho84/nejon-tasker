@@ -231,7 +231,11 @@ export default function TasksScreen() {
             </View>
 
             {/* EditTask BottomSheetModal */}
-            <EditTask ref={editTaskRef} task={selectedTask} />
+            <EditTask
+              ref={editTaskRef}
+              labelColor={label.color}
+              task={selectedTask}
+            />
 
             {/* AddTask TextInput */}
             <AddTask label={label} />

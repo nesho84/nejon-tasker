@@ -110,7 +110,10 @@ export default function useNotifications() {
                 Alert.alert(
                     tr.alerts.notificationPermission.title,
                     tr.alerts.notificationPermission.message,
-                    [{ text: "OK", onPress: async () => { Linking.openSettings(); } }],
+                    [
+                        { text: tr.buttons.cancel, onPress: () => { }, style: 'cancel' },
+                        { text: "OK", onPress: async () => { Linking.openSettings(); } }
+                    ],
                     { cancelable: false }
                 );
             }

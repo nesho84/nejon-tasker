@@ -27,7 +27,11 @@
         "foregroundImage": "./assets/icons/android-icon-foreground.png",
         "monochromeImage": "./assets/icons/android-icon-monochrome.png",
         "backgroundColor": "#E6F4FE"
-      }
+      },
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "ios": {
       "buildNumber": "40",
