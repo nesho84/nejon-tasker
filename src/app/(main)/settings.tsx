@@ -4,7 +4,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export type Language = "en" | "de" | "al";
 
@@ -31,7 +31,12 @@ export default function SettingsScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <ScrollView
+            style={[styles.scrollContainer, { backgroundColor: theme.background }]}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+
             {/* Theme */}
             <View style={[styles.menu, { borderColor: theme.border }]}>
                 <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
@@ -80,16 +85,23 @@ export default function SettingsScreen() {
                 </Text>
                 <BackupSection />
             </View>
-        </View>
+
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollContainer: {
         flex: 1,
-        paddingTop: 25,
-        paddingHorizontal: 16,
     },
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 16,
+        paddingTop: 25,
+        paddingBottom: 24,
+        gap: 16,
+    },
+
     menu: {
         paddingBottom: 15,
         marginBottom: 15,

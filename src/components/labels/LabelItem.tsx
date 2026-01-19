@@ -4,6 +4,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
+import { isReminderActive } from "@/utils/dates";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -55,10 +56,15 @@ export default function LabelItem({ handleEdit, refreshing, onRefresh }: Props) 
   const RenderLabel = ({ item, getIndex, isActive, drag }: RenderItemParams<Label>) => {
     // Filter tasks by labelId
     const tasks = useMemo(() => allTasks.filter(t => t.labelId === item.id && !t.isDeleted), [allTasks, item.id]);
+    // Get tasks counts
     const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
     const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
-    const reminderTasks = useMemo(() => tasks.filter(t => t.reminderDateTime && t.reminderId), [tasks]);
+    const reminderTasks = useMemo(() => {
+      const filtered = tasks.filter(t => t.reminderDateTime && t.reminderId);
+      return filtered.filter(t => isReminderActive(t.reminderDateTime, t.reminderId));
+    }, [tasks]);
 
+    // Handle press on Label - navigate to Tasks screen
     const handlePress = () => {
       router.push(`/tasks?labelId=${item.id}`);
     };

@@ -97,7 +97,7 @@ export default function LabelsScreen() {
 
                 {/* Floating Action Button */}
                 <TouchableOpacity
-                    style={[styles.fab, { backgroundColor: theme.link }]}
+                    style={[styles.fab, { backgroundColor: theme.lightSkyBlue }]}
                     onPress={() => addLabelRef.current?.present()}
                     activeOpacity={0.8}
                 >

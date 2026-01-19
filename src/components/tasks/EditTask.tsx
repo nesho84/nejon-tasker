@@ -14,7 +14,7 @@ import {
   useBottomSheetModal
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, BackHandler, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -28,6 +28,7 @@ type Ref = BottomSheetModal;
 const EditTask = forwardRef<Ref, Props>((props, ref) => {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
   const insets = useSafeAreaInsets();
   const { isKeyboardVisible, keyboardHeight } = useKeyboard();
 
@@ -72,25 +73,6 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       keyboardDidHideListener.remove();
     };
   }, []);
-
-  // ------------------------------------------------------------
-  // BottomSheetModal setup
-  // ------------------------------------------------------------
-  const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['25%', '75%', '90%'], []);
-
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={0.5}
-        pressBehavior="close"
-      />
-    ),
-    []
-  );
 
   // ------------------------------------------------------------
   // Update state when task prop changes
@@ -189,6 +171,39 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     }
   };
 
+  // ------------------------------------------------------------
+  // BottomSheetModal setup
+  // ------------------------------------------------------------
+  const { dismiss } = useBottomSheetModal();
+  const snapPoints = useMemo(() => ['25%', '75%', '90%'], []);
+  const isOpenRef = useRef(false);
+
+  // Android back button handler
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isOpenRef.current && ref && typeof ref !== 'function' && ref.current) {
+        ref.current.dismiss();
+        return true; // Prevent default back behavior
+      }
+      return false; // Allow default back behavior
+    });
+
+    return () => backHandler.remove();
+  }, [ref]);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.5}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
+
   return (
     <BottomSheetModal
       ref={ref}
@@ -199,6 +214,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
         setTaskInput(props.task?.text || "");
         setSelectedDateTime(props.task?.reminderDateTime || null);

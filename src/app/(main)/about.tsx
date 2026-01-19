@@ -1,6 +1,6 @@
 import { useThemeStore } from '@/store/themeStore';
 import Constants from 'expo-constants';
-import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function AboutScreen() {
     const { theme } = useThemeStore();
@@ -8,27 +8,50 @@ export default function AboutScreen() {
     const date = new Date();
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
-            <Text style={styles.title}>{Constants?.expoConfig?.name}</Text>
-            <Text style={styles.versionText}>Version {Constants?.expoConfig?.version}</Text>
-            <TouchableOpacity
-                onPress={async () => await Linking.openURL("https://nejon.net")}
-            >
-                <Text style={styles.yearText}>
-                    ©{date.getFullYear()} <Text style={styles.link}>nejon.net</Text>
-                </Text>
-            </TouchableOpacity>
-        </View>
+        <ScrollView
+            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt }]}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+
+            <View style={styles.container}>
+
+                <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
+                <Text style={styles.title}>{Constants?.expoConfig?.name}</Text>
+                <Text style={styles.versionText}>Version {Constants?.expoConfig?.version}</Text>
+                <TouchableOpacity
+                    onPress={async () => await Linking.openURL("https://nejon.net")}
+                >
+                    <Text style={styles.yearText}>
+                        ©{date.getFullYear()} <Text style={styles.link}>nejon.net</Text>
+                    </Text>
+                </TouchableOpacity>
+
+            </View>
+
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 16,
+        paddingTop: 25,
+        paddingBottom: 24,
+        gap: 16,
+    },
+
     container: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        marginTop: -80,
     },
+
     logo: {
         marginBottom: 10,
         width: 150,

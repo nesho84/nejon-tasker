@@ -256,7 +256,7 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="about"
                     options={{
-                        title: tr.labels.settings,
+                        title: tr.labels.about,
                         animation: "none"
                     }}
                 />

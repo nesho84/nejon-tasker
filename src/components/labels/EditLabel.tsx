@@ -11,8 +11,8 @@ import {
   BottomSheetView,
   useBottomSheetModal
 } from "@gorhom/bottom-sheet";
-import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert, BackHandler, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {
@@ -24,6 +24,7 @@ type Ref = BottomSheetModal;
 const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
   const insets = useSafeAreaInsets();
   const { isKeyboardVisible } = useKeyboard();
 
@@ -33,25 +34,6 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   // Local State
   const [labelInput, setLabelInput] = useState(props.label?.title || "");
   const [labelColor, setLabelColor] = useState(props.label?.color || "#3b82f6");
-
-  // ------------------------------------------------------------
-  // BottomSheetModal setup
-  // ------------------------------------------------------------
-  const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['50%', '75%', '90%'], []);
-
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={0.5}
-        pressBehavior="close"
-      />
-    ),
-    []
-  );
 
   // ------------------------------------------------------------
   // Update state when label prop changes
@@ -89,6 +71,39 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
     }
   };
 
+  // ------------------------------------------------------------
+  // BottomSheetModal setup
+  // ------------------------------------------------------------
+  const { dismiss } = useBottomSheetModal();
+  const snapPoints = useMemo(() => ['50%', '75%', '90%'], []);
+  const isOpenRef = useRef(false);
+
+  // Android back button handler
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isOpenRef.current && ref && typeof ref !== 'function' && ref.current) {
+        ref.current.dismiss();
+        return true; // Prevent default back behavior
+      }
+      return false; // Allow default back behavior
+    });
+
+    return () => backHandler.remove();
+  }, [ref]);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.5}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
+
   return (
     <BottomSheetModal
       ref={ref}
@@ -99,6 +114,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
         setLabelInput(props.label?.title || "");
         setLabelColor(props.label?.color || "#3b82f6");
