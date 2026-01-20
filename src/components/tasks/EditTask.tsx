@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 interface Props {
   task: Task | null;
   labelColor: string;
+  onDismiss: () => void;
 }
 
 type Ref = BottomSheetModal;
@@ -49,12 +50,13 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
 
   // Local State
   const [isEditing, setIsEditing] = useState(false);
-  const [taskInput, setTaskInput] = useState(props.task?.text || "");
+  const [taskText, setTaskText] = useState(props.task?.text || "");
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [reminderInput, setReminderInput] = useState(dateTimeToString(props.task?.reminderDateTime || null));
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(props.task?.reminderDateTime || null);
   const [isReminderUpdated, setIsReminderUpdated] = useState(false);
 
+  // TextInput reference
   const textInputRef = useRef<TextInput>(null);
 
   // Check if reminder is active (has reminderId AND datetime is in the future)
@@ -79,7 +81,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   // ------------------------------------------------------------
   useEffect(() => {
     if (props.task) {
-      setTaskInput(props.task.text);
+      setTaskText(props.task.text);
       setSelectedDateTime(props.task.reminderDateTime || null);
       setReminderInput(dateTimeToString(props.task.reminderDateTime || null));
     }
@@ -90,7 +92,10 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   // ------------------------------------------------------------
   const handleDateTimePicker = async () => {
     if (!notificationsEnabled) {
-      await requestPermission();
+      const status = await requestPermission();
+      if (status === 'granted') {
+        setDatePickerVisible(true);
+      }
       return;
     }
     setDatePickerVisible(true);
@@ -127,7 +132,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   const handleEdit = async () => {
     if (!props.task) return;
 
-    if (taskInput.length < 1) {
+    if (taskText.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
@@ -146,24 +151,24 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
         // Schedule a new notification
         const notificationId = await scheduleNotification({
           ...props.task,
-          text: taskInput,
+          text: taskText,
           reminderDateTime: selectedDateTime,
         });
         // Update Task
         await updateTask(props.task.id, {
-          text: taskInput,
+          text: taskText,
           reminderDateTime: selectedDateTime,
           reminderId: notificationId,
         });
       } else {
         // Update Task
         await updateTask(props.task.id, {
-          text: taskInput,
+          text: taskText,
         });
       }
 
       // Clear inputs
-      setTaskInput("");
+      setTaskText("");
       setSelectedDateTime(null);
       setReminderInput("");
       // Close BottomSheetModal
@@ -172,10 +177,17 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   };
 
   // ------------------------------------------------------------
+  // Handle TextInput change
+  // ------------------------------------------------------------
+  const onChangeText = useCallback((text: string) => {
+    setTaskText(text);
+  }, []);
+
+  // ------------------------------------------------------------
   // BottomSheetModal setup
   // ------------------------------------------------------------
   const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['25%', '75%', '90%'], []);
+  const snapPoints = useMemo(() => ['45%', '75%', '90%'], []);
   const isOpenRef = useRef(false);
 
   // Android back button handler
@@ -183,9 +195,9 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (isOpenRef.current && ref && typeof ref !== 'function' && ref.current) {
         ref.current.dismiss();
-        return true; // Prevent default back behavior
+        return true;
       }
-      return false; // Allow default back behavior
+      return false;
     });
 
     return () => backHandler.remove();
@@ -216,10 +228,8 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
-        setTaskInput(props.task?.text || "");
-        setSelectedDateTime(props.task?.reminderDateTime || null);
-        setReminderInput(dateTimeToString(props.task?.reminderDateTime || null));
-        setIsReminderUpdated(false);
+        setIsEditing(false);
+        props.onDismiss();
       }}
     >
       <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? keyboardHeight : 0) }]}>
@@ -234,22 +244,24 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           ]}
         >
 
-          {/* Single TextInput - always present */}
+          {/* TextInput */}
           <TextInput
             style={[styles.textInput, { color: theme.text }]}
             ref={textInputRef}
-            multiline
+            defaultValue={taskText}
+            multiline={true}
             maxLength={5500}
             scrollEnabled={true}
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={(text) => setTaskInput(text)}
+            onChangeText={onChangeText}
+            onContentSizeChange={() => textInputRef.current?.setNativeProps({ selection: { start: 0, end: 0 } })}
             onFocus={() => setIsEditing(true)}
             onBlur={() => setIsEditing(false)}
             placeholder={tr.forms.inputPlaceholder}
             placeholderTextColor={theme.placeholder}
-            value={taskInput}
             selection={isEditing ? undefined : { start: 0, end: 0 }}
+            onPressIn={() => setIsEditing(true)}
           />
         </View>
 
@@ -289,9 +301,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           style={[styles.btnEdit, { backgroundColor: props.labelColor }]}
           onPress={handleEdit}
         >
-          <Text style={styles.btnEditText}>
-            {tr.buttons.save}
-          </Text>
+          <Text style={styles.btnEditText}>{tr.buttons.save}</Text>
         </TouchableOpacity>
 
       </BottomSheetView>
@@ -311,6 +321,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   textInput: {
+    flex: 1,
     minHeight: 125,
     maxHeight: 250,
     fontSize: 15,

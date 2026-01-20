@@ -47,14 +47,6 @@ export default function TasksScreen() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // ------------------------------------------------------------
-  // Open BottomSheetModal for editing Task
-  // ------------------------------------------------------------
-  const handleEdit = (task: Task) => {
-    setSelectedTask(task);
-    editTaskRef.current?.present();
-  };
-
-  // ------------------------------------------------------------
   // Hard delete label
   // ------------------------------------------------------------
   const handleDeleteLabel = async (labelId: string) => {
@@ -121,6 +113,22 @@ export default function TasksScreen() {
   };
 
   // ------------------------------------------------------------
+  // Handle selecting a Task from the list
+  // ------------------------------------------------------------
+  const onSelect = (task: Task) => {
+    setSelectedTask(task);
+  };
+
+  // ------------------------------------------------------------
+  // Open a BottomSheetModal for editing Task
+  // ------------------------------------------------------------
+  useEffect(() => {
+    if (selectedTask) {
+      editTaskRef.current?.present();
+    }
+  }, [selectedTask]);
+
+  // ------------------------------------------------------------
   // Wait for instant navigation
   // ------------------------------------------------------------
   useEffect(() => {
@@ -139,7 +147,7 @@ export default function TasksScreen() {
     return (
       <View style={{ marginBottom: lastItemMargin }}>
         <TouchableOpacity
-          onPress={() => handleEdit(item)}
+          onPress={() => onSelect(item)}
           onLongPress={drag}
           disabled={isActive}
           delayLongPress={400}
@@ -185,8 +193,8 @@ export default function TasksScreen() {
       {/* Main Content with KeyboardAvoidingView */}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={"padding"}
-        keyboardVerticalOffset={100}
+        behavior="padding"
+        keyboardVerticalOffset={83}
       >
         {label && (
           <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -230,15 +238,16 @@ export default function TasksScreen() {
               )}
             </View>
 
+            {/* AddTask TextInput */}
+            <AddTask label={label} />
+
             {/* EditTask BottomSheetModal */}
             <EditTask
               ref={editTaskRef}
-              labelColor={label.color}
               task={selectedTask}
+              labelColor={label.color}
+              onDismiss={() => setSelectedTask(null)}
             />
-
-            {/* AddTask TextInput */}
-            <AddTask label={label} />
           </View>
         )}
       </KeyboardAvoidingView>

@@ -202,7 +202,7 @@ export function BackupSection() {
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 10,
+        paddingVertical: 18,
     },
     infoCard: {
         padding: 16,

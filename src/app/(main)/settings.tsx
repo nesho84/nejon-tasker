@@ -32,7 +32,7 @@ export default function SettingsScreen() {
 
     return (
         <ScrollView
-            style={[styles.scrollContainer, { backgroundColor: theme.background }]}
+            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt }]}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
         >

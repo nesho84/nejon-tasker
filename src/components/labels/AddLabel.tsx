@@ -30,14 +30,14 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
   const createLabel = useLabelStore((state) => state.createLabel);
 
   // Local State
-  const [title, setTitle] = useState("");
+  const [labelTitle, setLabelTitle] = useState("");
   const [labelColor, setLabelColor] = useState(labelBgColors[0]);
 
   // ------------------------------------------------------------
   // Handle adding new label
   // ------------------------------------------------------------
   const handleAdd = async () => {
-    if (title.length < 1) {
+    if (labelTitle.length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
@@ -47,12 +47,19 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
       return false;
     } else {
       // Create Label
-      await createLabel({ title: title, color: labelColor });
-      setTitle("");
+      await createLabel({ title: labelTitle, color: labelColor });
+      setLabelTitle("");
       // Close BottomSheetModal
       dismiss();
     }
   };
+
+  // ------------------------------------------------------------
+  // Handle TextInput change
+  // ------------------------------------------------------------
+  const onChangeTitle = useCallback((title: string) => {
+    setLabelTitle(title);
+  }, []);
 
   // ------------------------------------------------------------
   // BottomSheetModal setup
@@ -66,9 +73,9 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (isOpenRef.current && ref && typeof ref !== 'function' && ref.current) {
         ref.current.dismiss();
-        return true; // Prevent default back behavior
+        return true;
       }
-      return false; // Allow default back behavior
+      return false;
     });
 
     return () => backHandler.remove();
@@ -99,40 +106,37 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
       handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
-        setTitle("");
+        setLabelTitle("");
         setLabelColor(labelBgColors[0]);
       }}
     >
-      <BottomSheetView
-        style={[
-          styles.container,
-          { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }
-        ]}
-      >
+      <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }]}>
+        {/* Title */}
         <Text style={[styles.title, { color: labelColor }]}>
           {tr.forms.newLabel}
         </Text>
 
+        {/* TextInput */}
         <TextInput
+          style={[styles.textInput, { color: theme.textMuted }]}
+          defaultValue=""
           maxLength={100}
           autoCapitalize="none"
           autoCorrect={false}
-          value={title}
-          onChangeText={(text) => setTitle(text)}
-          style={[styles.textInput, { color: theme.textMuted, borderColor: theme.lightMuted }]}
+          onChangeText={onChangeTitle}
           placeholder={tr.forms.inputPlaceholder}
           placeholderTextColor={theme.placeholder}
         />
 
-        <ColorPicker labelColor={labelColor} handleLabelColor={setLabelColor} />
+        {/* Color Picker */}
+        <ColorPicker labelColor={labelColor} onChangeColor={setLabelColor} />
 
+        {/* Add button */}
         <TouchableOpacity
           style={[styles.btnAdd, { backgroundColor: labelColor }]}
           onPress={handleAdd}
         >
-          <Text style={styles.btnAddText}>
-            {tr.buttons.save}
-          </Text>
+          <Text style={styles.btnAddText}>{tr.buttons.save}</Text>
         </TouchableOpacity>
 
       </BottomSheetView>
@@ -151,6 +155,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textInput: {
+    flex: 1,
     minHeight: 50,
     backgroundColor: "#fff",
     fontSize: 20,

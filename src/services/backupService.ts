@@ -8,7 +8,6 @@ import * as Sharing from 'expo-sharing';
 import { Platform } from "react-native";
 
 const BACKUP_INFO_KEY = 'last_backup_info';
-const BACKUP_VERSION = '1.0';
 
 interface BackupData {
     version: string;
@@ -76,7 +75,7 @@ export async function createBackup(useShareSheet: boolean = false): Promise<void
 
         // Create backup object
         const backup: BackupData = {
-            version: BACKUP_VERSION,
+            version: `${Constants?.expoConfig?.version}`,
             appName: `${Constants?.expoConfig?.name}`,
             exportDate: new Date().toISOString(),
             labels,

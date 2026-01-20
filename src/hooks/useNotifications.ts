@@ -112,13 +112,19 @@ export default function useNotifications() {
                     tr.alerts.notificationPermission.message,
                     [
                         { text: tr.buttons.cancel, onPress: () => { }, style: 'cancel' },
-                        { text: "OK", onPress: async () => { Linking.openSettings(); } }
+                        { text: tr.buttons.openSettings, onPress: async () => { Linking.openSettings(); } }
                     ],
                     { cancelable: false }
                 );
+                setNotificationsEnabled(false);
+                return 'denied';
             }
+
+            setNotificationsEnabled(true);
+            return 'granted';
         } catch (error) {
             console.error('Error requesting notification permission:', error);
+            return 'denied';
         }
     };
 

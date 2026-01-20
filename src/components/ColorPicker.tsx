@@ -4,10 +4,10 @@ import { StyleSheet, TouchableOpacity, View, } from "react-native";
 
 interface Props {
     labelColor: string,
-    handleLabelColor: (value: string) => void;
+    onChangeColor: (value: string) => void;
 }
 
-export default function ColorPicker({ labelColor, handleLabelColor }: Props) {
+export default function ColorPicker({ labelColor, onChangeColor }: Props) {
     return (
         <View style={styles.container}>
             {labelBgColors.map((color) => {
@@ -15,7 +15,7 @@ export default function ColorPicker({ labelColor, handleLabelColor }: Props) {
                     <TouchableOpacity
                         key={color}
                         style={[styles.selectedColor, { backgroundColor: color }]}
-                        onPress={() => handleLabelColor(color)}
+                        onPress={() => onChangeColor(color)}
                     >
                         {labelColor === color && (
                             <MaterialIcons name="check" size={30} color="white" />

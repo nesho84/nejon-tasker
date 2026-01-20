@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LabelsScreen() {
@@ -48,12 +48,20 @@ export default function LabelsScreen() {
     };
 
     // ------------------------------------------------------------
+    // Handle selecting a Label from the list
+    // ------------------------------------------------------------
+    const onSelect = (label: Label) => {
+        setSelectedLabel(label);
+    };
+
+    // ------------------------------------------------------------
     // Open a BottomSheetModal for editing Label
     // ------------------------------------------------------------
-    const handleEdit = (item: Label) => {
-        setSelectedLabel(item);
-        editLabelRef.current?.present();
-    };
+    useEffect(() => {
+        if (selectedLabel) {
+            editLabelRef.current?.present();
+        }
+    }, [selectedLabel]);
 
     return (
         <AppScreen>
@@ -90,7 +98,7 @@ export default function LabelsScreen() {
             <View style={styles.container}>
                 {/* Labels List */}
                 <LabelItem
-                    handleEdit={handleEdit}
+                    onSelect={onSelect}
                     refreshing={isLoading}
                     onRefresh={handleRefresh}
                 />
@@ -104,11 +112,15 @@ export default function LabelsScreen() {
                     <MaterialCommunityIcons name="plus" size={28} color="#121212" />
                 </TouchableOpacity>
 
-                {/* EditLabel BottomSheetModal */}
-                <EditLabel ref={editLabelRef} label={selectedLabel} />
-
                 {/* AddLabel BottomSheetModal */}
                 <AddLabel ref={addLabelRef} />
+
+                {/* EditLabel BottomSheetModal */}
+                <EditLabel
+                    ref={editLabelRef}
+                    label={selectedLabel}
+                    onDismiss={() => setSelectedLabel(null)}
+                />
             </View>
 
         </AppScreen>

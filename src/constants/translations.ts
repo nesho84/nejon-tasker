@@ -37,6 +37,7 @@ export const TRANSLATIONS = {
             yes: "Yes",
             no: "No",
             ok: "OK",
+            openSettings: "Open Settings",
         },
 
         // Form inputs
@@ -191,6 +192,7 @@ export const TRANSLATIONS = {
             yes: "Ja",
             no: "Nein",
             ok: "OK",
+            openSettings: "Einstellungen öffnen",
         },
 
         forms: {
@@ -337,6 +339,7 @@ export const TRANSLATIONS = {
             yes: "Po",
             no: "Jo",
             ok: "OK",
+            openSettings: "Hap Cilësimet",
         },
 
         forms: {

@@ -3,7 +3,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Alert, Keyboard, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 interface Props {
@@ -44,27 +44,39 @@ export default function AddTask({ label }: Props) {
     }
   };
 
+  // ------------------------------------------------------------
+  // Handle TextInput change
+  // ------------------------------------------------------------
+  const onChangeText = useCallback((text: string) => {
+    setTaskText(text);
+  }, []);
+
   return (
     <View style={[styles.container, { borderTopColor: theme.border }]}>
+
+      {/* TextInput */}
       <TextInput
-        style={[styles.addTaskInput, { backgroundColor: theme.light, color: theme.text }]}
+        style={[styles.textInput, { backgroundColor: theme.light, color: theme.text }]}
         ref={textInputRef}
-        multiline
+        defaultValue=""
+        multiline={true}
         maxLength={5500}
         scrollEnabled={true}
         autoCapitalize="none"
         autoCorrect={false}
-        onChangeText={(text) => setTaskText(text)}
+        onChangeText={onChangeText}
         placeholder={tr.forms.inputPlaceholder}
         placeholderTextColor={theme.placeholder}
-        value={taskText}
       />
+
+      {/* Add Button */}
       <Pressable
         style={[styles.addButton, { backgroundColor: label.color }]}
         onPress={handleAdd}
       >
         <MaterialIcons name="add" size={38} color={theme.light} />
       </Pressable>
+
     </View>
   );
 }
@@ -77,7 +89,7 @@ const styles = StyleSheet.create({
     padding: 6,
     gap: 5,
   },
-  addTaskInput: {
+  textInput: {
     flex: 1,
     minHeight: 48,
     fontSize: 16,
