@@ -56,7 +56,7 @@ export default function AddTask({ label }: Props) {
 
       {/* TextInput */}
       <TextInput
-        style={[styles.textInput, { backgroundColor: theme.light, color: theme.text }]}
+        style={[styles.textInput, { backgroundColor: theme.lightLight, color: theme.text }]}
         ref={textInputRef}
         defaultValue=""
         multiline={true}
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     padding: 6,
     gap: 5,
   },
+
   textInput: {
     flex: 1,
     minHeight: 48,
@@ -97,6 +98,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 4,
   },
+
   addButton: {
     alignSelf: "flex-start",
     alignItems: "center",

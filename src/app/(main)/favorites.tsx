@@ -45,6 +45,7 @@ export default function FavoritesScreen() {
                     <TaskItem
                         task={item}
                         favoriteAction={true}
+                        softDeleteAction={true}
                         shareAction={true}
                     />
                 )}

@@ -50,7 +50,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   // ------------------------------------------------------------
   // Handle editing label
   // ------------------------------------------------------------
-  const handleEdit = async () => {
+  const handleUpdate = async () => {
     if (!props.label) return;
 
     if (labelTitle.length < 1) {
@@ -134,7 +134,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
 
         {/* TextInput */}
         <TextInput
-          style={[styles.textInput, { color: theme.textMuted }]}
+          style={[styles.textInput, { backgroundColor: theme.lightLight, color: theme.text }]}
           defaultValue={labelTitle}
           maxLength={100}
           autoCapitalize="none"
@@ -150,7 +150,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
         {/* Save button */}
         <TouchableOpacity
           style={[styles.btnEdit, { backgroundColor: labelColor }]}
-          onPress={handleEdit}
+          onPress={handleUpdate}
         >
           <Text style={styles.btnEditText}>{tr.buttons.save}</Text>
         </TouchableOpacity>
@@ -163,28 +163,25 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    gap: 14,
   },
+
   title: {
-    marginBottom: 16,
+    marginBottom: 8,
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
   },
+
   textInput: {
     flex: 1,
     minHeight: 50,
-    backgroundColor: "#fff",
     fontSize: 20,
     borderWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#DEE9F3",
     borderRadius: 5,
     paddingHorizontal: 15,
   },
-  selectColor: {
-    width: 30,
-    height: 30,
-    borderRadius: 5,
-  },
+
   btnEdit: {
     height: 50,
     justifyContent: "center",

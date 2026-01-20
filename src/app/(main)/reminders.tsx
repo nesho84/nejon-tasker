@@ -53,8 +53,8 @@ export default function RemindersScreen() {
                 >
                     <MaterialCommunityIcons name="alert-circle" color="#fff" size={20} />
                     <View style={{ flex: 1 }}>
-                        <Text style={styles.warningTitle}>Notifications are off</Text>
-                        <Text style={styles.warningSubtitle}>Tap to enable in settings</Text>
+                        <Text style={styles.warningTitle}>{tr.notifications.title1}</Text>
+                        <Text style={styles.warningSubtitle}>{tr.notifications.message1}</Text>
                     </View>
                     <MaterialCommunityIcons name="chevron-right" color="#fff" size={20} />
                 </TouchableOpacity>
@@ -65,6 +65,8 @@ export default function RemindersScreen() {
                 renderItem={({ item }) => (
                     <TaskItem
                         task={item}
+                        softDeleteAction={true}
+                        cancelReminderAction={true}
                         shareAction={true}
                     />
                 )}

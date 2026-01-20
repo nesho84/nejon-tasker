@@ -67,7 +67,7 @@ export default function TasksScreen() {
                 tr.alerts.deleteLabel.message2,
                 [
                   {
-                    text: 'Delete All',
+                    text: tr.buttons.deleteAll,
                     style: 'destructive',
                     onPress: async () => {
                       try {
@@ -81,7 +81,7 @@ export default function TasksScreen() {
                       }
                     },
                   },
-                  { text: 'Cancel', style: 'cancel' },
+                  { text: tr.buttons.cancel, style: 'cancel' },
                 ]
               );
             } else {

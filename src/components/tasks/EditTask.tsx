@@ -5,7 +5,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates, isReminderActive } from "@/utils/dates";
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
@@ -50,17 +50,17 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
 
   // Local State
   const [isEditing, setIsEditing] = useState(false);
+  const [isReminderUpdated, setIsReminderUpdated] = useState(false);
   const [taskText, setTaskText] = useState(props.task?.text || "");
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [reminderInput, setReminderInput] = useState(dateTimeToString(props.task?.reminderDateTime || null));
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(props.task?.reminderDateTime || null);
-  const [isReminderUpdated, setIsReminderUpdated] = useState(false);
 
   // TextInput reference
   const textInputRef = useRef<TextInput>(null);
 
   // Check if reminder is active (has reminderId AND datetime is in the future)
-  const reminderIsActive = isReminderActive(props.task?.reminderDateTime || null, props.task?.reminderId || null);
+  const hasActiveReminder = isReminderActive(props.task?.reminderDateTime || null, props.task?.reminderId || null);
 
   // ------------------------------------------------------------
   // Handle keyboard hide to blur TextInput
@@ -129,7 +129,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   // ------------------------------------------------------------
   // Handle Edit Task
   // ------------------------------------------------------------
-  const handleEdit = async () => {
+  const handleUpdate = async () => {
     if (!props.task) return;
 
     if (taskText.length < 1) {
@@ -177,6 +177,38 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   };
 
   // ------------------------------------------------------------
+  // Cancel task notification/reminder
+  // ------------------------------------------------------------
+  const handleCancelReminder = async () => {
+    Alert.alert(
+      tr.alerts.cancelReminder.title,
+      tr.alerts.cancelReminder.message,
+      [
+        {
+          text: tr.buttons.yes,
+          onPress: async () => {
+            // Cancel the existing notification
+            if (props.task?.reminderId) {
+              await cancelScheduledNotification(props.task.reminderId);
+              // Clear reminder data when cancelling reminder
+              await updateTask(props.task.id, {
+                reminderDateTime: null,
+                reminderId: null
+              });
+              // Close BottomSheetModal
+              dismiss();
+            }
+          },
+        },
+        {
+          text: tr.buttons.no,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  // ------------------------------------------------------------
   // Handle TextInput change
   // ------------------------------------------------------------
   const onChangeText = useCallback((text: string) => {
@@ -187,7 +219,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   // BottomSheetModal setup
   // ------------------------------------------------------------
   const { dismiss } = useBottomSheetModal();
-  const snapPoints = useMemo(() => ['45%', '75%', '90%'], []);
+  const snapPoints = useMemo(() => ['50%', '75%', '90%'], []);
   const isOpenRef = useRef(false);
 
   // Android back button handler
@@ -229,24 +261,15 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
         setIsEditing(false);
+        setIsReminderUpdated(false);
         props.onDismiss();
       }}
     >
       <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? keyboardHeight : 0) }]}>
         {/* TextInput Container */}
-        <View
-          style={[
-            styles.textInputContainer,
-            {
-              backgroundColor: isEditing ? theme.faded : theme.shadow,
-              borderColor: theme.uncheckedItemDark,
-            }
-          ]}
-        >
-
-          {/* TextInput */}
+        <View style={[styles.textInputContainer, { backgroundColor: theme.shadow, borderColor: theme.lightMuted }]}>
           <TextInput
-            style={[styles.textInput, { color: theme.text }]}
+            style={[styles.textInput, { backgroundColor: theme.light, color: theme.text }]}
             ref={textInputRef}
             defaultValue={taskText}
             multiline={true}
@@ -255,51 +278,69 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
             autoCapitalize="none"
             autoCorrect={false}
             onChangeText={onChangeText}
-            onContentSizeChange={() => textInputRef.current?.setNativeProps({ selection: { start: 0, end: 0 } })}
             onFocus={() => setIsEditing(true)}
             onBlur={() => setIsEditing(false)}
+            onPressIn={() => setIsEditing(true)}
             placeholder={tr.forms.inputPlaceholder}
             placeholderTextColor={theme.placeholder}
             selection={isEditing ? undefined : { start: 0, end: 0 }}
-            onPressIn={() => setIsEditing(true)}
           />
         </View>
 
-        {/* DateTime picker Input */}
-        <TouchableOpacity
-          style={[styles.inputDateContainer, { backgroundColor: theme.white, borderColor: theme.uncheckedItemDark }]}
-          onPress={handleDateTimePicker}>
-          <TextInput
-            style={{
-              fontWeight: '600',
-              color: (reminderIsActive || isReminderUpdated) ? theme.success : theme.lightMuted,
-              textDecorationLine: (!props.task?.reminderDateTime || reminderIsActive) ? 'none' : 'line-through'
-            }}
-            placeholder={tr.forms.setReminder}
-            value={reminderInput}
-            editable={false}
-          />
-          <Ionicons
-            name={(reminderIsActive || isReminderUpdated) ? "notifications" : "notifications-off"}
-            color={(reminderIsActive || isReminderUpdated) ? theme.success : theme.lightMuted}
-            size={20}
-          />
-        </TouchableOpacity>
+        {/* DateTimeInput Container */}
+        <View style={styles.dateTimeInputContainer}>
+          {/* TextInput with bell Icon */}
+          <TouchableOpacity
+            style={[styles.dateTimeTextInput, { backgroundColor: theme.light, borderColor: theme.textMuted }]}
+            onPress={handleDateTimePicker}
+          >
+            <MaterialCommunityIcons
+              name={(hasActiveReminder || isReminderUpdated) ? "bell" : "bell-off"}
+              color={(hasActiveReminder || isReminderUpdated) ? theme.success : theme.textMuted}
+              size={20}
+              style={{ marginRight: 4 }}
+            />
+            <TextInput
+              style={{
+                fontWeight: '600',
+                color: (hasActiveReminder || isReminderUpdated) ? theme.success : theme.textMuted,
+                textDecorationLine: (!props.task?.reminderDateTime || hasActiveReminder) ? 'none' : 'line-through'
+              }}
+              placeholder={tr.forms.setReminder}
+              value={reminderInput}
+              editable={false}
+            />
+          </TouchableOpacity>
 
-        {/* Reminder input */}
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="datetime"
-          locale="de_DE"
-          is24Hour
-          onConfirm={handleDateConfirm}
-          onCancel={() => setDatePickerVisible(false)}
-        />
+          {/* Reminder DateTimePickerModal */}
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="datetime"
+            locale="de_DE"
+            is24Hour
+            onConfirm={handleDateConfirm}
+            onCancel={() => setDatePickerVisible(false)}
+          />
+
+          {/* Reminder Cancel/Delete Icon */}
+          <TouchableOpacity
+            disabled={!hasActiveReminder}
+            style={[styles.btnCancelReminder, { backgroundColor: theme.light, borderColor: theme.textMuted }]}
+            onPress={handleCancelReminder}
+          >
+            <MaterialCommunityIcons
+              name="bell-remove-outline"
+              size={20}
+              color={theme.danger}
+              style={{ opacity: (hasActiveReminder) ? 1 : 0.3 }}
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* Save button */}
         <TouchableOpacity
           style={[styles.btnEdit, { backgroundColor: props.labelColor }]}
-          onPress={handleEdit}
+          onPress={handleUpdate}
         >
           <Text style={styles.btnEditText}>{tr.buttons.save}</Text>
         </TouchableOpacity>
@@ -312,31 +353,44 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    gap: 12,
+    gap: 14,
   },
+
   textInputContainer: {
-    backgroundColor: "white",
     marginTop: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 5,
+    borderWidth: 1,
+    borderRadius: 1,
   },
   textInput: {
     flex: 1,
-    minHeight: 125,
+    minHeight: 200,
     maxHeight: 250,
     fontSize: 15,
     textAlignVertical: 'top',
     padding: 11,
   },
-  inputDateContainer: {
+
+  dateTimeInputContainer: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  dateTimeTextInput: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     minHeight: 35,
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 5,
-    paddingHorizontal: 10
+    borderRadius: 1,
+    paddingHorizontal: 10,
   },
+  btnCancelReminder: {
+    width: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 1,
+  },
+
   btnEdit: {
     height: 50,
     justifyContent: "center",

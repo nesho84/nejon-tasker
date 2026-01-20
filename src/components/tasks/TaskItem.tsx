@@ -21,6 +21,7 @@ interface Props {
     softDeleteAction?: boolean;
     hardDeleteAction?: boolean;
     restoreAction?: boolean;
+    cancelReminderAction?: boolean;
     // Bottom actions
     shareAction?: boolean;
 }
@@ -34,6 +35,7 @@ export default function TaskItem({
     softDeleteAction,
     hardDeleteAction,
     restoreAction,
+    cancelReminderAction,
     shareAction
 }: Props) {
     const { theme } = useThemeStore();
@@ -51,7 +53,7 @@ export default function TaskItem({
     const { notificationsEnabled, cancelScheduledNotification } = useNotifications();
 
     // Check if reminder is active (has reminderId AND datetime is in the future)
-    const reminderIsActive = isReminderActive(task.reminderDateTime, task.reminderId);
+    const hasActiveReminder = isReminderActive(task.reminderDateTime, task.reminderId);
 
     // ------------------------------------------------------------
     // Toggle task checked/unchecked
@@ -60,7 +62,7 @@ export default function TaskItem({
         // If checking a task with active reminder, cancel notification
         if (value === true && task?.reminderId) {
             await cancelScheduledNotification(task.reminderId);
-            // Clear reminder data when checking
+            // Clear reminder data when checking the task
             await updateTask(task.id, {
                 checked: true,
                 reminderDateTime: null,
@@ -79,12 +81,19 @@ export default function TaskItem({
     };
 
     // ------------------------------------------------------------
-    // Soft delete task
+    // Restore task
     // ------------------------------------------------------------
-    const handleSoftDelete = async (task: Task) => {
+    const handleRestore = async (id: string) => {
+        await restoreTask(id);
+    };
+
+    // ------------------------------------------------------------
+    // Cancel task notification/reminder
+    // ------------------------------------------------------------
+    const handleCancelReminder = async (task: Task) => {
         Alert.alert(
-            tr.alerts.deleteTask.title,
-            tr.alerts.deleteTask.message,
+            tr.alerts.cancelReminder.title,
+            tr.alerts.cancelReminder.message,
             [
                 {
                     text: tr.buttons.yes,
@@ -92,7 +101,37 @@ export default function TaskItem({
                         // Cancel the existing notification
                         if (task?.reminderId) {
                             await cancelScheduledNotification(task.reminderId);
-                            // Clear reminder data when deleting
+                            // Clear reminder data when cancelling reminder
+                            await updateTask(task.id, {
+                                reminderDateTime: null,
+                                reminderId: null
+                            });
+                        }
+                    },
+                },
+                {
+                    text: tr.buttons.no,
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    // ------------------------------------------------------------
+    // Soft delete task
+    // ------------------------------------------------------------
+    const handleSoftDelete = async (task: Task) => {
+        Alert.alert(
+            tr.alerts.deleteTask.title,
+            tr.alerts.deleteTask.message1,
+            [
+                {
+                    text: tr.buttons.yes,
+                    onPress: async () => {
+                        // Cancel the existing notification
+                        if (task?.reminderId) {
+                            await cancelScheduledNotification(task.reminderId);
+                            // Clear reminder data when deleting the task
                             await updateTask(task.id, {
                                 reminderDateTime: null,
                                 reminderId: null,
@@ -112,15 +151,19 @@ export default function TaskItem({
     // ------------------------------------------------------------
     // Hard delete task
     // ------------------------------------------------------------
-    const handleHardDelete = async (id: string) => {
+    const handleHardDelete = async (task: Task) => {
         Alert.alert(
             tr.alerts.deleteTask.title,
-            tr.alerts.deleteTask.message,
+            tr.alerts.deleteTask.message2,
             [
                 {
                     text: tr.buttons.yes,
                     onPress: async () => {
-                        await hardDeleteTask(id);
+                        // Cancel the existing notification
+                        if (task?.reminderId) {
+                            await cancelScheduledNotification(task.reminderId);
+                        }
+                        await hardDeleteTask(task.id);
                     },
                 },
                 {
@@ -129,13 +172,6 @@ export default function TaskItem({
             ],
             { cancelable: false }
         );
-    };
-
-    // ------------------------------------------------------------
-    // Restore task
-    // ------------------------------------------------------------
-    const handleRestore = async (id: string) => {
-        await restoreTask(id);
     };
 
     return (
@@ -147,7 +183,6 @@ export default function TaskItem({
                     borderColor: task.checked ? theme.faded : theme.border,
                     opacity: isActive ? 0.5 : 1,
                     borderWidth: isActive ? 3 : 1,
-                    // marginTop: index === 0 ? 4 : 0,
                 },
             ]}
         >
@@ -207,8 +242,24 @@ export default function TaskItem({
                         >
                             <MaterialCommunityIcons
                                 name="backup-restore"
+                                color={theme.success}
+                                size={22}
+                            />
+                        </TouchableOpacity>
+                    )}
+
+                    {/* Reminder Cancel icon */}
+                    {cancelReminderAction && (
+                        <TouchableOpacity
+                            onPress={() => handleCancelReminder(task)}
+                            delayPressIn={0}
+                            delayPressOut={0}
+                            activeOpacity={0.7}
+                        >
+                            <MaterialCommunityIcons
+                                name="bell-remove-outline"
                                 color={theme.muted}
-                                size={23}
+                                size={22}
                             />
                         </TouchableOpacity>
                     )}
@@ -232,14 +283,14 @@ export default function TaskItem({
                     {/* Hard Delete icon */}
                     {hardDeleteAction && (
                         <TouchableOpacity
-                            onPress={() => handleHardDelete(task.id)}
+                            onPress={() => handleHardDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
                             activeOpacity={0.7}
                         >
                             <MaterialCommunityIcons
                                 name="close"
-                                color={theme.muted}
+                                color={theme.danger}
                                 size={24}
                             />
                         </TouchableOpacity>
@@ -253,9 +304,9 @@ export default function TaskItem({
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                     {/* Reminder icon */}
                     {task.reminderId && task.reminderDateTime && (
-                        <Ionicons
-                            name={(notificationsEnabled || reminderIsActive) ? "notifications" : "notifications-off"}
-                            color={reminderIsActive ? theme.success : theme.muted}
+                        <MaterialCommunityIcons
+                            name={(notificationsEnabled || hasActiveReminder) ? "bell" : "bell-off"}
+                            color={hasActiveReminder ? theme.success : theme.muted}
                             size={16}
                         />
                     )}
@@ -265,8 +316,8 @@ export default function TaskItem({
                         <Text
                             style={{
                                 fontSize: 11,
-                                color: reminderIsActive ? theme.success : theme.muted,
-                                textDecorationLine: reminderIsActive ? 'none' : 'line-through'
+                                color: hasActiveReminder ? theme.success : theme.muted,
+                                textDecorationLine: hasActiveReminder ? 'none' : 'line-through'
                             }}
                         >
                             {dates.format(task.reminderDateTime)}

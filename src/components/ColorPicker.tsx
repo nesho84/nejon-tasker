@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
-        marginVertical: 12,
         borderColor: LIGHT.lightMuted,
         borderWidth: 2,
         borderRadius: 5,

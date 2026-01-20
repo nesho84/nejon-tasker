@@ -151,12 +151,12 @@ export function BackupSection() {
                 </View>
             ) : (
                 <View style={[styles.infoCard, { borderColor: theme.border }]}>
-                    <Text style={[styles.noBackupText, { color: theme.warning }]}>No backup yet</Text>
+                    <Text style={[styles.noBackupText, { color: theme.warning }]}>{tr.labels.noBackup}</Text>
                 </View>
             )}
 
-            {/* Buttons */}
-            <View style={styles.buttonsContainer}>
+            {/* Backup Buttons */}
+            <View style={styles.backupButtonsContainer}>
                 {/* Create Backup Button */}
                 <TouchableOpacity
                     style={[styles.button, { backgroundColor: hasData ? theme.lightLight : theme.muted }]}
@@ -166,10 +166,10 @@ export function BackupSection() {
                     {isCreatingBackup ? (
                         <ActivityIndicator color={theme.info} size="small" />
                     ) : (
-                        <>
+                        <View style={styles.backupButtonsContent}>
                             <MaterialIcons name="save-alt" size={20} color={theme.success} />
                             <Text style={[styles.buttonText, { color: theme.text }]}>Backup</Text>
-                        </>
+                        </View>
                     )}
                 </TouchableOpacity>
 
@@ -182,19 +182,21 @@ export function BackupSection() {
                     {isRestoring ? (
                         <ActivityIndicator color={theme.info} size="small" />
                     ) : (
-                        <>
+                        <View style={styles.backupButtonsContent}>
                             <MaterialCommunityIcons name="backup-restore" size={20} color={theme.danger} />
                             <Text style={[styles.buttonText, { color: theme.text }]}>{tr.labels.restore}</Text>
-                        </>
+                        </View>
                     )}
                 </TouchableOpacity>
             </View>
 
             {/* Help Text */}
             {!hasData && (
-                <Text style={[styles.helpText, { color: theme.danger }]}>
-                    {tr.labels.backupHelp}
-                </Text>
+                <View style={styles.backupButtonsContent}>
+                    <Text style={[styles.helpText, { color: theme.danger }]}>
+                        {tr.labels.backupHelp}
+                    </Text>
+                </View>
             )}
         </View>
     );
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
     infoCard: {
         padding: 16,
         borderRadius: 8,
-        marginBottom: 12,
+        marginBottom: 14,
         borderWidth: 1,
     },
     infoLabel: {
@@ -226,9 +228,15 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
     },
-    buttonsContainer: {
+
+    backupButtonsContainer: {
         flexDirection: 'row',
         gap: 12,
+    },
+    backupButtonsContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
     },
     button: {
         flex: 1,
@@ -243,6 +251,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
     },
+
     helpText: {
         fontSize: 12,
         textAlign: 'center',

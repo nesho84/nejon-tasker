@@ -21,6 +21,7 @@ export const TRANSLATIONS = {
             restore: "Restore",
             success: "Success",
             backupHelp: "Create some labels and tasks first",
+            noBackup: "No backup yet",
             of: "of",
             displayOptions: "Display Options",
             checkedItems: "Checked Items",
@@ -32,6 +33,7 @@ export const TRANSLATIONS = {
             cancel: "Cancel",
             submit: "Submit",
             delete: "Delete",
+            deleteAll: "Delete All",
             edit: "Edit",
             exit: "Exit",
             yes: "Yes",
@@ -73,11 +75,12 @@ export const TRANSLATIONS = {
             },
             deleteTask: {
                 title: "Are you sure?",
-                message: "Delete Task!",
+                message1: "Delete Task!",
+                message2: "Delete Task permanently!",
             },
-            deleteAll: {
+            cancelReminder: {
                 title: "Are you sure?",
-                message: "Delete all items in the Storage!",
+                message: "Cancel the reminder for this task?",
             },
             requiredField: {
                 title: "Required field",
@@ -141,6 +144,8 @@ export const TRANSLATIONS = {
         // Notifications
         notifications: {
             taskReminder: "Task Reminder",
+            title1: "Notifications are off",
+            message1: "Tap to enable in Settings",
         },
 
         // Empty states
@@ -177,6 +182,7 @@ export const TRANSLATIONS = {
             restore: "Wiederherstellen",
             success: "Erfolg",
             backupHelp: "Erstellen Sie zuerst einige Etiketten und Aufgaben",
+            noBackup: "Noch kein Backup",
             of: "von",
             displayOptions: "Anzeigeoptionen",
             checkedItems: "Abgeschlossene Aufgaben",
@@ -187,6 +193,7 @@ export const TRANSLATIONS = {
             cancel: "Stornieren",
             submit: "Einreichen",
             delete: "Löschen",
+            deleteAll: "Alle löschen",
             edit: "Bearbeiten",
             exit: "Beenden",
             yes: "Ja",
@@ -224,11 +231,12 @@ export const TRANSLATIONS = {
             },
             deleteTask: {
                 title: "Sind Sie sicher?",
-                message: "Aufgabe löschen!",
+                message1: "Aufgabe löschen!",
+                message2: "Aufgabe dauerhaft löschen!",
             },
-            deleteAll: {
+            cancelReminder: {
                 title: "Sind Sie sicher?",
-                message: "Alle Elemente im Speicher löschen!",
+                message: "Die Erinnerung für diese Aufgabe abbrechen?",
             },
             requiredField: {
                 title: "Pflichtfeld",
@@ -290,6 +298,8 @@ export const TRANSLATIONS = {
 
         notifications: {
             taskReminder: "Aufgabenerinnerung",
+            title1: "Benachrichtigungen sind deaktiviert",
+            message1: "Tippen Sie, um sie in den Einstellungen zu aktivieren",
         },
 
         empty: {
@@ -325,6 +335,7 @@ export const TRANSLATIONS = {
             success: "Sukses",
             of: "prej",
             backupHelp: "Së pari Krijo disa etiketa dhe detyra",
+            noBackup: "Nuk ka ende një backup",
             displayOptions: "Opsionet e shfaqjes",
             checkedItems: "Detyra të kryera",
         },
@@ -334,6 +345,7 @@ export const TRANSLATIONS = {
             cancel: "Anulo",
             submit: "Dërgo",
             delete: "Fshij",
+            deleteAll: "Fshi të gjitha",
             edit: "Ndrysho",
             exit: "Dalje",
             yes: "Po",
@@ -371,11 +383,12 @@ export const TRANSLATIONS = {
             },
             deleteTask: {
                 title: "A jeni të sigurt?",
-                message: "Fshij detyrën!",
+                message1: "Fshij detyrën!",
+                message2: "Fshij detyrën përgjithmonë!",
             },
-            deleteAll: {
+            cancelReminder: {
                 title: "A jeni të sigurt?",
-                message: "Fshij bazën e të dhënave!",
+                message: "Anulo kujtesën për këtë detyrë?",
             },
             requiredField: {
                 title: "Fushë e detyrueshme",
@@ -437,6 +450,8 @@ export const TRANSLATIONS = {
 
         notifications: {
             taskReminder: "Kujtesa e detyrës",
+            title1: "Njoftimet janë çaktivizuar",
+            message1: "Shtyp për të aktivizuar te Cilësimet",
         },
 
         empty: {
