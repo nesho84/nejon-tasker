@@ -31,28 +31,10 @@ When you're ready, run:
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
 
 ---
 
-# Build & Development Guide
-
-# Project Build & Development Guide
+# ✅ Build & Development Guide
 
 ## Prerequisites
 - **Node.js** and **npm** installed
@@ -246,7 +228,7 @@ a   # launch on emulator
 
 
 
-# To Get Device Logs:
+# ✅ To Get Device Logs/Errors:
 
 ## Clear the logs first:
 ## Android:
@@ -302,7 +284,7 @@ adb logcat *:S ReactNative:V ReactNativeJS:V
 
 
 
-# Expo Project Dependency Update Workflow
+# ✅ Expo Dependency Update Workflow 1
 
 A safe, repeatable workflow for keeping your Expo project dependencies up-to-date while minimizing `expo-doctor` warnings and avoiding runtime/native issues.
 
@@ -429,3 +411,70 @@ npx expo upgrade
 6. Test all builds
 7. Ignore harmless warnings
 8. Upgrade Expo SDK when possible
+
+
+
+
+# ✅ Official expo Dependency Update Workflow 2
+## Step 0 — Backup (mandatory)
+git add .
+git commit -m "Backup before dependency update"
+
+## Step 1 — Update all packages via npm
+```bash
+npx npm-check-updates -u
+npx npm-check-updates -i
+npm install
+```
+
+
+This updates:
+
+JS-only packages
+
+Third-party native packages
+
+Expo patch/minor versions (same SDK)
+
+## Step 2 — Let Expo enforce compatibility
+```bash
+npx expo-doctor
+npx expo install --check
+```
+
+
+Fixes only mismatched Expo-managed packages
+
+Leaves third-party libraries untouched
+
+Ensures SDK compatibility
+
+## Step 3 — Clear caches
+```bash
+rm -rf node_modules android package-lock.json
+npm install
+npx expo start -c
+```
+
+## Step 4 — Test thoroughly
+
+Development build
+
+Android first (real device preferred)
+
+iOS simulator / device
+
+## Step 5 — Expo SDK upgrade (only when intended)
+```bash
+npx expo upgrade
+```
+
+
+Updates Expo, React, React Native, and Expo modules in sync
+
+Never upgrade SDKs via npm
+
+## Rules of Thumb
+Package Type	Update Rule
+Expo core	expo upgrade only
+Third-party native	Minor
