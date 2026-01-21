@@ -47,7 +47,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
             const id = uuid.v4() as string;
             const now = new Date().toISOString();
 
-            // Calculate next order position
+            // Calculate next order position (highest to show first)
             const maxOrder = get().labels.length > 0
                 ? Math.max(...get().labels.map(l => l.order_position))
                 : -1;
@@ -55,7 +55,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
             const newLabel: Label = {
                 id: id,
                 title: data.title,
-                color: data.color || "#000000",
+                color: data.color || "#AD1457",
                 category: data.category || null,
                 order_position: maxOrder + 1,
                 isFavorite: false,
@@ -66,7 +66,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
             };
 
             // Update state
-            set(state => ({ labels: [...state.labels, newLabel] }));
+            set(state => ({ labels: [newLabel, ...state.labels] }));
 
             // Persist to database
             await LabelsRepo.insertLabel(newLabel);
@@ -129,21 +129,25 @@ export const useLabelStore = create<LabelState>((set, get) => ({
         try {
             const now = new Date().toISOString();
 
+            // Reverse labelIds because we store DESC in DB
+            // Visual order [B,A,C] needs B=highest position to show first
+            const reversedIds = [...labelIds].reverse();
+
             // Update state
             set(state => ({
                 labels: state.labels
                     .map(label => {
-                        const newIndex = labelIds.indexOf(label.id);
+                        const newIndex = reversedIds.indexOf(label.id);
                         if (newIndex !== -1) {
                             return { ...label, order_position: newIndex, updatedAt: now };
                         }
                         return label;
                     })
-                    .sort((a, b) => a.order_position - b.order_position)
+                    .sort((a, b) => b.order_position - a.order_position)
             }));
 
             // Persist to database (batch transaction)
-            await LabelsRepo.reorderLabels(labelIds);
+            await LabelsRepo.reorderLabels(reversedIds);
         } catch (error) {
             // Rollback
             set({ labels: previousLabels });

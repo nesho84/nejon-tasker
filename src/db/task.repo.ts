@@ -8,7 +8,7 @@ export async function loadAllTasks(): Promise<Task[]> {
     const db = await getDB();
     try {
         const rows = await db.getAllAsync<Task>(
-            "SELECT * FROM tasks ORDER BY order_position ASC"
+            "SELECT * FROM tasks ORDER BY order_position DESC"
         );
         return rows;
     } catch (error) {

@@ -21,7 +21,7 @@
     "android": {
       "versionCode": 1,
       "package": "com.nesho84.nejontasker",
-      "softwareKeyboardLayoutMode": "pan",
+      "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/android-icon-foreground.png",

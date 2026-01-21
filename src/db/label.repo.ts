@@ -8,7 +8,7 @@ export async function loadAllLabels(): Promise<Label[]> {
     const db = await getDB();
     try {
         const rows = await db.getAllAsync<Label>(
-            "SELECT * FROM labels ORDER BY order_position ASC"
+            "SELECT * FROM labels ORDER BY order_position DESC"
         );
         return rows;
     } catch (error) {

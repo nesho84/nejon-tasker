@@ -351,6 +351,12 @@ npm install
 npx expo-doctor
 npx expo start -c
 ```
+
+# If => Uncaught Error: java.net.SocketTimeoutException:failed to connect to /192.168.1.49(port 8081) from /ipaddy (port 60524) after 10000ms.
+```bash
+npx expo start -c --tunnel
+```
+
 - Refreshes dependency map.
 - Removes stale warnings.
 - Ensures Metro and Expo caches are clean.
@@ -467,6 +473,17 @@ iOS simulator / device
 ## Step 5 — Expo SDK upgrade (only when intended)
 ```bash
 npx expo upgrade
+```
+
+## If some dependencies are not compatible (expo-doctor complaining) or the app does not build (in package.json) example:
+```bash
+"expo": {
+    "install": {
+      "exclude": [
+        "@react-native-picker/picker"
+      ]
+    }
+  }
 ```
 
 

@@ -63,7 +63,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             const id = uuid.v4() as string;
             const now = new Date().toISOString();
 
-            // Calculate next order position
+            // Calculate next order position (highest to show first)
             const labelTasks = get().allTasks.filter(t => t.labelId === data.labelId && !t.isDeleted);
             const maxOrder = labelTasks.length > 0
                 ? Math.max(...labelTasks.map(t => t.order_position))
@@ -86,7 +86,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             };
 
             // Update state
-            set((state) => ({ allTasks: [...state.allTasks, newTask] }));
+            set((state) => ({ allTasks: [newTask, ...state.allTasks] }));
 
             // Persist to database
             await TasksRepo.insertTask(newTask);
@@ -258,21 +258,25 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         try {
             const now = new Date().toISOString();
 
+            // Reverse taskIds because we store DESC in DB
+            // Visual order [B,A,C] needs B=highest position to show first
+            const reversedIds = [...taskIds].reverse();
+
             // Update state
             set((state) => ({
                 allTasks: state.allTasks
                     .map(task => {
-                        const newIndex = taskIds.indexOf(task.id);
+                        const newIndex = reversedIds.indexOf(task.id);
                         if (newIndex !== -1) {
                             return { ...task, order_position: newIndex, updatedAt: now };
                         }
                         return task;
                     })
-                    .sort((a, b) => a.order_position - b.order_position) // ← SORT!
+                    .sort((a, b) => b.order_position - a.order_position) // ← SORT!
             }));
 
             // Persist to database (batch transaction)
-            await TasksRepo.reorderTasks(taskIds);
+            await TasksRepo.reorderTasks(reversedIds);
         } catch (error) {
             // Rollback
             set({ allTasks: previousTasks });

@@ -1,3 +1,4 @@
+import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
 import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
@@ -63,6 +64,15 @@ export default function LabelsScreen() {
         }
     }, [selectedLabel]);
 
+    // Loading state
+    if (isLoading) {
+        return (
+            <AppScreen>
+                <AppLoading />
+            </AppScreen>
+        );
+    }
+
     return (
         <AppScreen>
 
@@ -97,11 +107,7 @@ export default function LabelsScreen() {
             {/* Main Content */}
             <View style={styles.container}>
                 {/* Labels List */}
-                <LabelItem
-                    onSelect={onSelect}
-                    refreshing={isLoading}
-                    onRefresh={handleRefresh}
-                />
+                <LabelItem onSelect={onSelect} />
 
                 {/* Floating Action Button */}
                 <TouchableOpacity

@@ -8,17 +8,15 @@ import { isReminderActive } from "@/utils/dates";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import AppLoading from "../AppLoading";
 
 interface Props {
   onSelect: (item: Label) => void;
-  refreshing: boolean;
-  onRefresh: () => void;
 }
 
-export default function LabelItem({ onSelect, refreshing, onRefresh }: Props) {
+export default function LabelItem({ onSelect }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
@@ -163,12 +161,6 @@ export default function LabelItem({ onSelect, refreshing, onRefresh }: Props) {
         onDragEnd={({ data }) => handleOrderLabels(data)}
         activationDistance={24}
         contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 5 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
       />
     ) : (
       <AppNoItems type={"label"} />
