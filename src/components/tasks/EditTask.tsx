@@ -313,14 +313,16 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           </TouchableOpacity>
 
           {/* Reminder DateTimePickerModal */}
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="datetime"
-            locale="de_DE"
-            is24Hour
-            onConfirm={handleDateConfirm}
-            onCancel={() => setDatePickerVisible(false)}
-          />
+          {isDatePickerVisible && (
+            <DateTimePickerModal
+              isVisible={true}
+              mode="datetime"
+              locale="de_DE"
+              is24Hour
+              onConfirm={handleDateConfirm}
+              onCancel={() => setDatePickerVisible(false)}
+            />
+          )}
 
           {/* Reminder Cancel/Delete Icon */}
           <TouchableOpacity
@@ -331,8 +333,8 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
             <MaterialCommunityIcons
               name="bell-remove-outline"
               size={20}
-              color={theme.danger}
-              style={{ opacity: (hasActiveReminder) ? 1 : 0.3 }}
+              color={hasActiveReminder ? theme.danger : theme.textMuted}
+              style={{ opacity: hasActiveReminder ? 1 : 0.4 }}
             />
           </TouchableOpacity>
         </View>
@@ -380,7 +382,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minHeight: 35,
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 1,
+    borderRadius: 4,
     paddingHorizontal: 10,
   },
   btnCancelReminder: {
@@ -388,7 +390,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 1,
+    borderRadius: 4,
   },
 
   btnEdit: {

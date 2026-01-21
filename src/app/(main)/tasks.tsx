@@ -210,7 +210,7 @@ export default function TasksScreen() {
               {/* ----- Unchecked tasks ----- */}
               {uncheckedTasks.length > 0 ? (
                 <DraggableFlatList
-                  containerStyle={{ flex: 3, opacity: 1 }}
+                  containerStyle={{ flex: 3 }}
                   data={uncheckedTasks}
                   renderItem={RenderTask}
                   keyExtractor={(item) => item.id}
@@ -223,12 +223,13 @@ export default function TasksScreen() {
               {/* ----- Checked tasks ----- */}
               {checkedTasks.length > 0 && (
                 <>
-                  <View style={[styles.tasksDivider, { borderColor: theme.border }]} />
-                  <Text style={[styles.tasksDividerText, { color: theme.muted, borderBottomColor: label.color }]}>
-                    {`${checkedTasks.length} ${tr.labels.checkedItems}`}
-                  </Text>
+                  <View style={[styles.tasksDivider, { borderColor: label.color }]}>
+                    <Text style={[styles.tasksDividerText, { color: theme.muted }]}>
+                      {`${checkedTasks.length} ${tr.labels.checkedItems}`}
+                    </Text>
+                  </View>
                   <DraggableFlatList
-                    containerStyle={{ flex: 1, opacity: 0.4 }}
+                    containerStyle={{ flex: 1 }}
                     data={checkedTasks}
                     renderItem={RenderTask}
                     keyExtractor={(item) => item.id}
@@ -276,14 +277,14 @@ const styles = StyleSheet.create({
   },
   tasksDivider: {
     width: "100%",
-    borderWidth: 1,
+    borderBottomWidth: 1,
+    paddingHorizontal: 8,
+    paddingTop: 3,
+    paddingBottom: 3,
   },
   tasksDividerText: {
+    width: "100%",
     alignSelf: "flex-start",
     fontSize: 13,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    width: "100%",
-    borderBottomWidth: 1,
   },
 });
