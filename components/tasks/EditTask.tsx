@@ -201,7 +201,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           },
         },
         {
-          text: tr.buttons.no,
+          text: tr.buttons.cancel,
         },
       ],
       { cancelable: false }

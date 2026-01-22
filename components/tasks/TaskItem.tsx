@@ -110,7 +110,7 @@ export default function TaskItem({
                     },
                 },
                 {
-                    text: tr.buttons.no,
+                    text: tr.buttons.cancel,
                 },
             ],
             { cancelable: false }
@@ -141,7 +141,7 @@ export default function TaskItem({
                     },
                 },
                 {
-                    text: tr.buttons.no,
+                    text: tr.buttons.cancel,
                 },
             ],
             { cancelable: false }
@@ -167,7 +167,7 @@ export default function TaskItem({
                     },
                 },
                 {
-                    text: tr.buttons.no,
+                    text: tr.buttons.cancel,
                 },
             ],
             { cancelable: false }

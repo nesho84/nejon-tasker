@@ -48,7 +48,6 @@ export const TRANSLATIONS = {
             setReminder: "Set Reminder...",
             newLabel: "Create new Label",
             editLabel: "Edit Label",
-            editTask: "Edit Task",
         },
 
         // Success/info messages
@@ -70,13 +69,13 @@ export const TRANSLATIONS = {
         alerts: {
             deleteLabel: {
                 title: "Are you sure?",
-                message: "Delete Label and all of its tasks!",
-                message2: "This will permanently delete all associated tasks. This action cannot be undone.",
+                message: "Delete Label and all of its tasks?",
+                message2: "This will permanently delete all associated tasks. This action cannot be undone!",
             },
             deleteTask: {
                 title: "Are you sure?",
-                message1: "Delete Task!",
-                message2: "Delete Task permanently!",
+                message1: "Delete Task?",
+                message2: "Delete Task permanently?",
             },
             cancelReminder: {
                 title: "Are you sure?",
@@ -207,7 +206,6 @@ export const TRANSLATIONS = {
             setReminder: "Erinnerung einstellen...",
             newLabel: "Neues Etikett erstellen",
             editLabel: "Etikett bearbeiten",
-            editTask: "Aufgabe bearbeiten",
         },
 
         messages: {
@@ -226,13 +224,13 @@ export const TRANSLATIONS = {
         alerts: {
             deleteLabel: {
                 title: "Sind Sie sicher?",
-                message: "Etikett und alle seine Aufgaben löschen!",
-                message2: "Dies löscht alle zugehörigen Aufgaben dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+                message: "Etikett und alle seine Aufgaben löschen?",
+                message2: "Dies löscht alle zugehörigen Aufgaben dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden!",
             },
             deleteTask: {
                 title: "Sind Sie sicher?",
-                message1: "Aufgabe löschen!",
-                message2: "Aufgabe dauerhaft löschen!",
+                message1: "Aufgabe löschen?",
+                message2: "Aufgabe dauerhaft löschen?",
             },
             cancelReminder: {
                 title: "Sind Sie sicher?",
@@ -359,7 +357,6 @@ export const TRANSLATIONS = {
             setReminder: "Cakto kujtesën...",
             newLabel: "Krijo etiketë të re",
             editLabel: "Ndrysho etiketën",
-            editTask: "Ndrysho detyrën",
         },
 
         messages: {
@@ -378,13 +375,13 @@ export const TRANSLATIONS = {
         alerts: {
             deleteLabel: {
                 title: "A jeni të sigurt?",
-                message: "Fshij etiketën dhe të gjitha detyrat!",
-                message2: "Kjo do të fshijë përgjithmonë të gjitha detyrat. Kjo veprim nuk mund të zhbëhet.",
+                message: "Fshij etiketën dhe të gjitha detyrat?",
+                message2: "Kjo do të fshijë përgjithmonë të gjitha detyrat. Kjo veprim nuk mund të zhbëhet!",
             },
             deleteTask: {
                 title: "A jeni të sigurt?",
-                message1: "Fshij detyrën!",
-                message2: "Fshij detyrën përgjithmonë!",
+                message1: "Fshij detyrën?",
+                message2: "Fshij detyrën përgjithmonë?",
             },
             cancelReminder: {
                 title: "A jeni të sigurt?",

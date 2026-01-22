@@ -264,7 +264,7 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="tasks"
                     options={{
-                        title: tr.forms.editTask,
+                        title: tr.labels.tasks,
                         animation: "slide_from_right"
                     }}
                 />

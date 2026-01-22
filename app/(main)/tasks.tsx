@@ -98,7 +98,7 @@ export default function TasksScreen() {
             }
           },
         },
-        { text: tr.buttons.no, style: 'cancel' },
+        { text: tr.buttons.cancel, style: 'cancel' },
       ],
       { cancelable: true }
     );

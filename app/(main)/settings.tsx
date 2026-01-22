@@ -5,7 +5,6 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-
 export type Language = "en" | "de" | "al";
 
 export default function SettingsScreen() {
