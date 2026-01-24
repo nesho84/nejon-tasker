@@ -174,6 +174,11 @@ eas build --platform all
 eas build --platform android --local
 ```
 
+- Optional **Release apk build using EAS(if you have a 'release-apk' profile in eas.json)**:
+```bash
+npx eas build --platform android --profile release-apk
+```
+
 **Notes**
 - Outputs `.aab` (Android) and `.ipa` (iOS)
 - Suitable for submission to stores
