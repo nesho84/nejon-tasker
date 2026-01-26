@@ -1,21 +1,24 @@
-import { LIGHT, labelBgColors } from "@/constants/colors";
+import { labelBgColors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity, View, } from "react-native";
 
 interface Props {
     labelColor: string,
-    onChangeColor: (value: string) => void;
+    onValueChange: (value: string) => void;
 }
 
-export default function ColorPicker({ labelColor, onChangeColor }: Props) {
+export default function ColorPicker({ labelColor, onValueChange: onChangeColor }: Props) {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { borderColor: labelColor }]}>
             {labelBgColors.map((color) => {
                 return (
                     <TouchableOpacity
                         key={color}
                         style={[styles.selectedColor, { backgroundColor: color }]}
-                        onPress={() => onChangeColor(color)}
+                        onPress={() => {
+                            console.log(color);
+                            onChangeColor(color);
+                        }}
                     >
                         {labelColor === color && (
                             <MaterialIcons name="check" size={30} color="white" />
@@ -32,15 +35,17 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
-        borderColor: LIGHT.lightMuted,
         borderWidth: 2,
         borderRadius: 5,
-        padding: 2,
+        padding: 5,
     },
     selectedColor: {
-        width: 30,
-        height: 30,
-        borderRadius: 5,
-        margin: 2,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 35,
+        height: 35,
+        borderRadius: 4,
+        margin: 3,
     },
 });

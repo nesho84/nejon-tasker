@@ -24,7 +24,7 @@ export default function AppScreen({ children }: ScreenProps) {
         edges={isKeyboardVisible ? ['left', 'right'] : ['left', 'right', 'bottom']}
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{ flex: 1, backgroundColor: theme.surface }}>
+          <View style={{ flex: 1, backgroundColor: theme.backgroundAlt }}>
             {children}
           </View>
         </TouchableWithoutFeedback>

@@ -140,6 +140,7 @@ export function BackupSection() {
 
     return (
         <View style={styles.container}>
+
             {/* Last Backup Info */}
             {lastBackup ? (
                 <View style={[styles.infoCard, { borderColor: theme.border }]}>
@@ -198,6 +199,7 @@ export function BackupSection() {
                     </Text>
                 </View>
             )}
+
         </View>
     );
 }

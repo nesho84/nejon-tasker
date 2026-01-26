@@ -136,7 +136,6 @@ export default function LabelsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        position: "relative",
     },
     fab: {
         position: "absolute",

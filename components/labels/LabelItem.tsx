@@ -1,4 +1,4 @@
-import AppNoItems from "@/components/AppNoItems";
+import AppEmpty from "@/components/AppEmpty";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -163,7 +163,7 @@ export default function LabelItem({ onSelect }: Props) {
         contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 5 }}
       />
     ) : (
-      <AppNoItems type={"label"} />
+      <AppEmpty type={"label"} />
     )
   );
 }

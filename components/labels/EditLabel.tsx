@@ -145,7 +145,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
         />
 
         {/* Color Picker */}
-        <ColorPicker labelColor={labelColor} onChangeColor={setLabelColor} />
+        <ColorPicker labelColor={labelColor} onValueChange={setLabelColor} />
 
         {/* Save button */}
         <TouchableOpacity
@@ -167,10 +167,10 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    marginBottom: 8,
-    fontSize: 30,
+    fontSize: 29,
     fontWeight: "bold",
     textAlign: "center",
+    marginBottom: 6,
   },
 
   textInput: {

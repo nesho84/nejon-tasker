@@ -11,52 +11,69 @@ export default function AboutScreen() {
 
     const date = new Date();
 
+    // ------------------------------------------------------------
+    // Open external link
+    // ------------------------------------------------------------
+    const openLink = (url: string) => {
+        Linking.canOpenURL(url).then((supported) => {
+            if (supported) {
+                Linking.openURL(url);
+            }
+        });
+    };
+
     return (
         <ScrollView
-            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt }]}
+            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt, marginTop: -insets.top }]}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
         >
-            <View style={[styles.container, { marginTop: -insets.top }]}>
-                {/* Logo */}
-                <View style={styles.logoContainer}>
-                    <Image style={styles.logo} source={require("../../assets/icons/icon.png")} />
-                </View>
 
-                {/* App Info Section */}
-                <View style={styles.infoSection}>
-                    <Text style={[styles.title, { color: theme.textMuted }]}>{Constants?.expoConfig?.name}</Text>
-                    <Text style={[styles.versionText, { color: theme.lightMuted }]}>Version {Constants?.expoConfig?.version}</Text>
-                </View>
+            {/* Logo */}
+            <Image style={styles.logo} source={require("../../assets/icons/icon.png")} />
 
-                {/* Support Section */}
-                <TouchableOpacity
-                    style={[styles.supportButton, {
-                        backgroundColor: theme.link + '08',
-                        borderColor: theme.link + '20'
-                    }]}
-                    onPress={() => Linking.openURL('https://paypal.me/NeshatAdemi?locale.x=de_DE&country.x=AT')}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconContainer, { backgroundColor: theme.link + '15' }]}>
-                        <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
-                    </View>
-                    <View style={styles.supportTextContainer}>
-                        <Text style={[styles.supportTitle, { color: theme.textMuted }]}>Support Development</Text>
-                        <Text style={[styles.supportSubtitle, { color: theme.link }]}>via PayPal</Text>
-                    </View>
-                    <MaterialCommunityIcons name="open-in-new" size={18} color={theme.link} style={{ opacity: 0.5 }} />
+            {/* Title */}
+            <Text style={[styles.title, { color: theme.textMuted }]}>{Constants?.expoConfig?.name}</Text>
+
+            {/* Support Section */}
+            <TouchableOpacity
+                style={[styles.supportButton, {
+                    backgroundColor: theme.link + '08',
+                    borderColor: theme.link + '20'
+                }]}
+                onPress={() => Linking.openURL('https://paypal.me/NeshatAdemi?locale.x=de_DE&country.x=AT')}
+                activeOpacity={0.8}
+            >
+                <View style={[styles.iconContainer, { backgroundColor: theme.link + '15' }]}>
+                    <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
+                </View>
+                <View style={styles.supportTextContainer}>
+                    <Text style={[styles.supportTitle, { color: theme.textMuted }]}>Support Development</Text>
+                    <Text style={[styles.supportSubtitle, { color: theme.link }]}>via PayPal</Text>
+                </View>
+                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.link} style={{ opacity: 0.5 }} />
+            </TouchableOpacity>
+
+            {/* Website & Privacy */}
+            <View style={styles.linksContainer}>
+                <TouchableOpacity onPress={() => openLink("https://nejon.net")}>
+                    <Text style={[styles.linkText, { color: theme.info }]}>nejon.net</Text>
                 </TouchableOpacity>
-
-                {/* Footer */}
-                <View style={styles.footerSection}>
-                    <TouchableOpacity onPress={async () => await Linking.openURL("https://nejon.net")}>
-                        <Text style={[styles.copyright, { color: theme.lightMuted }]}>
-                            © {date.getFullYear()} <Text style={[styles.link, { color: theme.link }]}>nejon.net</Text>
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity onPress={() => openLink("https://nejon-tasker.nejon.net/privacy.html")}>
+                    <Text style={[styles.linkText, { color: theme.info }]}>Privacy Policy</Text>
+                </TouchableOpacity>
             </View>
+
+            {/* Year */}
+            <Text style={[styles.yearText, { color: theme.text }]}>
+                © {date.getFullYear()}
+            </Text>
+
+            {/* Version */}
+            <Text style={[styles.versionText, { color: theme.lightMuted }]}>
+                Version {Constants?.expoConfig?.version}
+            </Text>
+
         </ScrollView>
     );
 }
@@ -67,41 +84,22 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
+        alignItems: "center",
+        justifyContent: "center",
         paddingHorizontal: 16,
         paddingTop: 12,
         paddingBottom: 24,
-    },
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
+        gap: 12,
     },
 
-    // Logo Section
-    logoContainer: {
-        marginBottom: 18,
-    },
     logo: {
         width: 120,
         height: 120,
-        borderRadius: 28,
-    },
-
-    // Info Section
-    infoSection: {
-        alignItems: "center",
-        marginBottom: 35,
     },
     title: {
         fontSize: 24,
         fontWeight: "700",
         letterSpacing: -0.5,
-        marginBottom: 8,
-    },
-    versionText: {
-        fontSize: 15,
-        fontWeight: "400",
-        opacity: 0.5,
     },
 
     // Support Button
@@ -112,9 +110,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderWidth: 1,
         borderRadius: 16,
+        marginVertical: 16,
         gap: 16,
-        width: '100%',
-        maxWidth: 400,
     },
     iconContainer: {
         width: 44,
@@ -138,18 +135,24 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
 
-    // Footer
-    footerSection: {
-        marginTop: 25,
-        alignItems: "center",
+    // Footer Section
+    linksContainer: {
+        flexDirection: "row",
+        gap: 16,
+        marginBottom: 16,
     },
-    copyright: {
-        fontSize: 13,
-        fontWeight: "400",
-        opacity: 0.5,
+    linkText: {
+        fontSize: 16,
+        fontWeight: "600",
+        textDecorationLine: "underline",
     },
-    link: {
-        fontSize: 13,
+    yearText: {
+        fontSize: 14,
         fontWeight: "500",
+        marginBottom: 4,
+    },
+    versionText: {
+        fontSize: 14,
+        fontWeight: "400",
     },
 });

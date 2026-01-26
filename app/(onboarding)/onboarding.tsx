@@ -1,19 +1,37 @@
 import { useOnboardingStore } from '@/store/onboardingStore';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { useThemeStore } from '@/store/themeStore';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function OnboardingScreen() {
     const { setOnboarding } = useOnboardingStore();
+    const { theme } = useThemeStore();
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Welcome!</Text>
-            <Text style={styles.subtitle}>Let's get you started</Text>
-            <Button title="Get Started" onPress={() => setOnboarding(true)} />
-        </View>
+        <ScrollView
+            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt }]}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+            <View style={styles.container}>
+                <Text style={[styles.title, { color: theme.text }]}>Welcome!</Text>
+                <Text style={[styles.subtitle, { color: theme.textMuted }]}>Let's get you started</Text>
+                <Button title="Get Started" onPress={() => setOnboarding(true)} />
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 16,
+        paddingTop: 12,
+        paddingBottom: 24,
+    },
+
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -27,7 +45,6 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 16,
-        color: '#666',
         marginBottom: 30
     },
 });

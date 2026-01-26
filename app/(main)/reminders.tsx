@@ -1,3 +1,4 @@
+import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
 import TaskItem from "@/components/tasks/TaskItem";
 import useNotifications from "@/hooks/useNotifications";
@@ -71,7 +72,8 @@ export default function RemindersScreen() {
                     />
                 )}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ paddingVertical: 8 }}
+                contentContainerStyle={{ flexGrow: 1, paddingVertical: 8 }}
+                ListEmptyComponent={<AppEmpty type="reminder" />}
             />
         </SafeAreaView>
     );

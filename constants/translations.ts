@@ -149,8 +149,11 @@ export const TRANSLATIONS = {
 
         // Empty states
         empty: {
-            noTasks: "No Tasks to show. \n\n You can use the plus button (+) to create new tasks.",
+            noTasks: "No Tasks to show. \n\n Use the input below to create new tasks.",
             noLabels: "No Labels to show. \n\n You can use the plus button (+) to create new labels.",
+            noReminders: "No Reminders to show. \n\n Reminders you set will appear here.",
+            noFavorites: "No Favorites to show. \n\n You can favorite tasks to see them here.",
+            noTrash: "No Deleted Tasks to show. \n\n Deleted tasks will appear here.",
         },
 
         // Settings screen specific
@@ -301,8 +304,11 @@ export const TRANSLATIONS = {
         },
 
         empty: {
-            noTasks: "Keine Aufgaben zu zeigen. \n\n Mit der Plus-Taste (+) können Sie neue Aufgaben erstellen.",
+            noTasks: "Keine Aufgaben zu zeigen. \n\n Verwenden Sie das Eingabefeld unten, um neue Aufgaben zu erstellen.",
             noLabels: "Keine Etiketten zu zeigen. \n\n Mit der Plus-Taste (+) können Sie neue Etiketten erstellen.",
+            noReminders: "Keine Erinnerungen zu zeigen. \n\n Reminder, die Sie einstellen, werden hier angezeigt.",
+            noFavorites: "Keine Favoriten zu zeigen. \n\n Sie können Aufgaben favorisieren, um sie hier zu sehen.",
+            noTrash: "Keine gelöschten Aufgaben zu zeigen. \n\n Gelöschte Aufgaben werden hier angezeigt.",
         },
 
         settings: {
@@ -452,8 +458,11 @@ export const TRANSLATIONS = {
         },
 
         empty: {
-            noTasks: "Asnjë detyrë për të shfaqur. \n\n Përdorni butonin plus (+) për të krijuar detyra të reja.",
+            noTasks: "Asnjë detyrë për të shfaqur. \n\n Përdorni fushën e mëposhtme për të krijuar detyra të reja.",
             noLabels: "Asnjë etiketë për të shfaqur. \n\n Përdorni butonin plus (+) për të krijuar etiketa të reja.",
+            noReminders: "Asnjë kujtesë për të shfaqur. \n\n Kujtesat që krijoni do të shfaqen këtu.",
+            noFavorites: "Asnjë e detyrë preferuar për të shfaqur. \n\n Mund të favorizoni detyra për t'i parë këtu.",
+            noTrash: "Asnjë detyrë e fshirë për të shfaqur. \n\n Detyrat e fshira do të shfaqen këtu.",
         },
 
         settings: {

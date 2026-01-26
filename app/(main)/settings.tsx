@@ -1,18 +1,16 @@
 import { BackupSection } from "@/components/BackupSection";
+import CustomPicker from "@/components/CustomPicker";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+
 export type Language = "en" | "de" | "al";
 
 export default function SettingsScreen() {
     const { theme, mode, toggleTheme } = useThemeStore();
     const { language, tr, setLanguage } = useLanguageStore();
-
-    // Local State
-    const [selectedLanguage, setSelectedLanguage] = useState<Language | string>(language);
 
     // ------------------------------------------------------------
     // Handle Theme Toggle
@@ -25,7 +23,6 @@ export default function SettingsScreen() {
     // Handle Language Change
     // ------------------------------------------------------------
     const handleLanguage = (lang: Language) => {
-        setSelectedLanguage(lang);
         setLanguage(lang);
     };
 
@@ -65,16 +62,21 @@ export default function SettingsScreen() {
                 <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
                     {tr.labels.language}
                 </Text>
-                <Picker
-                    style={[styles.languagePicker, { color: theme.muted }]}
-                    dropdownIconColor={theme.muted}
-                    selectedValue={selectedLanguage}
-                    onValueChange={(itemValue, itemIndex) => handleLanguage(itemValue as Language)}
-                >
-                    <Picker.Item label="English" value="en" />
-                    <Picker.Item label="Deutsch" value="de" />
-                    <Picker.Item label="Shqip" value="al" />
-                </Picker>
+                <CustomPicker
+                    style={styles.languagePicker}
+                    items={[
+                        { label: 'English', value: 'en' },
+                        { label: 'Deutsch', value: 'de' },
+                        { label: 'Shqip', value: 'al' },
+                    ]}
+                    selectedValue={language}
+                    onValueChange={(value) => handleLanguage(value as Language)}
+                    textColor={theme.muted}
+                    iconColor={theme.lightDodgerBlue}
+                    backgroundColor={theme.surface}
+                    modalBackgroundColor={theme.surface}
+                    borderColor={theme.border}
+                />
             </View>
 
             {/* Backup Section */}
@@ -110,11 +112,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         paddingBottom: 10,
     },
-    themeContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
     actionContainer: {
         display: "flex",
         flexDirection: "row",
@@ -124,10 +121,12 @@ const styles = StyleSheet.create({
     action: {
         fontSize: 17,
     },
-    languagePicker: {
-        marginLeft: -8,
+    themeContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
     },
-    deleteButton: {
-        fontSize: 10,
+    languagePicker: {
+        marginVertical: 15,
     },
 });

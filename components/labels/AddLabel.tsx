@@ -120,6 +120,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
         <TextInput
           style={[styles.textInput, { backgroundColor: theme.lightLight, color: theme.text }]}
           defaultValue=""
+          autoFocus={true}
           maxLength={100}
           autoCapitalize="none"
           autoCorrect={false}
@@ -129,14 +130,14 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
         />
 
         {/* Color Picker */}
-        <ColorPicker labelColor={labelColor} onChangeColor={setLabelColor} />
+        <ColorPicker labelColor={labelColor} onValueChange={setLabelColor} />
 
         {/* Add button */}
         <TouchableOpacity
           style={[styles.btnAdd, { backgroundColor: labelColor }]}
           onPress={handleAdd}
         >
-          <Text style={styles.btnAddText}>{tr.buttons.save}</Text>
+          <Text style={[styles.btnAddText, { color: theme.white }]}>{tr.buttons.save}</Text>
         </TouchableOpacity>
 
       </BottomSheetView>
@@ -151,10 +152,10 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    marginBottom: 8,
-    fontSize: 30,
+    fontSize: 29,
     fontWeight: "bold",
     textAlign: "center",
+    marginBottom: 6,
   },
 
   textInput: {
@@ -176,7 +177,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 17,
-    color: "white",
   },
 });
 

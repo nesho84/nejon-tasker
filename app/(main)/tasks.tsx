@@ -1,5 +1,5 @@
+import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
-import AppNoItems from "@/components/AppNoItems";
 import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
@@ -217,7 +217,7 @@ export default function TasksScreen() {
                   onDragEnd={({ data }) => handleOrderTasks(data)}
                 />
               ) : (
-                <AppNoItems type="task" />
+                <AppEmpty type="task" />
               )}
 
               {/* ----- Checked tasks ----- */}
