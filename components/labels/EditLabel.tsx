@@ -122,7 +122,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
       enableDynamicSizing={true}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
-      handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      handleIndicatorStyle={{ backgroundColor: theme.placeholder }}
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={props.onDismiss}
     >
@@ -134,7 +134,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
 
         {/* TextInput */}
         <TextInput
-          style={[styles.textInput, { backgroundColor: theme.lightLight, color: theme.text }]}
+          style={[styles.textInput, { backgroundColor: theme.disabled, color: theme.text }]}
           defaultValue={labelTitle}
           maxLength={100}
           autoCapitalize="none"

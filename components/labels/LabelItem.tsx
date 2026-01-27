@@ -83,7 +83,7 @@ export default function LabelItem({ onSelect }: Props) {
             styles.container,
             {
               backgroundColor: item.color,
-              borderColor: theme.lightMuted,
+              borderColor: theme.border,
               opacity: isActive ? 0.5 : 1,
               borderWidth: isActive ? 3 : 0,
               marginTop: getIndex && getIndex() === 0 ? 6 : 0,
@@ -97,11 +97,11 @@ export default function LabelItem({ onSelect }: Props) {
               style={{ marginTop: 2, marginRight: 6 }}
               name="label-outline"
               size={26}
-              color={theme.white}
+              color={theme.neutral}
             />
 
             {/* Label title */}
-            <Text style={[styles.labelBoxTitle, { color: theme.white }]}>
+            <Text style={[styles.labelBoxTitle, { color: theme.neutral }]}>
               {item.title.length > 25 ? item.title.slice(0, 20) + "..." : item.title}
             </Text>
 
@@ -115,7 +115,7 @@ export default function LabelItem({ onSelect }: Props) {
                 style={{ marginTop: 2 }}
                 name="playlist-edit"
                 size={31}
-                color={theme.white}
+                color={theme.neutral}
               />
             </TouchableOpacity>
           </View>
@@ -124,24 +124,24 @@ export default function LabelItem({ onSelect }: Props) {
           <View style={styles.summaryContainer}>
             {/* Tasks Remaining count */}
             <View style={{ alignItems: "center" }}>
-              <Text style={[styles.count, { color: theme.white }]}>{uncheckedTasks.length}</Text>
-              <Text style={[styles.subtitle, { color: theme.white }]}>
+              <Text style={[styles.count, { color: theme.neutral }]}>{uncheckedTasks.length}</Text>
+              <Text style={[styles.subtitle, { color: theme.neutral }]}>
                 {tr.labels.remaining}
               </Text>
             </View>
 
             {/* Tasks Reminders count */}
             <View style={{ alignItems: "center" }}>
-              <Text style={[styles.count, { color: theme.white }]}>{reminderTasks.length}</Text>
-              <Text style={[styles.subtitle, { color: theme.white }]}>
+              <Text style={[styles.count, { color: theme.neutral }]}>{reminderTasks.length}</Text>
+              <Text style={[styles.subtitle, { color: theme.neutral }]}>
                 {tr.labels.reminders}
               </Text>
             </View>
 
             {/* Tasks Completed count */}
             <View style={{ alignItems: "center" }}>
-              <Text style={[styles.count, { color: theme.white }]}>{checkedTasks.length}</Text>
-              <Text style={[styles.subtitle, { color: theme.white }]}>
+              <Text style={[styles.count, { color: theme.neutral }]}>{checkedTasks.length}</Text>
+              <Text style={[styles.subtitle, { color: theme.neutral }]}>
                 {tr.labels.completed}
               </Text>
             </View>

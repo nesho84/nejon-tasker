@@ -13,13 +13,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TasksScreen() {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const insets = useSafeAreaInsets();
 
   const { labelId } = useLocalSearchParams();
 
@@ -194,10 +197,10 @@ export default function TasksScreen() {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : 'height'}
-        keyboardVerticalOffset={83}
+        keyboardVerticalOffset={insets.top + (StatusBar.currentHeight ?? 0)}
       >
         {label && (
-          <View style={[styles.container, { backgroundColor: theme.background }]}>
+          <View style={[styles.container, { backgroundColor: theme.bg }]}>
             {/* Header container */}
             <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
               {/* Header text */}

@@ -42,7 +42,7 @@ export default function RemindersScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.backgroundAlt }]}
+            style={[styles.container, { backgroundColor: theme.bgAlt }]}
             edges={['bottom']}
         >
             {/* Warning banner when notifications are disabled */}

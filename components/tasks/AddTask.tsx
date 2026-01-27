@@ -56,7 +56,7 @@ export default function AddTask({ label }: Props) {
 
       {/* TextInput */}
       <TextInput
-        style={[styles.textInput, { backgroundColor: theme.lightLight, color: theme.text }]}
+        style={[styles.textInput, { backgroundColor: theme.disabled, color: theme.text }]}
         ref={textInputRef}
         defaultValue=""
         multiline={true}
@@ -74,7 +74,7 @@ export default function AddTask({ label }: Props) {
         style={[styles.addButton, { backgroundColor: label.color }]}
         onPress={handleAdd}
       >
-        <MaterialIcons name="add" size={38} color={theme.light} />
+        <MaterialIcons name="add" size={38} color={theme.neutral} />
       </Pressable>
 
     </View>

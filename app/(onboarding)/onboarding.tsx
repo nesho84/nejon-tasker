@@ -8,13 +8,13 @@ export default function OnboardingScreen() {
 
     return (
         <ScrollView
-            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt }]}
+            style={[styles.scrollContainer, { backgroundColor: theme.bgAlt }]}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
         >
             <View style={styles.container}>
                 <Text style={[styles.title, { color: theme.text }]}>Welcome!</Text>
-                <Text style={[styles.subtitle, { color: theme.textMuted }]}>Let's get you started</Text>
+                <Text style={[styles.subtitle, { color: theme.muted }]}>Let's get you started</Text>
                 <Button title="Get Started" onPress={() => setOnboarding(true)} />
             </View>
         </ScrollView>

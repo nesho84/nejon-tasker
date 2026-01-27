@@ -103,7 +103,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
       enableDynamicSizing={true}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
-      handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      handleIndicatorStyle={{ backgroundColor: theme.placeholder }}
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
         setLabelTitle("");
@@ -118,9 +118,9 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
 
         {/* TextInput */}
         <TextInput
-          style={[styles.textInput, { backgroundColor: theme.lightLight, color: theme.text }]}
+          style={[styles.textInput, { backgroundColor: theme.disabled, color: theme.text }]}
           defaultValue=""
-          autoFocus={true}
+          // autoFocus={true}
           maxLength={100}
           autoCapitalize="none"
           autoCorrect={false}
@@ -137,7 +137,7 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
           style={[styles.btnAdd, { backgroundColor: labelColor }]}
           onPress={handleAdd}
         >
-          <Text style={[styles.btnAddText, { color: theme.white }]}>{tr.buttons.save}</Text>
+          <Text style={[styles.btnAddText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
         </TouchableOpacity>
 
       </BottomSheetView>

@@ -179,7 +179,7 @@ export default function TaskItem({
             style={[
                 styles.container,
                 {
-                    backgroundColor: task.checked ? theme.faded : theme.backgroundAlt,
+                    backgroundColor: task.checked ? theme.disabled : theme.bgAlt,
                     borderColor: theme.border,
                     opacity: (isActive ? 0.5 : 1) && (task.checked ? 0.3 : 1),
                     borderWidth: isActive ? 3 : 1,
@@ -193,7 +193,7 @@ export default function TaskItem({
                 {checkAction && (
                     <View style={styles.checkBoxContainer}>
                         <Checkbox
-                            color={task.checked ? theme.border : theme.darkGrey}
+                            color={task.checked ? theme.border : theme.secondary}
                             value={!!task.checked}
                             onValueChange={(value) => handleToggleCheck(value, task)}
                         />
@@ -202,7 +202,7 @@ export default function TaskItem({
 
                 {/* Task Text */}
                 <View style={styles.taskTextContainer}>
-                    <Hyperlink linkDefault={true} linkStyle={{ color: theme.link }}>
+                    <Hyperlink linkDefault={true} linkStyle={{ color: theme.primary }}>
                         <Text
                             style={[styles.teaskText, {
                                 color: task.checked ? theme.muted : theme.text,

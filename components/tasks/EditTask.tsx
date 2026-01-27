@@ -257,7 +257,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       enableDynamicSizing={true}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: theme.surface }}
-      handleIndicatorStyle={{ backgroundColor: theme.lightMuted }}
+      handleIndicatorStyle={{ backgroundColor: theme.placeholder }}
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={() => {
         setIsEditing(false);
@@ -267,9 +267,9 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
     >
       <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? keyboardHeight : 0) }]}>
         {/* TextInput Container */}
-        <View style={[styles.textInputContainer, { backgroundColor: theme.shadow, borderColor: theme.lightMuted }]}>
+        <View style={[styles.textInputContainer, { backgroundColor: theme.shadow, borderColor: theme.placeholder }]}>
           <TextInput
-            style={[styles.textInput, { backgroundColor: theme.light, color: theme.text }]}
+            style={[styles.textInput, { backgroundColor: theme.bgAlt, color: theme.text }]}
             ref={textInputRef}
             defaultValue={taskText}
             multiline={true}
@@ -291,19 +291,19 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
         <View style={styles.dateTimeInputContainer}>
           {/* TextInput with bell Icon */}
           <TouchableOpacity
-            style={[styles.dateTimeTextInput, { backgroundColor: theme.light, borderColor: theme.textMuted }]}
+            style={[styles.dateTimeTextInput, { backgroundColor: theme.bgAlt, borderColor: theme.muted }]}
             onPress={handleDateTimePicker}
           >
             <MaterialCommunityIcons
               name={(hasActiveReminder || isReminderUpdated) ? "bell" : "bell-off"}
-              color={(hasActiveReminder || isReminderUpdated) ? theme.success : theme.textMuted}
+              color={(hasActiveReminder || isReminderUpdated) ? theme.success : theme.muted}
               size={20}
               style={{ marginRight: 4 }}
             />
             <TextInput
               style={{
                 fontWeight: '600',
-                color: (hasActiveReminder || isReminderUpdated) ? theme.success : theme.textMuted,
+                color: (hasActiveReminder || isReminderUpdated) ? theme.success : theme.muted,
                 textDecorationLine: (!props.task?.reminderDateTime || hasActiveReminder) ? 'none' : 'line-through'
               }}
               placeholder={tr.forms.setReminder}
@@ -327,13 +327,13 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
           {/* Reminder Cancel/Delete Icon */}
           <TouchableOpacity
             disabled={!hasActiveReminder}
-            style={[styles.btnCancelReminder, { backgroundColor: theme.light, borderColor: theme.textMuted }]}
+            style={[styles.btnCancelReminder, { backgroundColor: theme.bgAlt, borderColor: theme.muted }]}
             onPress={handleCancelReminder}
           >
             <MaterialCommunityIcons
               name="bell-remove-outline"
               size={20}
-              color={hasActiveReminder ? theme.danger : theme.textMuted}
+              color={hasActiveReminder ? theme.danger : theme.muted}
               style={{ opacity: hasActiveReminder ? 1 : 0.4 }}
             />
           </TouchableOpacity>

@@ -7,7 +7,7 @@ export default function AppLoading() {
   const { tr } = useLanguageStore();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]} pointerEvents="auto">
+    <View style={[styles.container, { backgroundColor: theme.bg }]} pointerEvents="auto">
       <ActivityIndicator style={{ paddingBottom: 15 }} size={58} color={theme.muted} />
       <Text style={{ fontSize: 20, color: theme.text, opacity: 0.7 }}>
         {tr.messages.loading}

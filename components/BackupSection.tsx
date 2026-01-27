@@ -144,9 +144,9 @@ export function BackupSection() {
             {/* Last Backup Info */}
             {lastBackup ? (
                 <View style={[styles.infoCard, { borderColor: theme.border }]}>
-                    <Text style={[styles.infoLabel, { color: theme.info }]}>{tr.labels.lastBackup}</Text>
+                    <Text style={[styles.infoLabel, { color: theme.success }]}>{tr.labels.lastBackup}</Text>
                     <Text style={[styles.infoDate, { color: theme.muted }]}>{dates.format(lastBackup.date)}</Text>
-                    <Text style={[styles.infoDetails, { color: theme.text }]}>
+                    <Text style={[styles.infoDetails, { color: theme.placeholder }]}>
                         {lastBackup.labelsCount} {tr.labels.labels} • {lastBackup.tasksCount} {tr.labels.tasks}
                     </Text>
                 </View>
@@ -160,7 +160,7 @@ export function BackupSection() {
             <View style={styles.backupButtonsContainer}>
                 {/* Create Backup Button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: hasData ? theme.lightLight : theme.muted }]}
+                    style={[styles.button, { backgroundColor: hasData ? theme.disabled : theme.muted }]}
                     onPress={handleCreateBackup}
                     disabled={!hasData || isCreatingBackup || isRestoring}
                 >
@@ -176,7 +176,7 @@ export function BackupSection() {
 
                 {/* Restore Backup Button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: theme.borderLight }]}
+                    style={[styles.button, { backgroundColor: theme.active }]}
                     onPress={handleRestoreBackup}
                     disabled={isCreatingBackup || isRestoring}
                 >
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     infoLabel: {
-        fontSize: 12,
+        fontSize: 14,
         marginBottom: 4,
     },
     infoDate: {

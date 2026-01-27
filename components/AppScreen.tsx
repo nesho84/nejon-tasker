@@ -20,11 +20,11 @@ export default function AppScreen({ children }: ScreenProps) {
     <>
       <StatusBar style={barStyle} />
       <SafeAreaView
-        style={{ flex: 1, backgroundColor: theme.background }}
+        style={{ flex: 1, backgroundColor: theme.bg }}
         edges={isKeyboardVisible ? ['left', 'right'] : ['left', 'right', 'bottom']}
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{ flex: 1, backgroundColor: theme.backgroundAlt }}>
+          <View style={{ flex: 1, backgroundColor: theme.bgAlt }}>
             {children}
           </View>
         </TouchableWithoutFeedback>

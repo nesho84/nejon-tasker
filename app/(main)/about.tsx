@@ -24,7 +24,7 @@ export default function AboutScreen() {
 
     return (
         <ScrollView
-            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt, marginTop: -insets.top }]}
+            style={[styles.scrollContainer, { backgroundColor: theme.bgAlt, marginTop: -insets.top }]}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
         >
@@ -33,25 +33,25 @@ export default function AboutScreen() {
             <Image style={styles.logo} source={require("../../assets/icons/icon.png")} />
 
             {/* Title */}
-            <Text style={[styles.title, { color: theme.textMuted }]}>{Constants?.expoConfig?.name}</Text>
+            <Text style={[styles.title, { color: theme.muted }]}>{Constants?.expoConfig?.name}</Text>
 
             {/* Support Section */}
             <TouchableOpacity
                 style={[styles.supportButton, {
-                    backgroundColor: theme.link + '08',
-                    borderColor: theme.link + '20'
+                    backgroundColor: theme.primary + '08',
+                    borderColor: theme.primary + '20'
                 }]}
                 onPress={() => Linking.openURL('https://paypal.me/NeshatAdemi?locale.x=de_DE&country.x=AT')}
                 activeOpacity={0.8}
             >
-                <View style={[styles.iconContainer, { backgroundColor: theme.link + '15' }]}>
+                <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
                     <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
                 </View>
                 <View style={styles.supportTextContainer}>
-                    <Text style={[styles.supportTitle, { color: theme.textMuted }]}>Support Development</Text>
-                    <Text style={[styles.supportSubtitle, { color: theme.link }]}>via PayPal</Text>
+                    <Text style={[styles.supportTitle, { color: theme.muted }]}>Support Development</Text>
+                    <Text style={[styles.supportSubtitle, { color: theme.primary }]}>via PayPal</Text>
                 </View>
-                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.link} style={{ opacity: 0.5 }} />
+                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
             </TouchableOpacity>
 
             {/* Website & Privacy */}
@@ -70,7 +70,7 @@ export default function AboutScreen() {
             </Text>
 
             {/* Version */}
-            <Text style={[styles.versionText, { color: theme.lightMuted }]}>
+            <Text style={[styles.versionText, { color: theme.placeholder }]}>
                 Version {Constants?.expoConfig?.version}
             </Text>
 

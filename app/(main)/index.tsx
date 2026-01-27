@@ -86,10 +86,10 @@ export default function LabelsScreen() {
                         <>
                             {/* Refresh Labels */}
                             <TouchableOpacity
-                                style={{ top: 1, marginRight: 26 }}
+                                style={{ top: 1, paddingRight: 24 }}
                                 onPress={handleRefresh}
                             >
-                                <MaterialCommunityIcons name="refresh" size={28} color={theme.text} />
+                                <MaterialCommunityIcons name="database-refresh-outline" size={26} color={theme.inverse} />
                             </TouchableOpacity>
 
                             {/* Settings */}
@@ -97,7 +97,7 @@ export default function LabelsScreen() {
                                 style={{ top: 1, marginRight: -3 }}
                                 onPress={() => router.push("/(main)/settings")}
                             >
-                                <MaterialCommunityIcons name="cog-outline" size={26} color={theme.text} />
+                                <MaterialCommunityIcons name="cog-outline" size={26} color={theme.inverse} />
                             </TouchableOpacity>
                         </>
                     ),
@@ -111,11 +111,11 @@ export default function LabelsScreen() {
 
                 {/* Floating Action Button */}
                 <TouchableOpacity
-                    style={[styles.fab, { backgroundColor: theme.lightSkyBlue }]}
+                    style={[styles.fab, { backgroundColor: theme.action1 }]}
                     onPress={() => addLabelRef.current?.present()}
                     activeOpacity={0.8}
                 >
-                    <MaterialCommunityIcons name="plus" size={28} color="#121212" />
+                    <MaterialCommunityIcons name="plus" size={28} color={theme.inverse} />
                 </TouchableOpacity>
 
                 {/* AddLabel BottomSheetModal */}
@@ -144,11 +144,11 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "center",
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.5,
         shadowRadius: 8,
         elevation: 8,
     },

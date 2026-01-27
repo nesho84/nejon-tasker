@@ -1,5 +1,6 @@
 import { BackupSection } from "@/components/BackupSection";
 import CustomPicker from "@/components/CustomPicker";
+import { DARK, LIGHT } from "@/constants/colors";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -28,14 +29,14 @@ export default function SettingsScreen() {
 
     return (
         <ScrollView
-            style={[styles.scrollContainer, { backgroundColor: theme.backgroundAlt }]}
+            style={[styles.scrollContainer, { backgroundColor: theme.bgAlt }]}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
         >
 
             {/* Theme */}
-            <View style={[styles.menu, { borderColor: theme.border }]}>
-                <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
+            <View style={[styles.menu, { borderColor: theme.divider }]}>
+                <Text style={[styles.title, { color: theme.primaryAlt }]}>
                     {tr.settings.displayOptions}
                 </Text>
                 <View style={styles.actionContainer}>
@@ -47,9 +48,8 @@ export default function SettingsScreen() {
                             {mode === "light" ? "Light" : "Dark"}
                         </Text>
                         <MaterialCommunityIcons
-                            color={theme.lightDodgerBlue}
-                            type="FontAwesome5"
-                            size={44}
+                            color={mode === "light" ? LIGHT.border : DARK.disabled}
+                            size={46}
                             name={mode === "light" ? "toggle-switch-off" : "toggle-switch"}
                             onPress={handleTheme}
                         />
@@ -58,8 +58,8 @@ export default function SettingsScreen() {
             </View>
 
             {/* Language */}
-            <View style={[styles.menu, { borderColor: theme.border }]}>
-                <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
+            <View style={[styles.menu, { borderColor: theme.divider }]}>
+                <Text style={[styles.title, { color: theme.primaryAlt }]}>
                     {tr.labels.language}
                 </Text>
                 <CustomPicker
@@ -72,7 +72,7 @@ export default function SettingsScreen() {
                     selectedValue={language}
                     onValueChange={(value) => handleLanguage(value as Language)}
                     textColor={theme.muted}
-                    iconColor={theme.lightDodgerBlue}
+                    iconColor={theme.border}
                     backgroundColor={theme.surface}
                     modalBackgroundColor={theme.surface}
                     borderColor={theme.border}
@@ -80,8 +80,8 @@ export default function SettingsScreen() {
             </View>
 
             {/* Backup Section */}
-            <View style={[styles.menu, { borderColor: theme.border }]}>
-                <Text style={[styles.title, { color: theme.lightDodgerBlue }]}>
+            <View style={[styles.menu, { borderColor: theme.divider }]}>
+                <Text style={[styles.title, { color: theme.primaryAlt }]}>
                     Backup
                 </Text>
                 <BackupSection />

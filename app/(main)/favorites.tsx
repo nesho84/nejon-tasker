@@ -37,7 +37,7 @@ export default function FavoritesScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.backgroundAlt }]}
+            style={[styles.container, { backgroundColor: theme.bgAlt }]}
             edges={['bottom']}
         >
             <FlatList

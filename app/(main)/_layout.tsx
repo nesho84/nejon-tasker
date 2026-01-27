@@ -35,7 +35,7 @@ export default function StackLayout() {
             <View
                 style={[
                     styles.container,
-                    { backgroundColor: theme.background, paddingTop: insets.top + 10 },
+                    { backgroundColor: theme.bg, paddingTop: insets.top + 10 },
                 ]}
             >
                 <ScrollView
@@ -201,7 +201,7 @@ export default function StackLayout() {
         >
             <Stack
                 screenOptions={{
-                    headerStyle: { backgroundColor: theme.background },
+                    headerStyle: { backgroundColor: theme.bg },
                     headerTintColor: theme.text,
                 }}
             >

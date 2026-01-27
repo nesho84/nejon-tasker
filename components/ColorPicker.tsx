@@ -15,10 +15,7 @@ export default function ColorPicker({ labelColor, onValueChange: onChangeColor }
                     <TouchableOpacity
                         key={color}
                         style={[styles.selectedColor, { backgroundColor: color }]}
-                        onPress={() => {
-                            console.log(color);
-                            onChangeColor(color);
-                        }}
+                        onPress={() => onChangeColor(color)}
                     >
                         {labelColor === color && (
                             <MaterialIcons name="check" size={30} color="white" />
