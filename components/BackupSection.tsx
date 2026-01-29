@@ -152,7 +152,7 @@ export function BackupSection() {
                 </View>
             ) : (
                 <View style={[styles.infoCard, { borderColor: theme.border }]}>
-                    <Text style={[styles.noBackupText, { color: theme.warning }]}>{tr.labels.noBackup}</Text>
+                    <Text style={[styles.noBackupText, { color: theme.danger }]}>{tr.labels.noBackup}</Text>
                 </View>
             )}
 
@@ -160,7 +160,7 @@ export function BackupSection() {
             <View style={styles.backupButtonsContainer}>
                 {/* Create Backup Button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: hasData ? theme.disabled : theme.muted }]}
+                    style={[styles.button, { backgroundColor: hasData ? theme.border : theme.disabled }]}
                     onPress={handleCreateBackup}
                     disabled={!hasData || isCreatingBackup || isRestoring}
                 >
@@ -168,8 +168,10 @@ export function BackupSection() {
                         <ActivityIndicator color={theme.info} size="small" />
                     ) : (
                         <View style={styles.backupButtonsContent}>
-                            <MaterialIcons name="save-alt" size={20} color={theme.success} />
-                            <Text style={[styles.buttonText, { color: theme.text }]}>Backup</Text>
+                            <MaterialIcons name="save-alt" size={20} color={hasData ? theme.success : theme.placeholder} />
+                            <Text style={[styles.buttonText, { color: hasData ? theme.text : theme.placeholder }]}>
+                                Backup
+                            </Text>
                         </View>
                     )}
                 </TouchableOpacity>
@@ -238,6 +240,7 @@ const styles = StyleSheet.create({
     backupButtonsContent: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 8,
     },
     button: {

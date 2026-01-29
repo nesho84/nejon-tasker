@@ -5,10 +5,11 @@ import EditLabel from "@/components/labels/EditLabel";
 import LabelItem from "@/components/labels/LabelItem";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
@@ -18,6 +19,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 export default function LabelsScreen() {
     const { theme } = useThemeStore();
     const { tr } = useLanguageStore();
+    const { setOnboarding } = useOnboardingStore();
 
     // Reload stores and database
     const loadLabels = useLabelStore((state) => state.loadLabels);
@@ -84,20 +86,20 @@ export default function LabelsScreen() {
                     headerTitleStyle: { fontSize: 24, fontWeight: '700' },
                     headerRight: () => (
                         <>
-                            {/* Refresh Labels */}
+                            {/* Refresh Labels Icon */}
                             <TouchableOpacity
-                                style={{ top: 1, paddingRight: 24 }}
+                                style={{ top: 1.3, paddingRight: 24 }}
                                 onPress={handleRefresh}
                             >
-                                <MaterialCommunityIcons name="database-refresh-outline" size={26} color={theme.inverse} />
+                                <MaterialIcons name="refresh" size={26} color={theme.inverse} />
                             </TouchableOpacity>
 
-                            {/* Settings */}
+                            {/* Settings Icon */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: -3 }}
                                 onPress={() => router.push("/(main)/settings")}
                             >
-                                <MaterialCommunityIcons name="cog-outline" size={26} color={theme.inverse} />
+                                <MaterialCommunityIcons name="cog-outline" size={25} color={theme.inverse} />
                             </TouchableOpacity>
                         </>
                     ),
@@ -109,15 +111,6 @@ export default function LabelsScreen() {
                 {/* Labels List */}
                 <LabelItem onSelect={onSelect} />
 
-                {/* Floating Action Button */}
-                <TouchableOpacity
-                    style={[styles.fab, { backgroundColor: theme.action1 }]}
-                    onPress={() => addLabelRef.current?.present()}
-                    activeOpacity={0.8}
-                >
-                    <MaterialCommunityIcons name="plus" size={28} color={theme.inverse} />
-                </TouchableOpacity>
-
                 {/* AddLabel BottomSheetModal */}
                 <AddLabel ref={addLabelRef} />
 
@@ -127,6 +120,15 @@ export default function LabelsScreen() {
                     label={selectedLabel}
                     onDismiss={() => setSelectedLabel(null)}
                 />
+
+                {/* Floating Action Button */}
+                <TouchableOpacity
+                    style={[styles.fab, { backgroundColor: theme.action1 }]}
+                    onPress={() => addLabelRef.current?.present()}
+                    activeOpacity={0.8}
+                >
+                    <MaterialCommunityIcons name="plus" size={28} color={theme.inverse} />
+                </TouchableOpacity>
             </View>
 
         </AppScreen>

@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 1.0.1",
+    "version": ">= 16.27.0",
     "appVersionSource": "local"
   },
   "build": {
@@ -10,28 +10,32 @@
       "android": {
         "buildType": "apk"
       },
-      "autoIncrement": false
+      "autoIncrement": false,
+      "channel": "development"
     },
     "release-apk": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
-      "autoIncrement": false
+      "autoIncrement": false,
+      "channel": "release-apk"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "app-bundle"
       },
-      "autoIncrement": false
+      "autoIncrement": false,
+      "channel": "preview"
     },
     "production": {
       "distribution": "store",
       "android": {
         "buildType": "app-bundle"
       },
-      "autoIncrement": false
+      "autoIncrement": false,
+      "channel": "production"
     }
   },
   "submit": {

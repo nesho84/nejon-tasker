@@ -16,7 +16,7 @@ interface Props {
   placeholder?: string;
   style?: any;
   textColor?: string;
-  iconColor?: string;
+  selectedColor?: string;
   backgroundColor?: string;
   modalBackgroundColor?: string;
   borderColor?: string;
@@ -30,7 +30,7 @@ export default function CustomPicker({
   placeholder = "Select...",
   style,
   textColor = "#666",
-  iconColor = "#666",
+  selectedColor = "#666",
   backgroundColor = "#fff",
   modalBackgroundColor = "#fff",
   borderColor = "#ddd",
@@ -58,27 +58,26 @@ export default function CustomPicker({
       >
         {selectedItem ? (
           <>
+            {/* Selected Item icon/emojie */}
             {selectedItem.icon && (
-              <MaterialCommunityIcons
-                name={selectedItem.icon as any}
-                size={20}
-                color={selectedItem.color || textColor}
-                style={{ marginRight: 8 }}
-              />
+              <Text style={styles.selectedIcon}>{selectedItem.icon}</Text>
             )}
+            {/* Selected Item label */}
             <Text style={[styles.selectedText, { color: selectedItem.color || textColor }]}>
               {selectedItem.label}
             </Text>
           </>
         ) : (
+          // Selected Item placeholder
           <Text style={[styles.selectedText, { color: textColor, opacity: 0.5 }]}>
             {placeholder}
           </Text>
         )}
+        {/* Selected Item icon right */}
         <MaterialCommunityIcons
           name="chevron-down"
           size={24}
-          color={iconColor}
+          color={selectedColor}
           style={styles.chevron}
         />
       </TouchableOpacity>
@@ -107,29 +106,27 @@ export default function CustomPicker({
                     styles.option,
                     {
                       backgroundColor: selectedValue === item.value
-                        ? `${iconColor}15`
+                        ? `${selectedColor}15`
                         : 'transparent',
                       borderBottomColor: borderColor,
                     }
                   ]}
                   onPress={() => handleSelect(item.value)}
                 >
+                  {/* Item icon/emojie */}
                   {item.icon && (
-                    <MaterialCommunityIcons
-                      name={item.icon as any}
-                      size={24}
-                      color={item.color || iconColor}
-                      style={{ marginRight: 12 }}
-                    />
+                    <Text style={styles.selectedIcon}>{item.icon}</Text>
                   )}
+                  {/* Item label */}
                   <Text style={[styles.optionText, { color: item.color || textColor }]}>
                     {item.label}
                   </Text>
+                  {/* Item icon right */}
                   {selectedValue === item.value && (
                     <MaterialCommunityIcons
                       name="check-circle"
                       size={24}
-                      color={iconColor}
+                      color={selectedColor}
                     />
                   )}
                 </TouchableOpacity>
@@ -150,6 +147,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
+  },
+  selectedIcon: {
+    fontSize: 20,
+    marginRight: 10,
   },
   selectedText: {
     fontSize: 17,

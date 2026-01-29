@@ -9,6 +9,13 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export type Language = "en" | "de" | "al";
 
+// Language options with flags
+const LANGUAGES = [
+    { value: 'en' as Language, label: 'English', icon: '🇬🇧' },
+    { value: 'de' as Language, label: 'Deutsch', icon: '🇩🇪' },
+    { value: 'al' as Language, label: 'Shqip', icon: '🇦🇱' },
+];
+
 export default function SettingsScreen() {
     const { theme, mode, toggleTheme } = useThemeStore();
     const { language, tr, setLanguage } = useLanguageStore();
@@ -64,15 +71,11 @@ export default function SettingsScreen() {
                 </Text>
                 <CustomPicker
                     style={styles.languagePicker}
-                    items={[
-                        { label: 'English', value: 'en' },
-                        { label: 'Deutsch', value: 'de' },
-                        { label: 'Shqip', value: 'al' },
-                    ]}
+                    items={LANGUAGES}
                     selectedValue={language}
                     onValueChange={(value) => handleLanguage(value as Language)}
                     textColor={theme.muted}
-                    iconColor={theme.border}
+                    selectedColor={theme.action1}
                     backgroundColor={theme.surface}
                     modalBackgroundColor={theme.surface}
                     borderColor={theme.border}

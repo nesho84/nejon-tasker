@@ -30,6 +30,8 @@
       },
       "permissions": [
         "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ]
     },
@@ -105,6 +107,12 @@
       "router": {}
     },
     "backgroundColor": "#000000",
-    "primaryColor": "#000000"
+    "primaryColor": "#000000",
+    "updates": {
+      "url": "https://u.expo.dev/15173707-2062-497c-b9a1-5ed496e67edd",
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
+    }
   }
 }

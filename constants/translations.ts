@@ -161,12 +161,32 @@ export const TRANSLATIONS = {
             clearStorage: "Clear Storage",
             displayOptions: "Display Options",
         },
+
+        // Obboarding screen specific
+        onboarding: {
+            languageTitle: "Choose Your Language",
+            languageSubtitle: "Select your preferred language",
+            next: "Next",
+            start: "Get Started",
+            skip: "Skip",
+            slide1Title: "Capture Your Tasks",
+            slide1Description: "Create and manage your tasks effortlessly. Stay on top of everything you need to do.",
+            slide2Title: "Organize with Labels",
+            slide2Description: "Group tasks using colorful labels. Drag and drop to reorder everything your way.",
+            slide3Title: "Set Reminders",
+            slide3Description: "Never miss important tasks. Get notified exactly when you need to.",
+            slide4Title: "Quick Access",
+            slide4Description: "Mark favorites, view reminders and trash, and share tasks with others.",
+            slide5Title: "Personalize & Protect",
+            slide5Description: "Switch between themes, choose your language, and backup your data securely.",
+        },
     },
 
     // ------------------------------------------------------------
     // Deutsch
     // ------------------------------------------------------------
     de: {
+        // Common labels
         labels: {
             home: "Startseite",
             settings: "Einstellungen",
@@ -190,6 +210,7 @@ export const TRANSLATIONS = {
             checkedItems: "Abgeschlossene Aufgaben",
         },
 
+        // Button text
         buttons: {
             save: "Speichern",
             cancel: "Stornieren",
@@ -204,6 +225,7 @@ export const TRANSLATIONS = {
             openSettings: "Einstellungen öffnen",
         },
 
+        // Form inputs
         forms: {
             inputPlaceholder: "Text eingeben...",
             setReminder: "Erinnerung einstellen...",
@@ -211,6 +233,7 @@ export const TRANSLATIONS = {
             editLabel: "Etikett bearbeiten",
         },
 
+        // Success/info messages
         messages: {
             loading: "Wird geladen...",
             updateSuccess: "Update war erfolgreich",
@@ -218,12 +241,14 @@ export const TRANSLATIONS = {
             nothingToDelete: "Nichts zu löschen",
         },
 
+        // Error messages
         errors: {
             somethingWrong: "Etwas ist schief gelaufen",
             invalidDate: "Datum und Uhrzeit dürfen nicht in der Vergangenheit liegen",
             requiredField: "Bitte fügen Sie mindestens ein oder mehrere Zeichen ein",
         },
 
+        // Alert dialogs
         alerts: {
             deleteLabel: {
                 title: "Sind Sie sicher?",
@@ -251,6 +276,7 @@ export const TRANSLATIONS = {
                 title: "Benachrichtigungsberechtigung",
                 message: "Sie haben die Benachrichtigungsberechtigung verweigert. Bitte aktivieren Sie es in Ihren Geräteeinstellungen, um Benachrichtigungen zu erhalten.",
             },
+            // Backup alerts
             backup: {
                 error1: {
                     title: "Keine Daten",
@@ -297,12 +323,14 @@ export const TRANSLATIONS = {
             },
         },
 
+        // Notifications
         notifications: {
             taskReminder: "Aufgabenerinnerung",
             title1: "Benachrichtigungen sind deaktiviert",
             message1: "Tippen Sie, um sie in den Einstellungen zu aktivieren",
         },
 
+        // Empty states
         empty: {
             noTasks: "Keine Aufgaben zu zeigen. \n\n Verwenden Sie das Eingabefeld unten, um neue Aufgaben zu erstellen.",
             noLabels: "Keine Etiketten zu zeigen. \n\n Mit der Plus-Taste (+) können Sie neue Etiketten erstellen.",
@@ -311,9 +339,29 @@ export const TRANSLATIONS = {
             noTrash: "Keine gelöschten Aufgaben zu zeigen. \n\n Gelöschte Aufgaben werden hier angezeigt.",
         },
 
+        // Settings screen specific
         settings: {
             clearStorage: "Datenbank löschen",
             displayOptions: "Anzeigeoptionen",
+        },
+
+        // Obboarding screen specific
+        onboarding: {
+            languageTitle: "Wählen Sie Ihre Sprache",
+            languageSubtitle: "Wählen Sie Ihre bevorzugte Sprache",
+            next: "Weiter",
+            start: "Loslegen",
+            skip: "Überspringen",
+            slide1Title: "Erfassen Sie Ihre Aufgaben",
+            slide1Description: "Erstellen und verwalten Sie Ihre Aufgaben mühelos. Behalten Sie den Überblick über alles, was Sie tun müssen.",
+            slide2Title: "Organisieren mit Etiketten",
+            slide2Description: "Gruppieren Sie Aufgaben mit farbenfrohen Etiketten. Ziehen und ablegen, um alles nach Ihren Wünschen zu ordnen.",
+            slide3Title: "Erinnerungen einstellen",
+            slide3Description: "Verpassen Sie keine wichtigen Aufgaben. Lassen Sie sich genau dann benachrichtigen, wenn Sie es brauchen.",
+            slide4Title: "Schneller Zugriff",
+            slide4Description: "Markieren Sie Favoriten, sehen Sie Erinnerungen und Papierkorb an und teilen Sie Aufgaben mit anderen.",
+            slide5Title: "Personalisieren & Schützen",
+            slide5Description: "Wechseln Sie zwischen Themen, wählen Sie Ihre Sprache und sichern Sie Ihre Daten sicher.",
         },
     },
 
@@ -321,6 +369,7 @@ export const TRANSLATIONS = {
     // Shqip
     // ------------------------------------------------------------
     al: {
+        // Common labels
         labels: {
             home: "Ballina",
             settings: "Cilësimet",
@@ -344,6 +393,7 @@ export const TRANSLATIONS = {
             checkedItems: "Detyra të kryera",
         },
 
+        // Button text
         buttons: {
             save: "Ruaj",
             cancel: "Anulo",
@@ -358,6 +408,7 @@ export const TRANSLATIONS = {
             openSettings: "Hap Cilësimet",
         },
 
+        // Form inputs
         forms: {
             inputPlaceholder: "Shkruaj tekst...",
             setReminder: "Cakto kujtesën...",
@@ -365,6 +416,7 @@ export const TRANSLATIONS = {
             editLabel: "Ndrysho etiketën",
         },
 
+        // Success/info messages
         messages: {
             loading: "Ngarkohet...",
             updateSuccess: "Aktualizimi ishte i suksesshëm",
@@ -372,12 +424,14 @@ export const TRANSLATIONS = {
             nothingToDelete: "Asgjë për të fshirë",
         },
 
+        // Error messages
         errors: {
             somethingWrong: "Diçka shkoi keq",
             invalidDate: "Data dhe ora nuk mund të jenë në të kaluarën",
             requiredField: "Ju lutemi shkruani të paktën një ose më shumë karaktere",
         },
 
+        // Alert dialogs
         alerts: {
             deleteLabel: {
                 title: "A jeni të sigurt?",
@@ -405,6 +459,7 @@ export const TRANSLATIONS = {
                 title: "Leja e njoftimeve",
                 message: "Ju keni refuzuar lejen e njoftimeve. Ju lutemi aktivizoni atë në opsionet e pajisjes tuaj për të marrë njoftime.",
             },
+            // Backup alerts
             backup: {
                 error1: {
                     title: "Asnjë të dhënë",
@@ -451,12 +506,14 @@ export const TRANSLATIONS = {
             },
         },
 
+        // Notifications
         notifications: {
             taskReminder: "Kujtesa e detyrës",
             title1: "Njoftimet janë çaktivizuar",
             message1: "Shtyp për të aktivizuar te Cilësimet",
         },
 
+        // Empty states
         empty: {
             noTasks: "Asnjë detyrë për të shfaqur. \n\n Përdorni fushën e mëposhtme për të krijuar detyra të reja.",
             noLabels: "Asnjë etiketë për të shfaqur. \n\n Përdorni butonin plus (+) për të krijuar etiketa të reja.",
@@ -465,9 +522,29 @@ export const TRANSLATIONS = {
             noTrash: "Asnjë detyrë e fshirë për të shfaqur. \n\n Detyrat e fshira do të shfaqen këtu.",
         },
 
+        // Settings screen specific
         settings: {
             clearStorage: "Pastro bazën e të dhënave",
             displayOptions: "Opsionet e shfaqjes",
+        },
+
+        // Obboarding screen specific
+        onboarding: {
+            languageTitle: "Zgjidh gjuhën tënde",
+            languageSubtitle: "Zgjidh gjuhën tënde të preferuar",
+            next: "Vazhdo",
+            start: "Fillo",
+            skip: "Kalo",
+            slide1Title: "Regjistro detyrat tua",
+            slide1Description: "Krijo dhe menaxho detyrat e tua pa mundim. Qëndro i informuar për gjithçka që duhet të bësh.",
+            slide2Title: "Organizo me etiketa",
+            slide2Description: "Grupo detyrat duke përdorur etiketa me ngjyra. Tërhiq dhe lësho për të riorganizuar gjithçka sipas dëshirës tënde.",
+            slide3Title: "Cakto kujtesa",
+            slide3Description: "Mos humbisni detyra të rëndësishme. Merr njoftime pikërisht kur të nevojiten.",
+            slide4Title: "Akses i shpejtë",
+            slide4Description: "Zgjidh të preferuarat, shiko kujtesat dhe detyrat e fshira, dhe ndaj detyra me të tjerët.",
+            slide5Title: "Personalizo & Siguro",
+            slide5Description: "Ndërro midis temave, zgjidh gjuhën tënde, dhe mbroj të dhënat tua me backup të sigurt.",
         },
     },
 };
