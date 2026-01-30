@@ -265,7 +265,12 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
         props.onDismiss();
       }}
     >
-      <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? keyboardHeight : 0) }]}>
+      <BottomSheetView
+        style={[
+          styles.container,
+          { paddingBottom: isKeyboardVisible ? insets.bottom + keyboardHeight : insets.bottom + 16 }
+        ]}
+      >
         {/* TextInput Container */}
         <View style={[styles.textInputContainer, { backgroundColor: theme.shadow, borderColor: theme.placeholder }]}>
           <TextInput

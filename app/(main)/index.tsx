@@ -4,8 +4,6 @@ import AddLabel from "@/components/labels/AddLabel";
 import EditLabel from "@/components/labels/EditLabel";
 import LabelItem from "@/components/labels/LabelItem";
 import { useLabelStore } from "@/store/labelStore";
-import { useLanguageStore } from "@/store/languageStore";
-import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
@@ -13,13 +11,12 @@ import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
+import * as Updates from "expo-updates";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LabelsScreen() {
     const { theme } = useThemeStore();
-    const { tr } = useLanguageStore();
-    const { setOnboarding } = useOnboardingStore();
 
     // Reload stores and database
     const loadLabels = useLabelStore((state) => state.loadLabels);
@@ -32,6 +29,35 @@ export default function LabelsScreen() {
     // Local State
     const [isLoading, setIsLoading] = useState(false);
     const [selectedLabel, setSelectedLabel] = useState<Label | null>(null);
+
+    // ------------------------------------------------------------
+    // Check for expo OTA updates on mount
+    // ------------------------------------------------------------
+    useEffect(() => {
+        if (!Updates.isEnabled) return;
+
+        const checkForUpdates = async () => {
+            const update = await Updates.checkForUpdateAsync();
+
+            if (update.isAvailable) {
+                await Updates.fetchUpdateAsync();
+
+                Alert.alert(
+                    "Update available",
+                    "The app was updated. Restart now?",
+                    [
+                        { text: "Later", style: "cancel" },
+                        {
+                            text: "Restart",
+                            onPress: () => Updates.reloadAsync(),
+                        },
+                    ]
+                );
+            }
+        };
+
+        checkForUpdates();
+    }, []);
 
     // ------------------------------------------------------------
     // Refresh Labels manually
@@ -88,7 +114,7 @@ export default function LabelsScreen() {
                         <>
                             {/* Refresh Labels Icon */}
                             <TouchableOpacity
-                                style={{ top: 1.3, paddingRight: 24 }}
+                                style={{ top: 1.4, paddingRight: 24 }}
                                 onPress={handleRefresh}
                             >
                                 <MaterialIcons name="refresh" size={26} color={theme.inverse} />

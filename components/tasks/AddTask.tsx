@@ -1,3 +1,4 @@
+import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -5,6 +6,7 @@ import { Label } from "@/types/label.types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useCallback, useRef, useState } from "react";
 import { Alert, Keyboard, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {
   label: Label;
@@ -13,6 +15,9 @@ interface Props {
 export default function AddTask({ label }: Props) {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
+
+  const insets = useSafeAreaInsets();
+  const { isKeyboardVisible, keyboardHeight } = useKeyboard();
 
   // taskStore
   const createTask = useTaskStore((state) => state.createTask);
@@ -52,11 +57,19 @@ export default function AddTask({ label }: Props) {
   }, []);
 
   return (
-    <View style={[styles.container, { borderTopColor: theme.border }]}>
-
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.bg,
+          borderTopColor: theme.border,
+          marginBottom: isKeyboardVisible ? insets.bottom + keyboardHeight : 0,
+        }
+      ]}
+    >
       {/* TextInput */}
       <TextInput
-        style={[styles.textInput, { backgroundColor: theme.disabled, color: theme.text }]}
+        style={[styles.textInput, { backgroundColor: theme.bgAlt, color: theme.text }]}
         ref={textInputRef}
         defaultValue=""
         multiline={true}
@@ -76,7 +89,6 @@ export default function AddTask({ label }: Props) {
       >
         <MaterialIcons name="add" size={38} color={theme.neutral} />
       </Pressable>
-
     </View>
   );
 }

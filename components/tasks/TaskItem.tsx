@@ -181,7 +181,7 @@ export default function TaskItem({
                 {
                     backgroundColor: task.checked ? theme.disabled : theme.bgAlt,
                     borderColor: theme.border,
-                    opacity: (isActive ? 0.5 : 1) && (task.checked ? 0.3 : 1),
+                    opacity: (isActive ? 0.5 : 1) && (task.checked ? 0.5 : 1),
                     borderWidth: isActive ? 3 : 1,
                 },
             ]}

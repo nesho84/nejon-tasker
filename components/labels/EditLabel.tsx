@@ -27,7 +27,7 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   const { tr } = useLanguageStore();
 
   const insets = useSafeAreaInsets();
-  const { isKeyboardVisible } = useKeyboard();
+  const { isKeyboardVisible, keyboardHeight } = useKeyboard();
 
   // labelStore
   const updateLabel = useLabelStore((state) => state.updateLabel);
@@ -126,7 +126,12 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
       onChange={(index) => isOpenRef.current = index !== -1}
       onDismiss={props.onDismiss}
     >
-      <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom + 20 + (isKeyboardVisible ? 80 : 0) }]}>
+      <BottomSheetView
+        style={[
+          styles.container,
+          { paddingBottom: isKeyboardVisible ? insets.bottom + keyboardHeight : insets.bottom + 16 }
+        ]}
+      >
         {/* Title */}
         <Text style={[styles.title, { color: labelColor }]}>
           {tr.forms.editLabel}

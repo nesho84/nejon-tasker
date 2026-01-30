@@ -4,6 +4,7 @@ import AppScreen from "@/components/AppScreen";
 import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
 import TaskItem from "@/components/tasks/TaskItem";
+import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -13,17 +14,16 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TasksScreen() {
   const { theme } = useThemeStore();
   const { tr } = useLanguageStore();
 
-  const insets = useSafeAreaInsets();
+  const { isKeyboardVisible, keyboardHeight } = useKeyboard();
 
+  // Get labelId from route params
   const { labelId } = useLocalSearchParams();
 
   // LabelStore
@@ -182,6 +182,7 @@ export default function TasksScreen() {
           title: label?.title,
           headerTintColor: label?.color,
           headerRight: () => (
+            // Delete Label Icon
             <TouchableOpacity
               onPress={() => {
                 if (label) handleDeleteLabel(label.id);
@@ -193,68 +194,62 @@ export default function TasksScreen() {
         }}
       />
 
-      {/* Main Content with KeyboardAvoidingView */}
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : 'height'}
-        keyboardVerticalOffset={insets.top + (StatusBar.currentHeight ?? 0)}
-      >
-        {label && (
-          <View style={[styles.container, { backgroundColor: theme.bg }]}>
-            {/* Header container */}
-            <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
-              {/* Header text */}
-              <Text style={[styles.headerText, { color: theme.muted }]}>
-                {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
-              </Text>
-            </View>
+      {/* Main Content */}
+      {label && (
+        <View style={[styles.container, { backgroundColor: theme.bg }]}>
+          {/* Header container */}
+          <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
+            {/* Header text */}
+            <Text style={[styles.headerText, { color: theme.muted }]}>
+              {`${checkedTasks.length} ${tr.labels.of} ${tasks.length} ${tr.labels.tasks}`}
+            </Text>
+          </View>
 
-            <View style={styles.tasksContainer}>
-              {/* ----- Unchecked tasks ----- */}
-              {uncheckedTasks.length > 0 ? (
+          <View style={styles.tasksContainer}>
+            {/* ----- Unchecked tasks ----- */}
+            {uncheckedTasks.length > 0 ? (
+              <DraggableFlatList
+                containerStyle={{ flex: 3 }}
+                data={uncheckedTasks}
+                renderItem={RenderTask}
+                keyExtractor={(item) => item.id}
+                onDragEnd={({ data }) => handleOrderTasks(data)}
+              />
+            ) : (
+              <AppEmpty type="task" />
+            )}
+
+            {/* ----- Checked tasks ----- */}
+            {(checkedTasks.length > 0 && !isKeyboardVisible) && (
+              <>
+                <View style={[styles.tasksDivider, { borderColor: label.color }]}>
+                  <Text style={[styles.tasksDividerText, { color: theme.muted }]}>
+                    {`${checkedTasks.length} ${tr.labels.checkedItems}`}
+                  </Text>
+                </View>
                 <DraggableFlatList
-                  containerStyle={{ flex: 3 }}
-                  data={uncheckedTasks}
+                  containerStyle={{ flex: 1 }}
+                  data={checkedTasks}
                   renderItem={RenderTask}
                   keyExtractor={(item) => item.id}
                   onDragEnd={({ data }) => handleOrderTasks(data)}
                 />
-              ) : (
-                <AppEmpty type="task" />
-              )}
-
-              {/* ----- Checked tasks ----- */}
-              {checkedTasks.length > 0 && (
-                <>
-                  <View style={[styles.tasksDivider, { borderColor: label.color }]}>
-                    <Text style={[styles.tasksDividerText, { color: theme.muted }]}>
-                      {`${checkedTasks.length} ${tr.labels.checkedItems}`}
-                    </Text>
-                  </View>
-                  <DraggableFlatList
-                    containerStyle={{ flex: 1 }}
-                    data={checkedTasks}
-                    renderItem={RenderTask}
-                    keyExtractor={(item) => item.id}
-                    onDragEnd={({ data }) => handleOrderTasks(data)}
-                  />
-                </>
-              )}
-            </View>
-
-            {/* AddTask TextInput */}
-            <AddTask label={label} />
-
-            {/* EditTask BottomSheetModal */}
-            <EditTask
-              ref={editTaskRef}
-              task={selectedTask}
-              labelColor={label.color}
-              onDismiss={() => setSelectedTask(null)}
-            />
+              </>
+            )}
           </View>
-        )}
-      </KeyboardAvoidingView>
+
+          {/* AddTask TextInput */}
+          <AddTask label={label} />
+
+          {/* EditTask BottomSheetModal */}
+          <EditTask
+            ref={editTaskRef}
+            task={selectedTask}
+            labelColor={label.color}
+            onDismiss={() => setSelectedTask(null)}
+          />
+        </View>
+      )}
 
     </AppScreen>
   );

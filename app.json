@@ -13,6 +13,14 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
+    "updates": {
+      "url": "https://u.expo.dev/15173707-2062-497c-b9a1-5ed496e67edd",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
+    },
     "splash": {
       "image": "./assets/icons/splash-icon-dark.png",
       "resizeMode": "contain",
@@ -21,16 +29,14 @@
     "android": {
       "versionCode": 3,
       "package": "com.nesho84.nejontasker",
-      "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/android-icon-foreground.png",
         "monochromeImage": "./assets/icons/android-icon-monochrome.png",
         "backgroundColor": "#E6F4FE"
       },
       "permissions": [
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ]
@@ -107,12 +113,6 @@
       "router": {}
     },
     "backgroundColor": "#000000",
-    "primaryColor": "#000000",
-    "updates": {
-      "url": "https://u.expo.dev/15173707-2062-497c-b9a1-5ed496e67edd",
-      "requestHeaders": {
-        "expo-channel-name": "production"
-      }
-    }
+    "primaryColor": "#000000"
   }
 }
