@@ -7,13 +7,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-export type Language = "en" | "de" | "al";
+export type Language = "en" | "de" | "sq";
 
 // Language options with flags
 const LANGUAGES = [
     { value: 'en' as Language, label: 'English', icon: '🇬🇧' },
     { value: 'de' as Language, label: 'Deutsch', icon: '🇩🇪' },
-    { value: 'al' as Language, label: 'Shqip', icon: '🇦🇱' },
+    { value: 'sq' as Language, label: 'Shqip', icon: '🇦🇱' },
 ];
 
 export default function SettingsScreen() {

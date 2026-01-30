@@ -8,13 +8,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get('window');
 
-export type Language = "en" | "de" | "al";
+export type Language = "en" | "de" | "sq";
 
 // Language options with flags
 const LANGUAGES = [
     { code: 'en' as Language, name: 'English', flag: '🇬🇧' },
     { code: 'de' as Language, name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'al' as Language, name: 'Shqip', flag: '🇦🇱' },
+    { code: 'sq' as Language, name: 'Shqip', flag: '🇦🇱' },
 ];
 
 export default function OnboardingScreen() {
