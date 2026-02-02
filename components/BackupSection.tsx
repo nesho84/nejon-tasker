@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     infoCard: {
         padding: 16,
         borderRadius: 8,
-        marginBottom: 14,
+        marginBottom: 16,
         borderWidth: 1,
     },
     infoLabel: {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 
     backupButtonsContainer: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 16,
     },
     backupButtonsContent: {
         flexDirection: 'row',

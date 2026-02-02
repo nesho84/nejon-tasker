@@ -22,6 +22,7 @@ export const TRANSLATIONS = {
             success: "Success",
             backupHelp: "Create some labels and tasks first",
             noBackup: "No backup yet",
+            supportDev: "Support the development",
             of: "of",
             displayOptions: "Display Options",
             checkedItems: "Checked Items",
@@ -162,6 +163,11 @@ export const TRANSLATIONS = {
             displayOptions: "Display Options",
         },
 
+        // About screen specific
+        about: {
+            desc: "Nejon Tasker is a simple and efficient task management app designed to help you organize your daily activities with ease.",
+        },
+
         // Obboarding screen specific
         onboarding: {
             languageTitle: "Choose Your Language",
@@ -205,6 +211,7 @@ export const TRANSLATIONS = {
             success: "Erfolg",
             backupHelp: "Erstellen Sie zuerst einige Etiketten und Aufgaben",
             noBackup: "Noch kein Backup",
+            supportDev: "Unterstützen Sie die Entwicklung",
             of: "von",
             displayOptions: "Anzeigeoptionen",
             checkedItems: "Abgeschlossene Aufgaben",
@@ -345,6 +352,11 @@ export const TRANSLATIONS = {
             displayOptions: "Anzeigeoptionen",
         },
 
+        // About screen specific
+        about: {
+            desc: "Nejon Tasker ist eine einfache und effiziente Aufgabenverwaltungs-App, die Ihnen hilft, Ihre täglichen Aktivitäten mühelos zu organisieren.",
+        },
+
         // Obboarding screen specific
         onboarding: {
             languageTitle: "Wählen Sie Ihre Sprache",
@@ -389,6 +401,7 @@ export const TRANSLATIONS = {
             of: "prej",
             backupHelp: "Së pari Krijo disa etiketa dhe detyra",
             noBackup: "Nuk ka ende një backup",
+            supportDev: "Ndihmo zhvillimin e aplikacionit",
             displayOptions: "Opsionet e shfaqjes",
             checkedItems: "Detyra të kryera",
         },
@@ -526,6 +539,11 @@ export const TRANSLATIONS = {
         settings: {
             clearStorage: "Pastro bazën e të dhënave",
             displayOptions: "Opsionet e shfaqjes",
+        },
+
+        // About screen specific
+        about: {
+            desc: "Nejon Tasker është një aplikacion i thjeshtë dhe efikas për menaxhimin e detyrave, i dizajnuar për t'ju ndihmuar të organizoni aktivitetet tuaja ditore me lehtësi.",
         },
 
         // Obboarding screen specific

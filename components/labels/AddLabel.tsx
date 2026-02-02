@@ -37,21 +37,24 @@ const AddLabel = forwardRef<Ref, Props>((props, ref) => {
   // Handle adding new label
   // ------------------------------------------------------------
   const handleAdd = async () => {
-    if (labelTitle.length < 1) {
+    if (labelTitle.trim().length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
-      return false;
-    } else {
-      // Create Label
-      await createLabel({ title: labelTitle, color: labelColor });
-      setLabelTitle("");
-      // Close BottomSheetModal
-      dismiss();
+      return;
     }
+
+    // Create Label
+    await createLabel({ title: labelTitle, color: labelColor });
+
+    // Clear inputs
+    setLabelTitle("");
+
+    // Close BottomSheetModal
+    dismiss();
   };
 
   // ------------------------------------------------------------

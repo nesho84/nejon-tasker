@@ -32,21 +32,25 @@ export default function AddTask({ label }: Props) {
   // Handle adding new Task
   // ------------------------------------------------------------
   const handleAdd = async () => {
-    if (taskText.length < 1) {
+    if (taskText.trim().length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
-      return false;
-    } else {
-      // Create Task
-      await createTask({ labelId: label.id, text: taskText });
-      setTaskText("");
-      textInputRef.current?.clear();
-      Keyboard.dismiss();
+      return;
     }
+
+    // Create Task
+    await createTask({ labelId: label.id, text: taskText });
+
+    // Clear inputs
+    setTaskText("");
+    textInputRef.current?.clear();
+
+    // Dismiss keyboard
+    Keyboard.dismiss();
   };
 
   // ------------------------------------------------------------

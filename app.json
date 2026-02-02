@@ -28,7 +28,7 @@
     },
     "android": {
       "versionCode": 3,
-      "package": "com.nesho84.nejontasker",
+      "package": "com.nejon.nejontasker",
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {

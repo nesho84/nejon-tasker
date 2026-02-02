@@ -1,4 +1,5 @@
 // About screen in the "Nejon Tasker" app
+import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Constants from 'expo-constants';
@@ -7,9 +8,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AboutScreen() {
     const { theme } = useThemeStore();
-    const insets = useSafeAreaInsets();
+    const { tr } = useLanguageStore();
 
-    const date = new Date();
+    const insets = useSafeAreaInsets();
 
     // ------------------------------------------------------------
     // Open external link
@@ -35,6 +36,21 @@ export default function AboutScreen() {
             {/* Title */}
             <Text style={[styles.title, { color: theme.muted }]}>{Constants?.expoConfig?.name}</Text>
 
+            {/* Description */}
+            <Text style={[styles.desc, { color: theme.placeholder }]} adjustsFontSizeToFit>
+                {tr.about.desc}
+            </Text>
+
+            {/* Website & Privacy */}
+            <View style={styles.linksContainer}>
+                <TouchableOpacity onPress={() => openLink("https://nejon.net")}>
+                    <Text style={[styles.linkText, { color: theme.info }]}>nejon.net</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => openLink("https://nejon-tasker.nejon.net/privacy.html")}>
+                    <Text style={[styles.linkText, { color: theme.info }]}>Privacy Policy</Text>
+                </TouchableOpacity>
+            </View>
+
             {/* Support Section */}
             <TouchableOpacity
                 style={[styles.supportButton, {
@@ -48,26 +64,11 @@ export default function AboutScreen() {
                     <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
                 </View>
                 <View style={styles.supportTextContainer}>
-                    <Text style={[styles.supportTitle, { color: theme.muted }]}>Support Development</Text>
+                    <Text style={[styles.supportTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
                     <Text style={[styles.supportSubtitle, { color: theme.primary }]}>via PayPal</Text>
                 </View>
                 <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
             </TouchableOpacity>
-
-            {/* Website & Privacy */}
-            <View style={styles.linksContainer}>
-                <TouchableOpacity onPress={() => openLink("https://nejon.net")}>
-                    <Text style={[styles.linkText, { color: theme.info }]}>nejon.net</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => openLink("https://nejon-tasker.nejon.net/privacy.html")}>
-                    <Text style={[styles.linkText, { color: theme.info }]}>Privacy Policy</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Year */}
-            <Text style={[styles.yearText, { color: theme.text }]}>
-                © {date.getFullYear()}
-            </Text>
 
             {/* Version */}
             <Text style={[styles.versionText, { color: theme.placeholder }]}>
@@ -89,17 +90,37 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 12,
         paddingBottom: 24,
-        gap: 12,
+        gap: 16,
     },
 
     logo: {
         width: 120,
         height: 120,
+        borderRadius: 20,
     },
     title: {
-        fontSize: 24,
+        fontSize: 26,
         fontWeight: "700",
-        letterSpacing: -0.5,
+        textAlign: "center",
+    },
+    desc: {
+        fontSize: 15,
+        fontWeight: "400",
+        textAlign: "center",
+        lineHeight: 22,
+        marginBottom: 8,
+        paddingHorizontal: 10,
+    },
+
+    // Links
+    linksContainer: {
+        flexDirection: "row",
+        gap: 16,
+    },
+    linkText: {
+        fontSize: 16,
+        fontWeight: "600",
+        textDecorationLine: "underline",
     },
 
     // Support Button
@@ -110,7 +131,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderWidth: 1,
         borderRadius: 16,
-        marginVertical: 16,
+        marginTop: 18,
+        marginBottom: 10,
         gap: 16,
     },
     iconContainer: {
@@ -135,22 +157,6 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
 
-    // Footer Section
-    linksContainer: {
-        flexDirection: "row",
-        gap: 16,
-        marginBottom: 16,
-    },
-    linkText: {
-        fontSize: 16,
-        fontWeight: "600",
-        textDecorationLine: "underline",
-    },
-    yearText: {
-        fontSize: 14,
-        fontWeight: "500",
-        marginBottom: 4,
-    },
     versionText: {
         fontSize: 14,
         fontWeight: "400",

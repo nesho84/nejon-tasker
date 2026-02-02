@@ -48,29 +48,33 @@ const EditLabel = forwardRef<Ref, Props>((props, ref) => {
   }, [props.label]);
 
   // ------------------------------------------------------------
-  // Handle editing label
+  // Handle Label update
   // ------------------------------------------------------------
   const handleUpdate = async () => {
     if (!props.label) return;
 
-    if (labelTitle.length < 1) {
+    // Validate input
+    if (labelTitle.trim().length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
-      return false;
-    } else {
-      // Update Label
-      await updateLabel(props.label.id, {
-        title: labelTitle,
-        color: labelColor,
-      });
-      setLabelTitle("");
-      // Close BottomSheetModal
-      dismiss();
+      return;
     }
+
+    // Update Label
+    await updateLabel(props.label.id, {
+      title: labelTitle,
+      color: labelColor,
+    });
+
+    // Clear inputs
+    setLabelTitle("");
+
+    // Close BottomSheetModal
+    dismiss();
   };
 
   // ------------------------------------------------------------

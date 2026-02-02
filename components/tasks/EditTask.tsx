@@ -127,53 +127,59 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
   };
 
   // ------------------------------------------------------------
-  // Handle Edit Task
+  // Handle Task update
   // ------------------------------------------------------------
   const handleUpdate = async () => {
     if (!props.task) return;
 
-    if (taskText.length < 1) {
+    // Validate input
+    if (taskText.trim().length < 1) {
       Alert.alert(
         tr.alerts.requiredField.title,
         tr.alerts.requiredField.message,
         [{ text: "OK" }],
         { cancelable: false }
       );
-      return false;
-    } else {
-      const reminderChanged = props.task?.reminderDateTime !== selectedDateTime;
-      // Check for existing reminders
-      if (reminderChanged && selectedDateTime) {
-        // Cancel old/existing notification
-        if (props.task.reminderId) {
-          await cancelScheduledNotification(props.task.reminderId);
-        }
-        // Schedule a new notification
-        const notificationId = await scheduleNotification({
-          ...props.task,
-          text: taskText,
-          reminderDateTime: selectedDateTime,
-        });
-        // Update Task
-        await updateTask(props.task.id, {
-          text: taskText,
-          reminderDateTime: selectedDateTime,
-          reminderId: notificationId,
-        });
-      } else {
-        // Update Task
-        await updateTask(props.task.id, {
-          text: taskText,
-        });
+      return;
+    }
+
+    const textChanged = props.task.text !== taskText;
+    const reminderChanged = props.task?.reminderDateTime !== selectedDateTime;
+
+    // Check for existing reminders - reschedule if text or reminder changed
+    if ((textChanged || reminderChanged) && selectedDateTime) {
+      // Cancel old/existing notification
+      if (props.task.reminderId) {
+        await cancelScheduledNotification(props.task.reminderId);
       }
 
-      // Clear inputs
-      setTaskText("");
-      setSelectedDateTime(null);
-      setReminderInput("");
-      // Close BottomSheetModal
-      dismiss();
+      // Schedule a new notification
+      const notificationId = await scheduleNotification({
+        ...props.task,
+        text: taskText,
+        reminderDateTime: selectedDateTime,
+      });
+
+      // Update Task
+      await updateTask(props.task.id, {
+        text: taskText,
+        reminderDateTime: selectedDateTime,
+        reminderId: notificationId,
+      });
+    } else {
+      // Update only text if no reminder involved
+      await updateTask(props.task.id, {
+        text: taskText,
+      });
     }
+
+    // Clear inputs
+    setTaskText("");
+    setSelectedDateTime(null);
+    setReminderInput("");
+
+    // Close BottomSheetModal
+    dismiss();
   };
 
   // ------------------------------------------------------------
