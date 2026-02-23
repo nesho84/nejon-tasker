@@ -17,21 +17,24 @@ const LANGUAGES = [
 ];
 
 export default function SettingsScreen() {
-    const { theme, mode, toggleTheme } = useThemeStore();
-    const { language, tr, setLanguage } = useLanguageStore();
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const mode = useThemeStore((state) => state.mode);
+    const language = useLanguageStore((state) => state.language);
+    const tr = useLanguageStore((state) => state.tr);
 
     // ------------------------------------------------------------
     // Handle Theme Toggle
     // ------------------------------------------------------------
     const handleTheme = () => {
-        toggleTheme();
+        useThemeStore.getState().toggleTheme();
     }
 
     // ------------------------------------------------------------
     // Handle Language Change
     // ------------------------------------------------------------
     const handleLanguage = (lang: Language) => {
-        setLanguage(lang);
+        useLanguageStore.getState().setLanguage(lang);
     };
 
     return (

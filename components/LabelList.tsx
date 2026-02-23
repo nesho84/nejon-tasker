@@ -1,4 +1,5 @@
 import AppEmpty from "@/components/AppEmpty";
+import AppLoading from "@/components/AppLoading";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -10,21 +11,16 @@ import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
-import AppLoading from "../AppLoading";
 
 interface Props {
   onSelect: (item: Label) => void;
 }
 
-export default function LabelItem({ onSelect }: Props) {
-  const { theme } = useThemeStore();
-  const { tr } = useLanguageStore();
-
-  // labelStore
+export default function LabelList({ onSelect }: Props) {
+  // Stores
+  const theme = useThemeStore((state) => state.theme);
+  const tr = useLanguageStore((state) => state.tr);
   const labels = useLabelStore((state) => state.labels);
-  const reorderLabels = useLabelStore((state) => state.reorderLabels);
-
-  // taskStore
   const allTasks = useTaskStore((state) => state.allTasks);
 
   // Local State
@@ -35,7 +31,7 @@ export default function LabelItem({ onSelect }: Props) {
   // ------------------------------------------------------------
   const handleOrderLabels = async (orderedLabels: Label[]) => {
     const labelIds = orderedLabels.map(label => label.id)
-    await reorderLabels(labelIds);
+    await useLabelStore.getState().reorderLabels(labelIds);
   }
 
   // ------------------------------------------------------------

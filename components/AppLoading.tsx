@@ -3,8 +3,9 @@ import { useThemeStore } from "@/store/themeStore";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 export default function AppLoading() {
-  const { theme } = useThemeStore();
-  const { tr } = useLanguageStore();
+  // Stores
+  const theme = useThemeStore((state) => state.theme);
+  const tr = useLanguageStore((state) => state.tr);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]} pointerEvents="auto">

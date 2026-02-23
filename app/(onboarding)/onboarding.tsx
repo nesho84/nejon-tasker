@@ -18,9 +18,11 @@ const LANGUAGES = [
 ];
 
 export default function OnboardingScreen() {
-    const { setOnboarding } = useOnboardingStore();
-    const { mode, theme } = useThemeStore();
-    const { setLanguage, language, tr } = useLanguageStore();
+    // Stores
+    const mode = useThemeStore((state) => state.mode);
+    const theme = useThemeStore((state) => state.theme);
+    const language = useLanguageStore((state) => state.language);
+    const tr = useLanguageStore((state) => state.tr);
 
     const barStyle = mode === "dark" ? "light" : "dark";
 
@@ -56,7 +58,7 @@ export default function OnboardingScreen() {
             title: tr.onboarding.slide5Title,
             description: tr.onboarding.slide5Description,
         },
-    ];
+    ] as const;
 
     // Refs
     const scrollViewRef = useRef<ScrollView>(null);
@@ -70,7 +72,7 @@ export default function OnboardingScreen() {
     // Handle language selection and proceed to features
     // ------------------------------------------------------------
     const handleLanguageNext = () => {
-        setLanguage(selectedLanguage);
+        useLanguageStore.getState().setLanguage(selectedLanguage);
         setLanguageScreen(false);
     };
 
@@ -98,7 +100,7 @@ export default function OnboardingScreen() {
         if (currentSlide < SLIDES.length - 1) {
             goToSlide(currentSlide + 1);
         } else {
-            setOnboarding(true);
+            useOnboardingStore.getState().setOnboarding(true);
         }
     };
 
@@ -106,7 +108,7 @@ export default function OnboardingScreen() {
     // Handle Skip button press
     // ------------------------------------------------------------
     const handleSkip = () => {
-        setOnboarding(true);
+        useOnboardingStore.getState().setOnboarding(true);
     };
 
     // Step 1: Language Selection

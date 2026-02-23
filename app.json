@@ -3,7 +3,7 @@
     "name": "Nejon Tasker",
     "slug": "nejon-tasker",
     "version": "1.0.4",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "scheme": "nejontasker",
     "userInterfaceStyle": "automatic",

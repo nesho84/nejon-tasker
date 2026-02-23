@@ -38,8 +38,9 @@ export default function TaskItem({
     cancelReminderAction,
     shareAction
 }: Props) {
-    const { theme } = useThemeStore();
-    const { tr } = useLanguageStore();
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
 
     // taskStore
     const updateTask = useTaskStore((state) => state.updateTask);

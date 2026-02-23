@@ -1,7 +1,6 @@
 import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
-import AddTask from "@/components/tasks/AddTask";
 import EditTask from "@/components/tasks/EditTask";
 import TaskItem from "@/components/tasks/TaskItem";
 import { useKeyboard } from "@/hooks/useKeyboard";
@@ -10,29 +9,31 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TasksScreen() {
-  const { theme } = useThemeStore();
-  const { tr } = useLanguageStore();
-
-  const { isKeyboardVisible, keyboardHeight } = useKeyboard();
-
   // Get labelId from route params
   const { labelId } = useLocalSearchParams();
 
+  // Stores
+  const theme = useThemeStore((state) => state.theme);
+  const tr = useLanguageStore((state) => state.tr);
+
+  const insets = useSafeAreaInsets();
+  const { isKeyboardVisible, keyboardHeight } = useKeyboard();
+
   // LabelStore
-  const { labels, deleteLabel } = useLabelStore();
+  const labels = useLabelStore((state) => state.labels);
   const label = labels.find((l) => l.id === labelId);
 
   // taskStore
   const allTasks = useTaskStore((state) => state.allTasks);
-  const reorderTasks = useTaskStore((state) => state.reorderTasks);
   // Filter tasks
   const tasks = useMemo(() => allTasks.filter(t => t.labelId === labelId && !t.isDeleted), [allTasks, labelId]);
   const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
@@ -41,13 +42,15 @@ export default function TasksScreen() {
   const lastChecked = useMemo(() => checkedTasks[checkedTasks.length - 1], [checkedTasks]);
   const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
 
-  // Refs for bottomSheet Modals
+  // Refs
+  const textInputRef = useRef<TextInput>(null);
   const editTaskRef = useRef<BottomSheetModal>(null);
 
   // Local State
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [taskTextInput, setTaskTextInput] = useState("");
 
   // ------------------------------------------------------------
   // Hard delete label
@@ -75,7 +78,7 @@ export default function TasksScreen() {
                     onPress: async () => {
                       try {
                         setIsLoading(true);
-                        await deleteLabel(labelId);
+                        await useLabelStore.getState().deleteLabel(labelId);
                         router.back();
                       } catch (error) {
                         Alert.alert('Error', `Failed to delete: ${error}`);
@@ -91,7 +94,7 @@ export default function TasksScreen() {
               // No tasks, delete immediately
               try {
                 setIsLoading(true);
-                await deleteLabel(labelId);
+                await useLabelStore.getState().deleteLabel(labelId);
                 router.back();
               } catch (error) {
                 Alert.alert('Error', `Failed to delete: ${error}`);
@@ -112,7 +115,7 @@ export default function TasksScreen() {
   // ------------------------------------------------------------
   const handleOrderTasks = async (orderedTasks: Task[]) => {
     const taskIds = orderedTasks.map(task => task.id);
-    await reorderTasks(taskIds);
+    await useTaskStore.getState().reorderTasks(taskIds);
   };
 
   // ------------------------------------------------------------
@@ -121,6 +124,38 @@ export default function TasksScreen() {
   const onSelect = (task: Task) => {
     setSelectedTask(task);
   };
+
+  // ------------------------------------------------------------
+  // Handle adding new Task
+  // ------------------------------------------------------------
+  const handleAdd = async () => {
+    if (taskTextInput.trim().length < 1) {
+      Alert.alert(
+        tr.alerts.requiredField.title,
+        tr.alerts.requiredField.message,
+        [{ text: "OK" }],
+        { cancelable: false }
+      );
+      return;
+    }
+
+    // Create Task
+    await useTaskStore.getState().createTask({ labelId: label?.id, text: taskTextInput });
+
+    // Clear inputs
+    setTaskTextInput("");
+    textInputRef.current?.clear();
+
+    // Dismiss keyboard
+    Keyboard.dismiss();
+  };
+
+  // ------------------------------------------------------------
+  // Handle TextInput change
+  // ------------------------------------------------------------
+  const onChangeText = useCallback((text: string) => {
+    setTaskTextInput(text);
+  }, []);
 
   // ------------------------------------------------------------
   // Open a BottomSheetModal for editing Task
@@ -194,7 +229,6 @@ export default function TasksScreen() {
         }}
       />
 
-      {/* Main Content */}
       {label && (
         <View style={[styles.container, { backgroundColor: theme.bg }]}>
           {/* Header container */}
@@ -239,7 +273,39 @@ export default function TasksScreen() {
           </View>
 
           {/* AddTask TextInput */}
-          <AddTask label={label} />
+          <View
+            style={[
+              styles.addTaskContainer,
+              {
+                backgroundColor: theme.bg,
+                borderTopColor: theme.border,
+                marginBottom: isKeyboardVisible ? insets.bottom + keyboardHeight : 0,
+              }
+            ]}
+          >
+            {/* TextInput */}
+            <TextInput
+              style={[styles.textInput, { backgroundColor: theme.bgAlt, color: theme.text }]}
+              ref={textInputRef}
+              defaultValue=""
+              multiline={true}
+              maxLength={5500}
+              scrollEnabled={true}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={onChangeText}
+              placeholder={tr.forms.inputPlaceholder}
+              placeholderTextColor={theme.placeholder}
+            />
+
+            {/* Add Button */}
+            <Pressable
+              style={[styles.addButton, { backgroundColor: label.color }]}
+              onPress={handleAdd}
+            >
+              <MaterialIcons name="add" size={38} color={theme.neutral} />
+            </Pressable>
+          </View>
 
           {/* EditTask BottomSheetModal */}
           <EditTask
@@ -284,5 +350,31 @@ const styles = StyleSheet.create({
     width: "100%",
     alignSelf: "flex-start",
     fontSize: 13,
+  },
+
+  // AddTask styles
+  addTaskContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    padding: 6,
+    gap: 5,
+  },
+  textInput: {
+    flex: 1,
+    minHeight: 48,
+    fontSize: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  addButton: {
+    alignSelf: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 47,
+    height: 47,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 4,
   },
 });

@@ -1,33 +1,29 @@
-import AddLabel from '@/components/labels/AddLabel';
 import useAppExit from '@/hooks/useAppExit';
 import { useLabelStore } from '@/store/labelStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from '@/types/label.types';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import Constants from 'expo-constants';
 import { router, Stack } from "expo-router";
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function StackLayout() {
-    const { theme } = useThemeStore();
-    const { tr } = useLanguageStore();
-
-    const { backAction } = useAppExit();
-    const insets = useSafeAreaInsets();
-
-    // LabelStore
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
     const labels = useLabelStore((state) => state.labels);
+
+    const insets = useSafeAreaInsets();
+    const { backAction } = useAppExit();
 
     // Local State
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const closeDrawer = () => setDrawerOpen(false);
-    const addLabelRef = useRef<BottomSheetModal>(null);
 
     // Drawer Content Component
     const DrawerContent = () => {
@@ -119,13 +115,11 @@ export default function StackLayout() {
                         activeOpacity={0.7}
                         onPress={() => {
                             closeDrawer();
-                            addLabelRef.current?.present();
+                            router.push("/(modals)/addLabel");
                         }}
                     >
                         <MaterialIcons name="add" size={24} color={theme.text} />
                         <Text style={[styles.menuLabel, { fontSize: 14, color: theme.text }]}>{tr.forms.newLabel}</Text>
-                        {/* AddLabel BottomSheetModal */}
-                        <AddLabel ref={addLabelRef} />
                     </TouchableOpacity>
 
 

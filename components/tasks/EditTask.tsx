@@ -27,14 +27,12 @@ interface Props {
 type Ref = BottomSheetModal;
 
 const EditTask = forwardRef<Ref, Props>((props, ref) => {
-  const { theme } = useThemeStore();
-  const { tr } = useLanguageStore();
+  // Stores
+  const theme = useThemeStore((state) => state.theme);
+  const tr = useLanguageStore((state) => state.tr);
 
   const insets = useSafeAreaInsets();
   const { isKeyboardVisible, keyboardHeight } = useKeyboard();
-
-  // taskStore
-  const updateTask = useTaskStore((state) => state.updateTask);
 
   const dateTimeToString = (date: string | null): string => {
     return date ? dates.format(date) : tr.forms.setReminder;
@@ -161,14 +159,14 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
       });
 
       // Update Task
-      await updateTask(props.task.id, {
+      await useTaskStore.getState().updateTask(props.task.id, {
         text: taskText,
         reminderDateTime: selectedDateTime,
         reminderId: notificationId,
       });
     } else {
       // Update only text if no reminder involved
-      await updateTask(props.task.id, {
+      await useTaskStore.getState().updateTask(props.task.id, {
         text: taskText,
       });
     }
@@ -197,7 +195,7 @@ const EditTask = forwardRef<Ref, Props>((props, ref) => {
             if (props.task?.reminderId) {
               await cancelScheduledNotification(props.task.reminderId);
               // Clear reminder data when cancelling reminder
-              await updateTask(props.task.id, {
+              await useTaskStore.getState().updateTask(props.task.id, {
                 reminderDateTime: null,
                 reminderId: null
               });

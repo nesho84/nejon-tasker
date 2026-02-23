@@ -12,6 +12,8 @@ export const LIGHT = {
 
   // Background layers
   bg: "#fafafa",
+  bg2: "#f9fafb",
+  bg3: "#f3f4f6",
   bgAlt: "#f8f9fa",
   surface: "#ffffff",
   action1: "#4285f4",
@@ -54,6 +56,8 @@ export const DARK = {
 
   // Background layers
   bg: "#121212",
+  bg2: "#1e1e1e",
+  bg3: "#2a2a2a",
   bgAlt: "#1f1f1f",
   surface: "#292a2d",
   action1: "#0A5ED7",

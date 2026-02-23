@@ -11,8 +11,9 @@ import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RemindersScreen() {
-    const { theme } = useThemeStore();
-    const { tr } = useLanguageStore();
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);

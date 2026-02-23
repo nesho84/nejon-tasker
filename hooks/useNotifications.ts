@@ -18,8 +18,10 @@ export default function useNotifications() {
     // taskStore actions
     const updateTask = useTaskStore((state) => state.updateTask);
 
-    // Notifications enabled state
+    // Notifications state
     const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
+
+    // Refs
     const appStateListenerRef = useRef<any>(null);
 
     // ------------------------------------------------------------
@@ -40,7 +42,7 @@ export default function useNotifications() {
     // Schedule a notification
     // ------------------------------------------------------------
     const scheduleNotification = async (task: Task) => {
-        const { tr } = useLanguageStore.getState();
+        const tr = useLanguageStore((state) => state.tr);
 
         // First request permission
         await requestPermission();
@@ -101,8 +103,7 @@ export default function useNotifications() {
     // Request notification permission
     // ------------------------------------------------------------
     const requestPermission = async () => {
-        // Get tr at call time, not hook initialization
-        const { tr } = useLanguageStore.getState();
+        const tr = useLanguageStore((state) => state.tr);
 
         try {
             const { status } = await Notifications.requestPermissionsAsync();

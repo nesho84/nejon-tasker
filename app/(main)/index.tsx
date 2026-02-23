@@ -1,40 +1,31 @@
 import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
-import AddLabel from "@/components/labels/AddLabel";
-import EditLabel from "@/components/labels/EditLabel";
-import LabelItem from "@/components/labels/LabelItem";
+import LabelList from "@/components/LabelList";
 import { useLabelStore } from "@/store/labelStore";
+import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from "@/types/label.types";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
 import * as Updates from "expo-updates";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LabelsScreen() {
-    const { theme } = useThemeStore();
-
-    // Reload stores and database
-    const loadLabels = useLabelStore((state) => state.loadLabels);
-    const loadTasks = useTaskStore((state) => state.loadTasks);
-
-    // Refs for bottomSheet Modals
-    const addLabelRef = useRef<BottomSheetModal>(null);
-    const editLabelRef = useRef<BottomSheetModal>(null);
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
 
     // Local State
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedLabel, setSelectedLabel] = useState<Label | null>(null);
 
     // ------------------------------------------------------------
     // Check for expo OTA updates on mount
     // ------------------------------------------------------------
     useEffect(() => {
-       if (__DEV__) return; // Skip in dev mode
+        if (__DEV__) return; // Skip in dev mode
 
         const checkForUpdates = async () => {
             const update = await Updates.checkForUpdateAsync();
@@ -66,8 +57,8 @@ export default function LabelsScreen() {
         setIsLoading(true);
         try {
             // Reload labels and tasks from database
-            await loadLabels();
-            await loadTasks();
+            await useLabelStore.getState().loadLabels();
+            await useTaskStore.getState().loadTasks();
         } catch (error) {
             console.log(error);
         } finally {
@@ -77,20 +68,11 @@ export default function LabelsScreen() {
     };
 
     // ------------------------------------------------------------
-    // Handle selecting a Label from the list
+    // Handle selecting a Label from the LabelList
     // ------------------------------------------------------------
     const onSelect = (label: Label) => {
-        setSelectedLabel(label);
+        router.push(`/editLabel?labelId=${label.id}`);
     };
-
-    // ------------------------------------------------------------
-    // Open a BottomSheetModal for editing Label
-    // ------------------------------------------------------------
-    useEffect(() => {
-        if (selectedLabel) {
-            editLabelRef.current?.present();
-        }
-    }, [selectedLabel]);
 
     // Loading state
     if (isLoading) {
@@ -135,22 +117,12 @@ export default function LabelsScreen() {
             {/* Main Content */}
             <View style={styles.container}>
                 {/* Labels List */}
-                <LabelItem onSelect={onSelect} />
-
-                {/* AddLabel BottomSheetModal */}
-                <AddLabel ref={addLabelRef} />
-
-                {/* EditLabel BottomSheetModal */}
-                <EditLabel
-                    ref={editLabelRef}
-                    label={selectedLabel}
-                    onDismiss={() => setSelectedLabel(null)}
-                />
+                <LabelList onSelect={onSelect} />
 
                 {/* Floating Action Button */}
                 <TouchableOpacity
                     style={[styles.fab, { backgroundColor: theme.action1 }]}
-                    onPress={() => addLabelRef.current?.present()}
+                    onPress={() => router.push("/(modals)/addLabel")}
                     activeOpacity={0.8}
                 >
                     <MaterialCommunityIcons name="plus" size={28} color={theme.inverse} />
@@ -167,7 +139,7 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: "absolute",
-        bottom: 22,
+        bottom: 24,
         right: 10,
         width: 56,
         height: 56,

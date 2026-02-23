@@ -10,7 +10,9 @@ type ScreenProps = {
 };
 
 export default function AppScreen({ children }: ScreenProps) {
-  const { mode, theme } = useThemeStore();
+  // Stores
+  const mode = useThemeStore((state) => state.mode);
+  const theme = useThemeStore((state) => state.theme);
 
   const { isKeyboardVisible } = useKeyboard();
 

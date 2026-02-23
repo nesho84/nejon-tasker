@@ -9,8 +9,9 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function BackupSection() {
-    const { theme } = useThemeStore();
-    const { tr } = useLanguageStore();
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
 
     // Local State
     const [lastBackup, setLastBackup] = useState<{ date: string; labelsCount: number; tasksCount: number } | null>(null);

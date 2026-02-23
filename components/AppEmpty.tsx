@@ -8,8 +8,9 @@ interface Props {
 }
 
 export default function AppEmpty({ type = "task" }: Props) {
-  const { theme } = useThemeStore();
-  const { tr } = useLanguageStore();
+  // Stores
+  const theme = useThemeStore((state) => state.theme);
+  const tr = useLanguageStore((state) => state.tr);
 
   // ------------------------------------------------------------
   // Render empty text based on type

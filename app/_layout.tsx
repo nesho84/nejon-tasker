@@ -16,7 +16,7 @@ const RootStack = () => {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {/* Onboarding group */}
+      {/* Onboarding */}
       <Stack.Protected guard={!onboardingComplete}>
         <Stack.Screen name="(onboarding)" options={{ animation: "fade" }} />
       </Stack.Protected>
@@ -24,6 +24,14 @@ const RootStack = () => {
       {/* Main app, only after onboarding */}
       <Stack.Protected guard={onboardingComplete}>
         <Stack.Screen name="(main)" />
+        {/* Modal Screens */}
+        <Stack.Screen
+          name="(modals)"
+          options={{
+            presentation: "transparentModal",
+            animation: "slide_from_bottom",
+          }}
+        />
       </Stack.Protected>
     </Stack>
   );

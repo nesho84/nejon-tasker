@@ -7,8 +7,9 @@ import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AboutScreen() {
-    const { theme } = useThemeStore();
-    const { tr } = useLanguageStore();
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
 
     const insets = useSafeAreaInsets();
 
