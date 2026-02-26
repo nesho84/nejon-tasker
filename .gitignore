@@ -33,8 +33,5 @@ yarn-error.*
 # local env files
 .env*.local
 
-# assets
-assets/psd/
-
 # typescript
 *.tsbuildinfo

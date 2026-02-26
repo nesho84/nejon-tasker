@@ -2,8 +2,8 @@
   "expo": {
     "name": "Nejon Tasker",
     "slug": "nejon-tasker",
-    "version": "1.0.3",
-    "orientation": "portrait",
+    "version": "1.0.5",
+    "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "scheme": "nejontasker",
     "userInterfaceStyle": "automatic",
@@ -27,8 +27,8 @@
       "backgroundColor": "#ffffff"
     },
     "android": {
-      "versionCode": 3,
-      "package": "com.nesho84.nejontasker",
+      "versionCode": 5,
+      "package": "com.nejon.nejontasker",
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
@@ -42,7 +42,7 @@
       ]
     },
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "5",
       "bundleIdentifier": "com.nejon.nejontasker",
       "supportsTablet": true,
       "infoPlist": {
