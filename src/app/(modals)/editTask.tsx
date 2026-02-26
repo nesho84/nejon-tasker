@@ -209,7 +209,7 @@ export default function EditTask() {
   }, []);
 
   return (
-    <ModalSheet style={{ backgroundColor: theme.bg2 }} ref={modalSheetRef} modalHeight={'41%'}>
+    <ModalSheet style={{ backgroundColor: theme.bg2 }} ref={modalSheetRef} modalHeight={'42%'}>
 
       <View style={styles.container}>
         {/* TextInput Container */}

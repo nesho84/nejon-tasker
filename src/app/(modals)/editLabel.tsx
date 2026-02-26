@@ -72,7 +72,7 @@ export default function EditLabel() {
   }, []);
 
   return (
-    <ModalSheet style={{ backgroundColor: theme.bg2 }} ref={modalSheetRef} modalHeight={'50%'}>
+    <ModalSheet style={{ backgroundColor: theme.bg2 }} ref={modalSheetRef} modalHeight={'52%'}>
 
       <View style={styles.container}>
         {/* Title */}
