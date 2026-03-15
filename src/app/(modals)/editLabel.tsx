@@ -3,10 +3,10 @@ import ModalSheet, { ModalSheetRef } from "@/components/ModalSheet";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function EditLabel() {
   // Get labelId from route params
@@ -20,12 +20,12 @@ export default function EditLabel() {
 
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
-
-  const insets = useSafeAreaInsets();
+  const inputRef = useRef<TextInput>(null);
 
   // Local State
   const [labelTitle, setLabelTitle] = useState(label?.title || "");
   const [labelColor, setLabelColor] = useState(label?.color || "");
+  const [hasText, setHasText] = useState((label?.title?.length ?? 0) > 0);
 
   // ------------------------------------------------------------
   // Update state when label prop changes
@@ -126,19 +126,39 @@ export default function EditLabel() {
 
         {/* Text input */}
         <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.label}</Text>
-        <TextInput
-          style={[styles.textInput, {
-            backgroundColor: theme.shadow,
-            color: theme.text2,
-            borderColor: `${labelColor}30`,
-          }]}
-          defaultValue={labelTitle}
-          maxLength={100}
-          autoCorrect={false}
-          onChangeText={onChangeTitle}
-          placeholder={tr.forms.inputPlaceholder}
-          placeholderTextColor={theme.placeholder}
-        />
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            ref={inputRef}
+            style={[styles.textInput, {
+              backgroundColor: theme.shadow,
+              color: theme.text2,
+              borderColor: `${labelColor}30`,
+            }]}
+            defaultValue={labelTitle}
+            maxLength={100}
+            autoCorrect={false}
+            placeholder={tr.forms.inputPlaceholder}
+            placeholderTextColor={theme.placeholder}
+            onChangeText={(text) => {
+              setHasText(text.length > 0);
+              onChangeTitle(text);
+            }}
+          />
+          {/* Clear Icon */}
+          {hasText && (
+            <Pressable
+              style={styles.clearIcon}
+              hitSlop={8}
+              onPress={() => {
+                inputRef.current?.clear();
+                setHasText(false);
+                onChangeTitle('');
+              }}
+            >
+              <Ionicons name="close-circle" size={18} color={theme.placeholder} />
+            </Pressable>
+          )}
+        </View>
 
         {/* Color Picker */}
         <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.color}</Text>
@@ -197,6 +217,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 12,
     paddingHorizontal: 14,
+  },
+  clearIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
 
   btnRow: {

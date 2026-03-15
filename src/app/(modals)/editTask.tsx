@@ -10,7 +10,6 @@ import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function EditTask() {
   // Get taskId from route params
@@ -27,8 +26,6 @@ export default function EditTask() {
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
   const textInputRef = useRef<TextInput>(null);
-
-  const insets = useSafeAreaInsets();
 
   // Format date time to string or return default placeholder
   const dateTimeToString = (date: string | null): string => {

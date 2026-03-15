@@ -4,8 +4,9 @@ import { labelBgColors } from "@/constants/colors";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useRef, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function AddLabel() {
   // Stores
@@ -14,10 +15,12 @@ export default function AddLabel() {
 
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
+  const inputRef = useRef<TextInput>(null);
 
   // Local State
   const [labelTitle, setLabelTitle] = useState("");
   const [labelColor, setLabelColor] = useState(labelBgColors[0]);
+  const [hasText, setHasText] = useState(false);
 
   // ------------------------------------------------------------
   // Handle adding new label
@@ -102,19 +105,39 @@ export default function AddLabel() {
 
         {/* Text input */}
         <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.label}</Text>
-        <TextInput
-          style={[styles.textInput, {
-            backgroundColor: theme.shadow,
-            color: theme.text2,
-            borderColor: `${labelColor}30`,
-          }]}
-          defaultValue=""
-          maxLength={100}
-          autoCorrect={false}
-          onChangeText={onChangeTitle}
-          placeholder={tr.forms.inputPlaceholder}
-          placeholderTextColor={theme.placeholder2}
-        />
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            ref={inputRef}
+            style={[styles.textInput, {
+              backgroundColor: theme.shadow,
+              color: theme.text2,
+              borderColor: `${labelColor}30`,
+            }]}
+            defaultValue=""
+            maxLength={100}
+            autoCorrect={false}
+            placeholder={tr.forms.inputPlaceholder}
+            placeholderTextColor={theme.placeholder2}
+            onChangeText={(text) => {
+              setHasText(text.length > 0);
+              onChangeTitle(text);
+            }}
+          />
+          {/* Clear Icon */}
+          {hasText && (
+            <Pressable
+              style={styles.clearIcon}
+              hitSlop={8}
+              onPress={() => {
+                inputRef.current?.clear();
+                setHasText(false);
+                onChangeTitle('');
+              }}
+            >
+              <Ionicons name="close-circle" size={18} color={theme.placeholder} />
+            </Pressable>
+          )}
+        </View>
 
         {/* Color Picker */}
         <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.color}</Text>
@@ -173,6 +196,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 12,
     paddingHorizontal: 14,
+  },
+  clearIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
 
   btnRow: {
