@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   clearIcon: {
     position: 'absolute',
-    right: 10,
+    right: 14,
     top: 0,
     bottom: 0,
     justifyContent: 'center',
