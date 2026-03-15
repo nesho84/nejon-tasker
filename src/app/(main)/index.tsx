@@ -9,7 +9,7 @@ import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
 import * as Updates from "expo-updates";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function LabelsScreen() {
     // Stores
@@ -23,27 +23,13 @@ export default function LabelsScreen() {
     // ------------------------------------------------------------
     useEffect(() => {
         if (__DEV__) return; // Skip in dev mode
-
         const checkForUpdates = async () => {
             const update = await Updates.checkForUpdateAsync();
-
             if (update.isAvailable) {
                 await Updates.fetchUpdateAsync();
-
-                Alert.alert(
-                    "Update available",
-                    "The app was updated. Restart now?",
-                    [
-                        { text: "Later", style: "cancel" },
-                        {
-                            text: "Restart",
-                            onPress: () => Updates.reloadAsync(),
-                        },
-                    ]
-                );
+                Updates.reloadAsync();
             }
         };
-
         checkForUpdates();
     }, []);
 
@@ -91,7 +77,7 @@ export default function LabelsScreen() {
                             {/* Settings Icon */}
                             <TouchableOpacity
                                 style={{ top: 1, marginRight: -3 }}
-                                onPress={() => router.push("/(main)/settings")}
+                                onPress={() => router.navigate("/(main)/settings")}
                             >
                                 <MaterialCommunityIcons name="cog-outline" size={25} color={theme.inverse} />
                             </TouchableOpacity>
@@ -102,13 +88,14 @@ export default function LabelsScreen() {
 
             {/* Main Content */}
             <View style={styles.container}>
+
                 {/* Labels List */}
                 <LabelList />
 
                 {/* Floating Action Button */}
                 <TouchableOpacity
-                    style={[styles.fab, { backgroundColor: theme.action1 }]}
-                    onPress={() => router.push("/(modals)/addLabel")}
+                    style={[styles.fab, { backgroundColor: theme.fab, borderColor: theme.fabBorder }]}
+                    onPress={() => router.navigate("/(modals)/addLabel")}
                     activeOpacity={0.8}
                 >
                     <MaterialCommunityIcons name="plus" size={28} color={theme.inverse} />
@@ -125,17 +112,18 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: "absolute",
-        bottom: 22,
-        right: 10,
+        bottom: 28,
+        right: 12,
         width: 56,
         height: 56,
+        borderWidth: 0.8,
         borderRadius: 28,
         alignItems: "center",
         justifyContent: "center",
         shadowColor: "#000",
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 6,
     },
 });

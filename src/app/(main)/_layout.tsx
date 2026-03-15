@@ -61,7 +61,7 @@ export default function StackLayout() {
                         style={styles.menuItem}
                         onPress={() => {
                             closeDrawer();
-                            router.push("/(main)/reminders");
+                            router.navigate("/(main)/reminders");
                         }}
                         activeOpacity={0.7}
                     >
@@ -74,7 +74,7 @@ export default function StackLayout() {
                         style={styles.menuItem}
                         onPress={() => {
                             closeDrawer();
-                            router.push("/(main)/favorites");
+                            router.navigate("/(main)/favorites");
                         }}
                         activeOpacity={0.7}
                     >
@@ -99,7 +99,7 @@ export default function StackLayout() {
                                     activeOpacity={0.7}
                                     onPress={() => {
                                         closeDrawer();
-                                        router.push(`/tasks?labelId=${item.id}`)
+                                        router.navigate(`/tasks?labelId=${item.id}`)
                                     }}
                                 >
                                     <MaterialCommunityIcons name="label-outline" size={22} color={theme.text} />
@@ -117,7 +117,7 @@ export default function StackLayout() {
                         activeOpacity={0.7}
                         onPress={() => {
                             closeDrawer();
-                            router.push("/(modals)/addLabel");
+                            router.navigate("/(modals)/addLabel");
                         }}
                     >
                         <MaterialIcons name="add" size={24} color={theme.text} />
@@ -134,7 +134,7 @@ export default function StackLayout() {
                         activeOpacity={0.7}
                         onPress={() => {
                             closeDrawer();
-                            router.push("/(main)/trash");
+                            router.navigate("/(main)/trash");
                         }}
                     >
                         <MaterialCommunityIcons name="trash-can-outline" size={22} color={theme.text} />
@@ -147,7 +147,7 @@ export default function StackLayout() {
                         activeOpacity={0.7}
                         onPress={() => {
                             closeDrawer();
-                            router.push("/(main)/settings");
+                            router.navigate("/(main)/settings");
                         }}
                     >
                         <MaterialCommunityIcons name="cog-outline" size={22} color={theme.text} />
@@ -160,7 +160,7 @@ export default function StackLayout() {
                         activeOpacity={0.7}
                         onPress={() => {
                             closeDrawer();
-                            router.push("/(main)/about");
+                            router.navigate("/(main)/about");
                         }}
                     >
                         <MaterialCommunityIcons name="information-outline" size={22} color={theme.text} />

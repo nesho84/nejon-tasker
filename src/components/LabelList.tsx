@@ -33,7 +33,7 @@ export default function LabelList() {
   // Handle selecting a Label from the list
   // ------------------------------------------------------------
   const handleEdit = (label: Label) => {
-    router.push(`/editLabel?labelId=${label.id}`);
+    router.navigate(`/editLabel?labelId=${label.id}`);
   };
 
   // Loading state
@@ -41,7 +41,7 @@ export default function LabelList() {
     return <AppLoading inline={true} />;
   }
 
-  // Render Single Label template
+  // Render single Label card template
   const RenderLabel = ({ item, getIndex, isActive, drag }: RenderItemParams<Label>) => {
     // Filter tasks by labelId
     const tasks = useMemo(() => allTasks.filter(t => t.labelId === item.id && !t.isDeleted), [allTasks, item.id]);
@@ -55,81 +55,71 @@ export default function LabelList() {
 
     return (
       <TouchableOpacity
-        onPress={() => router.push(`/tasks?labelId=${item.id}`)}
+        onPress={() => router.navigate(`/tasks?labelId=${item.id}`)}
         onLongPress={drag}
         disabled={isActive}
         delayLongPress={400}
         delayPressIn={0}
         delayPressOut={0}
-        hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
         activeOpacity={0.7}
+        hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
       >
         <View
           style={[
-            styles.container,
+            styles.cardContainer,
             {
-              backgroundColor: item.color,
+              backgroundColor: theme.card,
+              borderWidth: 0.3,
+              borderLeftWidth: 4,
               borderColor: theme.border,
+              borderLeftColor: item.color,
+              borderRadius: 8,
+              elevation: 2,
               opacity: isActive ? 0.5 : 1,
-              borderWidth: isActive ? 3 : 0,
               marginTop: getIndex && getIndex() === 0 ? 6 : 0,
             },
           ]}
         >
-          {/* -----Item title and icons Container----- */}
-          <View style={styles.labelBoxHeaderContainer}>
+
+          {/* ----- Title row ----- */}
+          <View style={styles.cardHeaderContainer}>
             {/* Icon before label title */}
             <MaterialCommunityIcons
-              style={{ marginTop: 2, marginRight: 6 }}
+              style={{ marginTop: 2, marginRight: 8 }}
               name="label-outline"
               size={26}
-              color={theme.neutral}
+              color={item.color}
             />
-
             {/* Label title */}
-            <Text style={[styles.labelBoxTitle, { color: theme.neutral }]}>
+            <Text style={[styles.cardTitle, { color: item.color }]}>
               {item.title.length > 25 ? item.title.slice(0, 20) + "..." : item.title}
             </Text>
-
             {/* Edit Label Icon */}
-            <TouchableOpacity
-              onPress={() => handleEdit(item)}
-              delayPressIn={0}
-              delayPressOut={0}
-            >
+            <TouchableOpacity delayPressIn={0} delayPressOut={0} onPress={() => handleEdit(item)}>
               <MaterialCommunityIcons
-                style={{ marginTop: 2 }}
-                name="playlist-edit"
-                size={31}
-                color={theme.neutral}
+                name="dots-horizontal"
+                size={32}
+                color={theme.muted}
               />
             </TouchableOpacity>
           </View>
 
-          {/* Tasks summary*/}
+          {/* Tasks Summary/Stats */}
           <View style={styles.summaryContainer}>
-            {/* Tasks Remaining count */}
+            {/* Remaining */}
             <View style={{ alignItems: "center" }}>
-              <Text style={[styles.count, { color: theme.neutral }]}>{uncheckedTasks.length}</Text>
-              <Text style={[styles.subtitle, { color: theme.neutral }]}>
-                {tr.labels.remaining}
-              </Text>
+              <Text style={[styles.summaryCount, { color: theme.muted }]}>{uncheckedTasks.length}</Text>
+              <Text style={[styles.summarySubtitle, { color: theme.muted }]}>{tr.labels.remaining}</Text>
             </View>
-
-            {/* Tasks Reminders count */}
+            {/* Reminders */}
             <View style={{ alignItems: "center" }}>
-              <Text style={[styles.count, { color: theme.neutral }]}>{reminderTasks.length}</Text>
-              <Text style={[styles.subtitle, { color: theme.neutral }]}>
-                {tr.labels.reminders}
-              </Text>
+              <Text style={[styles.summaryCount, { color: theme.muted }]}>{reminderTasks.length}</Text>
+              <Text style={[styles.summarySubtitle, { color: theme.muted }]}>{tr.labels.reminders}</Text>
             </View>
-
-            {/* Tasks Completed count */}
+            {/* Completed */}
             <View style={{ alignItems: "center" }}>
-              <Text style={[styles.count, { color: theme.neutral }]}>{checkedTasks.length}</Text>
-              <Text style={[styles.subtitle, { color: theme.neutral }]}>
-                {tr.labels.completed}
-              </Text>
+              <Text style={[styles.summaryCount, { color: theme.muted }]}>{checkedTasks.length}</Text>
+              <Text style={[styles.summarySubtitle, { color: theme.muted }]}>{tr.labels.completed}</Text>
             </View>
           </View>
 
@@ -146,7 +136,7 @@ export default function LabelList() {
         keyExtractor={(item) => item.id}
         onDragEnd={({ data }) => handleOrderLabels(data)}
         activationDistance={24}
-        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 5 }}
+        contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       />
     ) : (
@@ -157,43 +147,44 @@ export default function LabelList() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 6,
-    paddingBottom: 10,
-    borderRadius: 4,
-    borderWidth: 0.3,
-    elevation: 2,
+    flexGrow: 1,
+    paddingTop: 2,
+    paddingBottom: 14,
+    paddingHorizontal: 6,
+    gap: 8,
   },
-  labelBoxHeaderContainer: {
+  cardContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingTop: 4,
+    paddingBottom: 14,
+  },
+  cardHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     alignSelf: "stretch",
-    paddingHorizontal: 10,
-    paddingBottom: 2,
-    marginBottom: 5,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
+    paddingHorizontal: 2,
+    marginBottom: 6,
+  },
+  cardTitle: {
+    flexShrink: 1,
+    paddingVertical: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+    marginRight: "auto",
   },
   summaryContainer: {
     alignSelf: "stretch",
     flexDirection: "row",
     justifyContent: "space-evenly",
   },
-  labelBoxTitle: {
-    flexShrink: 1,
-    paddingVertical: 5,
-    fontSize: 21,
-    fontWeight: "bold",
-    marginRight: "auto"
-  },
-  count: {
-    fontSize: 24,
-  },
-  subtitle: {
-    fontSize: 12,
+  summaryCount: {
+    fontSize: 22,
     fontWeight: "700",
+  },
+  summarySubtitle: {
+    fontSize: 11,
+    fontWeight: "500",
   },
 });

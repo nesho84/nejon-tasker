@@ -259,7 +259,7 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
             tasksCount: backup.tasks.length,
         };
     } catch (error) {
-        console.error('Restore failed:', error);
+        console.warn('Restore failed:', error);
         throw error;
     }
 }

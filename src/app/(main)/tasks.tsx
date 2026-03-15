@@ -143,7 +143,7 @@ export default function TasksScreen() {
   // Handle selecting a Task from the list
   // ------------------------------------------------------------
   const handleEdit = (task: Task) => {
-    router.push({
+    router.navigate({
       pathname: '/editTask',
       params: { labelId: labelId, taskId: task.id },
     });

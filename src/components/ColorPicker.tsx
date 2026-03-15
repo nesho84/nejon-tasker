@@ -1,48 +1,61 @@
 import { labelBgColors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity, View, } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 
 interface Props {
-    labelColor: string,
+    labelColor: string;
     onValueChange: (value: string) => void;
 }
 
 export default function ColorPicker({ labelColor, onValueChange: onChangeColor }: Props) {
+    // Render single color item template
+    const RenderColor = ({ item: color }: { item: string }) => {
+        return (
+            <TouchableOpacity
+                style={[
+                    styles.colorCircle,
+                    { backgroundColor: color },
+                    labelColor === color && styles.selected,
+                    labelColor === color && { shadowColor: color },
+                ]}
+                onPress={() => onChangeColor(color)}
+                activeOpacity={0.8}
+            >
+                {labelColor === color && (
+                    <MaterialIcons name="check" size={26} color="white" />
+                )}
+            </TouchableOpacity>
+        );
+    };
+
     return (
-        <View style={[styles.container, { borderColor: labelColor }]}>
-            {labelBgColors.map((color) => {
-                return (
-                    <TouchableOpacity
-                        key={color}
-                        style={[styles.selectedColor, { backgroundColor: color }]}
-                        onPress={() => onChangeColor(color)}
-                    >
-                        {labelColor === color && (
-                            <MaterialIcons name="check" size={30} color="white" />
-                        )}
-                    </TouchableOpacity>
-                )
-            })}
-        </View>
+        <FlatList
+            data={labelBgColors}
+            renderItem={RenderColor}
+            keyExtractor={(item) => item}
+            numColumns={8}
+            scrollEnabled={false}
+        />
     );
-}
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        borderWidth: 2,
-        borderRadius: 5,
-        padding: 5,
-    },
-    selectedColor: {
-        display: "flex",
+    colorCircle: {
+        flex: 1,
+        aspectRatio: 1,
+        borderRadius: 100,
+        margin: 4,
         alignItems: "center",
         justifyContent: "center",
-        width: 35,
-        height: 35,
-        borderRadius: 4,
-        margin: 3,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        elevation: 0,
+    },
+    selected: {
+        shadowOpacity: 0.9,
+        shadowRadius: 6,
+        elevation: 5,
+        transform: [{ scale: 1.15 }],
     },
 });

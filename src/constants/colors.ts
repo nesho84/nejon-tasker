@@ -18,16 +18,22 @@ export const LIGHT = {
   surface: "#ffffff",
   action1: "#4285f4",
   action2: "#E64980",
+  fab: "#d3d3d3",
+  fabBorder: "#c6c6c6",
 
   // Text colors
   text: "#202124",
+  text2: "#536075",
+  label: "#969ba0",
   muted: "#80868b",
 
   // Surfaces
   card: "#f1f1f1",
   border: "#dadce0",
-  divider: "#d1d5db",
+  divider: "rgba(0,0,0,0.07)",
+  handle: "#c6c6c6",
   placeholder: "#9aa0a6",
+  placeholder2: "#b0b4b8",
 
   // Interactive states
   active: "#e8eaed",
@@ -62,16 +68,22 @@ export const DARK = {
   surface: "#292a2d",
   action1: "#0A5ED7",
   action2: "#E64980",
+  fab: "#353e4d",
+  fabBorder: "#5f6368",
 
   // Text colors
   text: "#e8eaed",
+  text2: "#d1d5db",
+  label: "#81868b",
   muted: "#9aa0a6",
 
   // Surfaces
   card: "#1f2937",
   border: "#5f6368",
-  divider: "#4b5563",
+  divider: "rgba(255,255,255,0.07)",
+  handle: "#5d5d5d",
   placeholder: "#80868b",
+  placeholder2: "#313335",
 
   // Interactive states
   active: "#5f6368",
@@ -88,10 +100,29 @@ export const DARK = {
 
 // Label colors
 export const labelBgColors = [
-  "#1F78B4", "#6b8695", "#80a15f", "#33A02C", "#cc8a89", "#E31A1C", "#d4994a",
-  "#FF7F00", "#9a7ea9", "#6A3D9A", "#959530", "#B15928", "#179ca1", "#1B9E77",
-  "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#b38402", "#A6761D", "#666666",
-  "#4B6A53", "#B249D3", "#688d4c", "#5C47B7", "#808323", "#E0529C", "#4FAE52",
-  "#CD3E5F", "#5b9c7d", "#DA6A1F", "#5E79B2", "#C2954A", "#5c3866", "#5F7B35",
-  "#AE85BC", "#7c422a", "#477e91", "#594E52", "#92866a", "#C17E7B", "#9E9E9E"
+  "#1F78B4", // blue
+  "#179ca1", // teal
+  "#33A02C", // green
+  "#1B9E77", // emerald
+  "#66A61E", // lime
+  "#6A3D9A", // purple
+  "#B249D3", // violet
+  "#E7298A", // pink
+  "#E31A1C", // red
+  "#FF7F00", // orange
+  "#f9ab00", // amber
+  "#B15928", // brown
+  "#5E79B2", // slate blue
+  "#CD3E5F", // rose
+  "#4B6A53", // forest
+  "#666666", // gray
+
+  "#692b17", // peach
+  "#7c4a03", // sand
+  "#264d3b", // mint
+  "#0c625d", // sage
+  "#256377", // fog
+  "#284255", // storm
+  "#472e5b", // dusk
+  "#6c394f", // blossom
 ];

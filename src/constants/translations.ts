@@ -45,8 +45,13 @@ export const TRANSLATIONS = {
         forms: {
             inputPlaceholder: "Enter text...",
             setReminder: "Set Reminder...",
+            label: "Label",
+            task: "Task",
+            color: "Color",
             newLabel: "Create new Label",
             editLabel: "Edit Label",
+            editTask: "Edit Task",
+            reminder: "Reminder",
         },
         // Success/info messages
         messages: {
@@ -220,8 +225,13 @@ export const TRANSLATIONS = {
         forms: {
             inputPlaceholder: "Text eingeben...",
             setReminder: "Erinnerung einstellen...",
+            label: "Etikett",
+            task: "Aufgabe",
+            color: "Farbe",
             newLabel: "Neues Etikett erstellen",
             editLabel: "Etikett bearbeiten",
+            editTask: "Aufgabe bearbeiten",
+            reminder: "Erinnerung",
         },
         // Success/info messages
         messages: {
@@ -395,8 +405,13 @@ export const TRANSLATIONS = {
         forms: {
             inputPlaceholder: "Shkruaj tekst...",
             setReminder: "Cakto kujtesën...",
+            label: "Etiketa",
+            task: "Detyra",
+            color: "Ngjyra",
             newLabel: "Krijo etiketë të re",
             editLabel: "Ndrysho etiketën",
+            editTask: "Ndrysho detyrën",
+            reminder: "Kujtesa",
         },
         // Success/info messages
         messages: {

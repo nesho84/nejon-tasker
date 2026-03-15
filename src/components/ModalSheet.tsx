@@ -1,60 +1,106 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react';
 import {
   BackHandler,
   Keyboard,
   Platform,
+  Pressable,
   StyleSheet,
-  TouchableOpacity,
   useWindowDimensions,
   View,
   ViewStyle
 } from 'react-native';
 import { Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
+// ------------------------------------------------------------
+// Props
+// ------------------------------------------------------------
+type ModalSheetSize = 'xs' | 'sm' | 'smd' | 'md' | 'mdl' | 'lg' | 'lgx' | 'xl' | 'xlx' | 'xxl' | 'xxlf' | 'full';
+
+interface Colors {
+  sheetBackgroundColor?: string;
+  headerBarBorderColor?: string;
+  handleColor?: string;
+  closeIconColor?: string;
+}
+
 interface Props {
   children: React.ReactNode;
-  modalHeight?: number | `${number}%`;
   style?: ViewStyle;
+  colors?: Colors;
   staticMode?: boolean;
+  size?: ModalSheetSize | number;
   scrolling?: boolean;
-  onClose?: () => void;
+  closeIcon?: boolean;
   header?: React.ReactNode;
   footer?: React.ReactNode;
-};
+  onClose?: () => void;
+}
 
 export type ModalSheetRef = {
   close: () => void;
 };
 
-const ANIMATION_DURATION = 200;
-const SNAP_BACK_DURATION = 100;
-const HANDLE_COLOR = '#80868b';
+// ------------------------------------------------------------
+// Size map — screen height ratios
+// ------------------------------------------------------------
+const SIZES_MAP: Record<ModalSheetSize, number> = {
+  xs: 0.20,
+  sm: 0.28,
+  smd: 0.36,
+  md: 0.45,
+  mdl: 0.52,
+  lg: 0.58,
+  lgx: 0.64,
+  xl: 0.70,
+  xlx: 0.76,
+  xxl: 0.82,
+  xxlf: 0.90,
+  full: 0.99,
+};
+
+// ------------------------------------------------------------
+// Constants
+// ------------------------------------------------------------
+const SHEET_BACKGROUND = '#fafafa';
+const HEADER_BAR_BORDER_COLOR = 'rgba(128, 128, 128, 0.2)';
+const HANDLE_COLOR = '#5D5D5D';
+const CLOSE_ICON_COLOR = '#5D5D5D';
+
+const ANIMATION_DURATION = 250;
+const BACKDROP_DELAY = 500;
+const SNAP_BACK_DURATION = 150;
 
 const ModalSheet = forwardRef<ModalSheetRef, Props>(({
   children,
-  modalHeight,
   style,
+  colors,
   staticMode,
+  size = 'full',
   scrolling = true,
-  onClose,
+  closeIcon,
   header,
   footer,
+  onClose
 }, ref) => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
 
+  const sheetMaxHeight = typeof size === 'number'
+    ? height * Math.min(Math.max(size, 0.1), 1)
+    : height * SIZES_MAP[size ?? 'full'];
+
   const translateY = useSharedValue(0);
   const backdropOpacity = useSharedValue(0);
-  const context = useSharedValue({ y: 0 });
   const keyboardHeight = useSharedValue(0);
 
   // ------------------------------------------------------------
-  // Navigates back in the stack and runs any cleanup logic
+  // Navigate back and run optional cleanup
   // ------------------------------------------------------------
   const handleClose = useCallback(() => {
     onClose?.();
@@ -62,21 +108,17 @@ const ModalSheet = forwardRef<ModalSheetRef, Props>(({
   }, [onClose, router]);
 
   // ------------------------------------------------------------
-  // Slides the sheet off screen and fades the backdrop before closing
+  // Animate sheet off screen then navigate back
   // ------------------------------------------------------------
   const animatedClose = useCallback(() => {
-    if (staticMode) return;
-
     translateY.value = withTiming(height, { duration: ANIMATION_DURATION });
     backdropOpacity.value = withTiming(0, { duration: ANIMATION_DURATION }, (finished) => {
-      if (finished) {
-        scheduleOnRN(handleClose);
-      }
+      if (finished) scheduleOnRN(handleClose);
     });
-  }, [height, staticMode, handleClose]);
+  }, [height, handleClose]);
 
   // ------------------------------------------------------------
-  // Allows parent components to trigger close via ref
+  // Expose close() to parent via ref
   // ------------------------------------------------------------
   useImperativeHandle(ref, () => ({
     close: () => {
@@ -85,45 +127,41 @@ const ModalSheet = forwardRef<ModalSheetRef, Props>(({
         return;
       }
       animatedClose();
-    }
-  }), [animatedClose]);
+    },
+  }), [animatedClose, staticMode]);
 
   // ------------------------------------------------------------
-  // Delays backdrop fade-in to sync with the navigator slide animation
+  // Fade in backdrop after navigator slide animation completes
   // ------------------------------------------------------------
   useEffect(() => {
     const t = setTimeout(() => {
       backdropOpacity.value = withTiming(1, { duration: ANIMATION_DURATION });
-    }, 600); // 600ms to match the slide_from_bottom animation
+    }, BACKDROP_DELAY);
     return () => clearTimeout(t);
   }, []);
 
   // ------------------------------------------------------------
-  // Overrides the Android hardware back button with animated close
+  // Android hardware back — silent no-op in staticMode
   // ------------------------------------------------------------
   useEffect(() => {
-    const onBackPress = () => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (staticMode) return true;
       animatedClose();
       return true;
-    };
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    });
     return () => subscription.remove();
-  }, [animatedClose]);
+  }, [animatedClose, staticMode]);
 
   // ------------------------------------------------------------
-  // Listens to keyboard show/hide events to adjust the sheet position
+  // Keyboard — shift sheet up so focused inputs stay visible
   // ------------------------------------------------------------
   useEffect(() => {
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 
-    const onShow = (e: any) => {
-      const kbHeight = e.endCoordinates.height;
-      keyboardHeight.value = withTiming(kbHeight, { duration: 350 });
-    };
-    const onHide = (e: any) => {
-      keyboardHeight.value = withTiming(0, { duration: 250 });
-    };
+    const onShow = (e: any) => keyboardHeight.value = withTiming(e.endCoordinates.height, { duration: 300 });
+    const onHide = () => keyboardHeight.value = withTiming(0, { duration: 250 });
+
     const subShow = Keyboard.addListener(showEvent, onShow);
     const subHide = Keyboard.addListener(hideEvent, onHide);
 
@@ -134,145 +172,160 @@ const ModalSheet = forwardRef<ModalSheetRef, Props>(({
   }, []);
 
   // ------------------------------------------------------------
-  // Tracks drag position and closes or snaps back based on threshold
+  // Pan gesture — drag down to dismiss, snap back otherwise
   // ------------------------------------------------------------
   const gesture = Gesture.Pan()
-    .onStart(() => {
-      context.value = { y: translateY.value };
-    })
+    .enabled(!staticMode)
     .onUpdate((event) => {
-      if (staticMode) return;
-      const newY = event.translationY + context.value.y;
-      // only allow dragging down
-      if (newY > 0) translateY.value = newY;
+      if (event.translationY > 0) translateY.value = event.translationY;
     })
     .onEnd((event) => {
-      if (staticMode) {
-        translateY.value = withSpring(0);
-        return;
-      }
-      if (event.translationY > height / 3 || event.velocityY > 1000) {
-        // close
+      if (event.translationY > sheetMaxHeight / 2 || event.velocityY > 1000) {
         translateY.value = withTiming(height, { duration: ANIMATION_DURATION });
         backdropOpacity.value = withTiming(0, { duration: ANIMATION_DURATION }, (finished) => {
           if (finished) scheduleOnRN(handleClose);
         });
       } else {
-        // snap back
         translateY.value = withTiming(0, { duration: SNAP_BACK_DURATION });
       }
     });
 
   // ------------------------------------------------------------
-  // Calculates the animated style for the sheet based on keyboard and drag position
+  // Sheet position — drag offset minus keyboard upward shift
   // ------------------------------------------------------------
   const animatedStyle = useAnimatedStyle(() => {
-    const resolvedMaxHeight =
-      typeof modalHeight === 'string'
-        ? (parseFloat(modalHeight) / 100) * height
-        : modalHeight ?? height * 0.99;
-
     const safeHeight = height - insets.top - insets.bottom;
-    const spaceAboveSheet = safeHeight - resolvedMaxHeight;
-    const upward = Math.min(keyboardHeight.value, Math.max(spaceAboveSheet, 0));
-    const heightReduction = keyboardHeight.value - upward;
+    const spaceAbove = safeHeight - sheetMaxHeight;
+    const upward = Math.min(keyboardHeight.value, Math.max(spaceAbove, 0));
 
     return {
       transform: [{ translateY: translateY.value - upward }],
-      maxHeight: resolvedMaxHeight - heightReduction,
     };
   });
 
   // ------------------------------------------------------------
-  // Drives the backdrop opacity on the UI thread
+  // Backdrop opacity
   // ------------------------------------------------------------
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
   }));
 
   return (
-    <Animated.View style={[
-      styles.container,
-      {
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-      }
-    ]}
-    >
+    <View style={styles.root}>
 
-      {/* Backdrop */}
+      {/* Dimmed backdrop — pointer events disabled, tap handled by Pressable below */}
       <Animated.View
         style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.4)' }, backdropStyle]}
         pointerEvents="none"
       />
 
-      {/* Tap Backdrop to close */}
-      <TouchableOpacity
-        style={StyleSheet.absoluteFillObject}
-        onPress={animatedClose}
-        activeOpacity={0}
-      />
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            paddingTop: insets.top,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          },
+          animatedStyle,
+        ]}
+      >
 
-      {/* Sheet */}
-      <GestureDetector gesture={gesture}>
-        <Animated.View style={[styles.content, animatedStyle, style]}>
-          {/* Drag Handle */}
-          <View style={styles.header}>
-            <View style={[styles.handle, { backgroundColor: HANDLE_COLOR }]} />
-          </View>
+        {/* Tap outside sheet to dismiss */}
+        {!staticMode && (
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={animatedClose} />
+        )}
 
-          {/* Header (fixed) */}
-          {header && <View>{header}</View>}
+        <GestureDetector gesture={gesture}>
+          <Animated.View style={[
+            styles.innerContainer,
+            {
+              backgroundColor: colors?.sheetBackgroundColor ?? SHEET_BACKGROUND,
+              paddingBottom: insets.bottom,
+              maxHeight: sheetMaxHeight,
+            }
+          ]}>
 
-          {/* Content */}
-          {scrolling ? (
-            <ScrollView
-              contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
-              showsVerticalScrollIndicator={false}
-              bounces={false}
-              keyboardShouldPersistTaps="handled"
-              nestedScrollEnabled={true}
-            >
-              {children}
-            </ScrollView>
-          ) : (
-            children
-          )}
+            {/* Handle bar — drag target + optional close icon */}
+            <View style={[styles.headerBarContainer, { borderBottomColor: colors?.headerBarBorderColor ?? HEADER_BAR_BORDER_COLOR }]}>
+              <View style={[styles.handleIcon, { backgroundColor: colors?.handleColor ?? HANDLE_COLOR }]} />
+              {!staticMode && closeIcon && (
+                <Pressable onPress={animatedClose} style={styles.closeIcon} hitSlop={12}>
+                  <Ionicons name="close" size={24} color={colors?.closeIconColor ?? CLOSE_ICON_COLOR} />
+                </Pressable>
+              )}
+            </View>
 
-          {/* Footer (fixed) */}
-          {footer && <View>{footer}</View>}
+            {/* Fixed header */}
+            {header && <View>{header}</View>}
 
-        </Animated.View>
-      </GestureDetector>
+            {/* Content area — scrollable or static */}
+            <View style={[styles.content, style]}>
+              {scrolling ? (
+                <ScrollView
+                  contentContainerStyle={{ flexGrow: 1 }}
+                  bounces={false}
+                  nestedScrollEnabled={true}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {children}
+                </ScrollView>
+              ) : (
+                children
+              )}
+            </View>
 
-    </Animated.View>
+            {/* Fixed footer */}
+            {footer && <View>{footer}</View>}
+
+          </Animated.View>
+        </GestureDetector>
+
+      </Animated.View>
+    </View>
   );
 });
 
 export default ModalSheet;
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'flex-end',
   },
-  content: {
+  innerContainer: {
     flex: 1,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    flexShrink: 1,
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
     overflow: 'hidden',
+    shadowColor: '#121212',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 12,
   },
-  header: {
+  headerBarContainer: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     paddingTop: 12,
-    paddingBottom: 22,
+    paddingBottom: 6,
   },
-  handle: {
-    width: 75,
+  handleIcon: {
+    width: 40,
     height: 4,
-    alignSelf: 'center',
     borderRadius: 2,
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 2,
+    right: 16,
+  },
+  content: {
+    flex: 1,
   },
 });

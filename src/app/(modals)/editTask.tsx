@@ -10,6 +10,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function EditTask() {
   // Get taskId from route params
@@ -26,6 +27,8 @@ export default function EditTask() {
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
   const textInputRef = useRef<TextInput>(null);
+
+  const insets = useSafeAreaInsets();
 
   // Format date time to string or return default placeholder
   const dateTimeToString = (date: string | null): string => {
@@ -208,36 +211,91 @@ export default function EditTask() {
     setTaskText(text);
   }, []);
 
-  return (
-    <ModalSheet style={{ backgroundColor: theme.bg2 }} ref={modalSheetRef} modalHeight={'42%'}>
+  // Fixed Footer with Close/Today buttons
+  const FixedFooter = () => {
+    return (
+      <>
+        {/* Divider above footer */}
+        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
+        <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
+          {/* Cancel button */}
+          <TouchableOpacity
+            style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
+            onPress={() => modalSheetRef.current?.close()}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
+          </TouchableOpacity>
+          {/* Save Button */}
+          <TouchableOpacity
+            style={[styles.btnSave, { backgroundColor: label?.color }]}
+            onPress={handleUpdate}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  };
+
+  // Main Content
+  return (
+    <ModalSheet
+      ref={modalSheetRef}
+      size={0.53}
+      colors={{ sheetBackgroundColor: theme.bg2, handleColor: theme.handle, headerBarBorderColor: 'transparent' }}
+      footer={<FixedFooter />}
+    >
       <View style={styles.container}>
-        {/* TextInput Container */}
-        <View style={[styles.textInputContainer, { backgroundColor: theme.shadow, borderColor: theme.placeholder }]}>
-          <TextInput
-            style={[styles.textInput, { backgroundColor: theme.bgAlt, color: theme.text }]}
-            ref={textInputRef}
-            defaultValue={taskText}
-            multiline={true}
-            maxLength={5500}
-            scrollEnabled={true}
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={onChangeText}
-            onFocus={() => setIsEditing(true)}
-            onBlur={() => setIsEditing(false)}
-            onPressIn={() => setIsEditing(true)}
-            placeholder={tr.forms.inputPlaceholder}
-            placeholderTextColor={theme.placeholder}
-            selection={isEditing ? undefined : { start: 0, end: 0 }}
-          />
+
+        {/* Title row */}
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, { color: label?.color }]}>
+            {tr.forms.editTask}
+          </Text>
+          <View style={[styles.accentDot, { backgroundColor: label?.color, shadowColor: label?.color }]} />
         </View>
 
+        {/* Divider below title */}
+        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+
+        {/* Text input */}
+        <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.task}</Text>
+        <TextInput
+          style={[styles.textInput, {
+            backgroundColor: theme.shadow,
+            color: theme.text2,
+            borderColor: `${label?.color}30`,
+          }]}
+          ref={textInputRef}
+          defaultValue={taskText}
+          multiline={true}
+          maxLength={5500}
+          scrollEnabled={true}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={onChangeText}
+          onFocus={() => setIsEditing(true)}
+          onBlur={() => setIsEditing(false)}
+          onPressIn={() => setIsEditing(true)}
+          placeholder={tr.forms.inputPlaceholder}
+          placeholderTextColor={theme.placeholder}
+          selection={isEditing ? undefined : { start: 0, end: 0 }}
+        />
+
         {/* DateTimeInput Container */}
-        <View style={styles.dateTimeInputContainer}>
+        <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.reminder}</Text>
+        <View style={styles.dateTimeInputRow}>
           {/* TextInput with bell Icon */}
           <TouchableOpacity
-            style={[styles.dateTimeTextInput, { backgroundColor: theme.bgAlt, borderColor: theme.muted }]}
+            style={[
+              styles.dateTimeTextInput,
+              {
+                backgroundColor: theme.shadow,
+                borderColor: `${label?.color}30`,
+              }]}
             onPress={handleDateTimePicker}
           >
             <MaterialCommunityIcons
@@ -248,6 +306,7 @@ export default function EditTask() {
             />
             <TextInput
               style={{
+                height: 48,
                 fontWeight: '600',
                 color: (hasActiveReminder || isReminderUpdated) ? theme.success : theme.muted,
                 textDecorationLine: (!task?.reminderDateTime || hasActiveReminder) ? 'none' : 'line-through'
@@ -271,7 +330,13 @@ export default function EditTask() {
           {/* Reminder Cancel/Delete Icon */}
           <TouchableOpacity
             disabled={!hasActiveReminder}
-            style={[styles.btnCancelReminder, { backgroundColor: theme.bgAlt, borderColor: theme.muted }]}
+            style={[
+              styles.btnCancelReminder,
+              {
+                backgroundColor: theme.shadow,
+                borderColor: `${label?.color}30`,
+              }
+            ]}
             onPress={handleCancelReminder}
           >
             <MaterialCommunityIcons
@@ -283,37 +348,63 @@ export default function EditTask() {
           </TouchableOpacity>
         </View>
 
-        {/* Edit button */}
-        <TouchableOpacity
-          style={[styles.btnEdit, { backgroundColor: label?.color }]}
-          onPress={handleUpdate}
-        >
-          <Text style={[styles.btnEditText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
-        </TouchableOpacity>
       </View>
-
     </ModalSheet>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
-    gap: 14,
+    flexGrow: 1,
+    paddingHorizontal: 14,
+    paddingBottom: 14,
+    gap: 10,
   },
-  textInputContainer: {
-    borderWidth: 1,
-    borderRadius: 1,
+
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
+    marginBottom: 2,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  accentDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 3,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+
+  divider: {
+    height: 1.8,
+  },
+
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.9,
   },
   textInput: {
     flex: 1,
-    minHeight: 200,
-    maxHeight: 250,
-    fontSize: 15,
+    height: 136,
+    maxHeight: 136,
+    fontSize: 16,
+    borderWidth: 1.5,
+    borderRadius: 12,
     textAlignVertical: 'top',
-    padding: 11,
+    paddingHorizontal: 14,
   },
-  dateTimeInputContainer: {
+
+  dateTimeInputRow: {
     flexDirection: "row",
     gap: 10,
   },
@@ -322,26 +413,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     minHeight: 35,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 4,
-    paddingHorizontal: 10,
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingHorizontal: 14,
   },
   btnCancelReminder: {
-    width: 40,
+    width: 55,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 4,
+    borderWidth: 1.5,
+    borderRadius: 12,
   },
-  btnEdit: {
-    height: 50,
-    justifyContent: "center",
-    padding: 11,
-    borderRadius: 5,
+
+  btnRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    gap: 14,
   },
-  btnEditText: {
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 17,
+  btnCancel: {
+    flex: 1,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  btnCancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  btnSave: {
+    flex: 1,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+  },
+  btnSaveText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
