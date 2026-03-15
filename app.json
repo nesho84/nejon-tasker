@@ -7,7 +7,6 @@
     "icon": "./assets/icons/icon.png",
     "scheme": "nejontasker",
     "userInterfaceStyle": "automatic",
-    "jsEngine": "hermes",
     "owner": "nesho84",
     "runtimeVersion": {
       "policy": "appVersion"
@@ -85,7 +84,9 @@
         "expo-notifications",
         {
           "icon": "./assets/icons/notification-icon.png",
-          "color": "#ffffff"
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
         }
       ],
       [

@@ -354,6 +354,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 14,
+    paddingTop: 8,
     paddingBottom: 14,
     gap: 10,
   },
@@ -362,7 +363,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 6,
     marginBottom: 2,
   },
   title: {

@@ -148,6 +148,7 @@ export default function LabelList() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    paddingTop: 1,
     paddingBottom: 14,
     paddingHorizontal: 6,
     gap: 8,
