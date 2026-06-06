@@ -6,39 +6,39 @@ import { createJSONStorage, persist } from "zustand/middleware";
 export type ThemeMode = "light" | "dark";
 
 interface ThemeState {
-    mode: ThemeMode;
+    themeMode: ThemeMode;
     theme: typeof LIGHT | typeof DARK;
     isReady: boolean;
-    setTheme: (mode: ThemeMode) => void;
+    setTheme: (themeMode: ThemeMode) => void;
     toggleTheme: () => void;
 }
 
 export const useThemeStore = create<ThemeState>()(
     persist(
         (set) => ({
-            mode: 'dark',
+            themeMode: 'dark',
             theme: DARK,
             isReady: false,
 
             // Change theme manually
             setTheme: (mode) =>
-                set({ mode: mode, theme: mode === "dark" ? DARK : LIGHT }),
+                set({ themeMode: mode, theme: mode === "dark" ? DARK : LIGHT }),
 
             // Toggle theme
             toggleTheme: () =>
                 set((state) => {
-                    const newMode = state.mode === "light" ? "dark" : "light";
-                    return { mode: newMode, theme: newMode === "dark" ? DARK : LIGHT };
+                    const newMode = state.themeMode === "light" ? "dark" : "light";
+                    return { themeMode: newMode, theme: newMode === "dark" ? DARK : LIGHT };
                 }),
         }),
         {
             name: 'theme-store',
             storage: createJSONStorage(() => AsyncStorage),
-            partialize: (state) => ({ mode: state.mode }), // persist only mode
+            partialize: (state) => ({ themeMode: state.themeMode }), // persist only mode
             onRehydrateStorage: () => (state) => {
                 // After rehydration, set theme based on persisted mode
                 if (state) {
-                    state.theme = state.mode === 'dark' ? DARK : LIGHT;
+                    state.theme = state.themeMode === 'dark' ? DARK : LIGHT;
                     state.isReady = true;
                 }
             },

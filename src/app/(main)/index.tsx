@@ -10,6 +10,7 @@ import { router, Stack } from "expo-router";
 import * as Updates from "expo-updates";
 import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function LabelsScreen() {
     // Stores
@@ -17,6 +18,10 @@ export default function LabelsScreen() {
 
     // Local State
     const [isLoading, setIsLoading] = useState(false);
+
+    // Safe area insets
+    const insets = useSafeAreaInsets();
+    const bottomInset = insets.bottom + 28;
 
     // ------------------------------------------------------------
     // Check for expo OTA updates on mount
@@ -94,7 +99,14 @@ export default function LabelsScreen() {
 
                 {/* Floating Action Button */}
                 <TouchableOpacity
-                    style={[styles.fab, { backgroundColor: theme.fab, borderColor: theme.fabBorder }]}
+                    style={[
+                        styles.fab,
+                        {
+                            backgroundColor: theme.fab,
+                            borderColor: theme.fabBorder,
+                            bottom: bottomInset,
+                        }
+                    ]}
                     onPress={() => router.navigate("/(modals)/addLabel")}
                     activeOpacity={0.8}
                 >
@@ -112,7 +124,7 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: "absolute",
-        bottom: 28,
+        // bottom: 28,
         right: 12,
         width: 56,
         height: 56,

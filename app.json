@@ -19,11 +19,6 @@
         "expo-channel-name": "production"
       }
     },
-    "splash": {
-      "image": "./assets/icons/splash-icon-dark.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "android": {
       "versionCode": 6,
       "package": "com.nejon.nejontasker",
@@ -34,11 +29,10 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.POST_NOTIFICATIONS"
-      ],
-      "blockedPermissions": ["ACTIVITY_RECOGNITION"]
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "ios": {
       "buildNumber": "6",
@@ -81,6 +75,12 @@
         }
       ],
       [
+        "expo-navigation-bar",
+        {
+          "enforceContrast": true
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/icons/notification-icon.png",
@@ -93,12 +93,12 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "buildToolsVersion": "35.0.0"
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "buildToolsVersion": "36.0.0"
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "16.4"
           }
         }
       ]

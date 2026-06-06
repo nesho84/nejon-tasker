@@ -40,7 +40,12 @@ export default function TasksScreen() {
   // Refs
   const textInputRef = useRef<TextInput>(null);
 
+  // Safe area insets
   const insets = useSafeAreaInsets();
+  const topInset = 12;
+  const bottomInset = insets.bottom;
+
+  // Keyboard state
   const { isKeyboardVisible, keyboardHeight } = useKeyboard();
 
   // Local State
@@ -270,7 +275,7 @@ export default function TasksScreen() {
               {
                 backgroundColor: theme.bg,
                 borderTopColor: theme.border,
-                marginBottom: isKeyboardVisible ? insets.bottom + keyboardHeight : 0,
+                marginBottom: isKeyboardVisible ? bottomInset + keyboardHeight : bottomInset
               }
             ]}
           >

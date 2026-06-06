@@ -19,7 +19,7 @@ const LANGUAGES = [
 
 export default function OnboardingScreen() {
     // Stores
-    const mode = useThemeStore((state) => state.mode);
+    const mode = useThemeStore((state) => state.themeMode);
     const theme = useThemeStore((state) => state.theme);
     const language = useLanguageStore((state) => state.language);
     const tr = useLanguageStore((state) => state.tr);

@@ -4,7 +4,6 @@ import { DARK, LIGHT } from "@/constants/colors";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,7 +19,7 @@ const LANGUAGES = [
 export default function SettingsScreen() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
-    const mode = useThemeStore((state) => state.mode);
+    const mode = useThemeStore((state) => state.themeMode);
     const language = useLanguageStore((state) => state.language);
     const tr = useLanguageStore((state) => state.tr);
 

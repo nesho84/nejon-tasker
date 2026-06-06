@@ -16,7 +16,11 @@ export default function StackLayout() {
     const tr = useLanguageStore((state) => state.tr);
     const labels = useLabelStore((state) => state.labels);
 
+    // Safe area insets
     const insets = useSafeAreaInsets();
+    const topInset = insets.top + 10;
+    const bottomInset = insets.bottom + 12;
+    const leftInset = insets.left - 10;
 
     // Local State
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -26,19 +30,14 @@ export default function StackLayout() {
     // Drawer Content Component
     const DrawerContent = () => {
         return (
-            <View
-                style={[
-                    styles.container,
-                    {
-                        backgroundColor: theme.bg,
-                        paddingLeft: insets.left - 10,
-                        paddingTop: insets.top + 10
-                    },
-                ]}
-            >
+            <View style={[styles.container, { backgroundColor: theme.bg }]}>
                 <ScrollView
                     showsVerticalScrollIndicator={true}
-                    contentContainerStyle={{ paddingBottom: insets.bottom + 10 }}
+                    contentContainerStyle={{
+                        paddingTop: topInset,
+                        paddingBottom: bottomInset,
+                        paddingLeft: leftInset,
+                    }}
                 >
 
                     {/* Header */}
@@ -251,7 +250,7 @@ export default function StackLayout() {
                     name="tasks"
                     options={{
                         title: tr.labels.tasks,
-                        animation: "slide_from_right"
+                        animation: "ios_from_right"
                     }}
                 />
 

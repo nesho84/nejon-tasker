@@ -306,7 +306,7 @@ export default function EditTask() {
                 height: 48,
                 fontWeight: '600',
                 color: (hasActiveReminder || isReminderUpdated) ? theme.success : theme.muted,
-                textDecorationLine: (!task?.reminderDateTime || hasActiveReminder) ? 'none' : 'line-through'
+                textDecorationLine: (!task?.reminderDateTime || hasActiveReminder || isReminderUpdated) ? 'none' : 'line-through'
               }}
               placeholder={tr.forms.setReminder}
               value={reminderInput}

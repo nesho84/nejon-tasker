@@ -10,6 +10,7 @@ import { router } from "expo-router";
 import { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppLoading from "./AppLoading";
 
 export default function LabelList() {
@@ -20,6 +21,11 @@ export default function LabelList() {
   const labelsLoading = useLabelStore((state) => state.isLoading);
   const allTasks = useTaskStore((state) => state.allTasks);
   const tasksLoading = useTaskStore((state) => state.isLoading);
+
+  // Safe area insets
+  const insets = useSafeAreaInsets();
+  const topInset = 4;
+  const bottomInset = insets.bottom + 24;
 
   // ------------------------------------------------------------
   // Reordor labels
@@ -136,7 +142,10 @@ export default function LabelList() {
         keyExtractor={(item) => item.id}
         onDragEnd={({ data }) => handleOrderLabels(data)}
         activationDistance={24}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[
+          styles.container,
+          { paddingTop: topInset, paddingBottom: bottomInset }
+        ]}
         showsVerticalScrollIndicator={false}
       />
     ) : (
@@ -148,8 +157,6 @@ export default function LabelList() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingTop: 1,
-    paddingBottom: 14,
     paddingHorizontal: 6,
     gap: 8,
   },

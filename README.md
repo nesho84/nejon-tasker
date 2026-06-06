@@ -231,6 +231,56 @@ a   # launch on emulator
 # ---
 
 
+## OTA Updates (EAS Update)
+
+This app uses **EAS Update** to ship JS/asset changes without a full store release.
+
+### How It Works
+
+- `expo-updates` checks `updates.url` on launch
+- The app sends its `channel` and `runtimeVersion` to the server
+- If a matching update exists, it downloads and applies it on next launch
+- **Only JS and assets change** — native changes still require a full build
+
+### Channels (configured in `app.json` + `eas.json`)
+
+| Channel | Purpose |
+|---|---|
+| `production` | Live store builds |
+| `preview` | Internal QA builds |
+| `development` | Dev client builds |
+
+### Publishing an Update
+
+> Do **not** bump `version` or `versionCode` for OTA — those are for store releases only.
+
+```bash
+# All platforms
+eas update --branch production --platform all --message "fix: description"
+
+# Android only
+eas update --branch production --platform android --message "fix: description"
+```
+
+### Rules
+
+- OTA works only when `runtimeVersion` matches the installed build
+- Native code changes (new packages, permissions, `android/` edits) require a full EAS build
+- After a full EAS build, resume publishing OTA updates as normal
+
+### Setup (one-time)
+
+```bash
+npm install -g eas-cli
+eas login
+npx expo install expo-updates
+eas update:configure         # injects updates.url and runtimeVersion into app.json
+eas channel:create production
+```
+
+---
+
+
 
 
 # ✅ To Get Device Logs/Errors:

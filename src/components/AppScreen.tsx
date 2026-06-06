@@ -1,5 +1,5 @@
-import { useKeyboard } from "@/hooks/useKeyboard";
 import { useThemeStore } from "@/store/themeStore";
+import { NavigationBar } from 'expo-navigation-bar';
 import { StatusBar } from "expo-status-bar";
 import { ReactNode } from "react";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
@@ -11,26 +11,27 @@ type ScreenProps = {
 
 export default function AppScreen({ children }: ScreenProps) {
   // Stores
-  const mode = useThemeStore((state) => state.mode);
   const theme = useThemeStore((state) => state.theme);
+  const themeMode = useThemeStore((state) => state.themeMode);
 
-  const { isKeyboardVisible } = useKeyboard();
-
-  const barStyle = mode === "dark" ? "light" : "dark";
+  // Determine status bar and navigation bar styles based on the resolved theme
+  const statusBarStyle = themeMode === "dark" ? "light" : "dark";
+  const navigationBarStyle = themeMode === "dark" ? "light" : "dark";
 
   return (
     <>
-      <StatusBar style={barStyle} />
+      <StatusBar style={statusBarStyle} />
       <SafeAreaView
         style={{ flex: 1, backgroundColor: theme.bg }}
-        edges={isKeyboardVisible ? ['left', 'right'] : ['left', 'right', 'bottom']}
+        edges={['left', 'right']}
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{ flex: 1, backgroundColor: theme.bgAlt }}>
+          <View style={{ flex: 1 }}>
             {children}
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
+      <NavigationBar style={navigationBarStyle} />
     </>
   );
 }
