@@ -404,6 +404,9 @@ After updates:
 rm -rf node_modules android package-lock.json
 npm install
 npx expo-doctor
+or
+# Use the --verbose flag to see more details about passed checks.
+npx expo-doctor --verbose
 npx expo start -c
 ```
 

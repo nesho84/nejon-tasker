@@ -1,15 +1,15 @@
-import { useThemeStore } from "@/store/themeStore";
+import { useThemeStore } from '@/store/themeStore';
 import { NavigationBar } from 'expo-navigation-bar';
 import { StatusBar } from "expo-status-bar";
-import { ReactNode } from "react";
-import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
+import { useEffect } from "react";
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type ScreenProps = {
-  children: ReactNode;
-};
+interface Props {
+  children: React.ReactNode;
+}
 
-export default function AppScreen({ children }: ScreenProps) {
+export default function AppScreen({ children }: Props) {
   // Stores
   const theme = useThemeStore((state) => state.theme);
   const themeMode = useThemeStore((state) => state.themeMode);
@@ -17,6 +17,13 @@ export default function AppScreen({ children }: ScreenProps) {
   // Determine status bar and navigation bar styles based on the resolved theme
   const statusBarStyle = themeMode === "dark" ? "light" : "dark";
   const navigationBarStyle = themeMode === "dark" ? "light" : "dark";
+
+  // Set the navigationBarStyle style imperatively;
+  // because the <NavigationBar> component's setHidden path throws:
+  // "[Error: Uncaught (in promise, id: 0) Error: Call to function 'ExpoNavigationBar.setHidden' has been rejected." during activity teardown.
+  useEffect(() => {
+    NavigationBar.setStyle(navigationBarStyle);
+  }, [navigationBarStyle]);
 
   return (
     <>
@@ -31,7 +38,6 @@ export default function AppScreen({ children }: ScreenProps) {
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
-      <NavigationBar style={navigationBarStyle} />
     </>
   );
 }
