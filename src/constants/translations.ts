@@ -163,6 +163,11 @@ export const TRANSLATIONS = {
         settings: {
             clearStorage: "Clear Storage",
             displayOptions: "Display Options",
+            notifications: "Notifications",
+            batteryOptTitle: "Battery Optimization",
+            batteryOptBody: "Battery optimization may delay or block notifications. Tap to verify.",
+            alarmAccessTitle: "Alarms & Reminders",
+            alarmAccessBody: "Alarms & reminders may be disabled. Tap to verify.",
         },
         // About screen specific
         about: {
@@ -352,6 +357,11 @@ export const TRANSLATIONS = {
         settings: {
             clearStorage: "Datenbank löschen",
             displayOptions: "Anzeigeoptionen",
+            notifications: "Benachrichtigungen",
+            batteryOptTitle: "Akkuoptimierung",
+            batteryOptBody: "Die Akkuoptimierung kann Benachrichtigungen verzögern oder verhindern. Tippe zum Überprüfen.",
+            alarmAccessTitle: "Alarme & Erinnerungen",
+            alarmAccessBody: "Alarme und Erinnerungen sind möglicherweise deaktiviert. Tippe, um dies zu bestätigen.",
         },
         // About screen specific
         about: {
@@ -541,6 +551,11 @@ export const TRANSLATIONS = {
         settings: {
             clearStorage: "Pastro bazën e të dhënave",
             displayOptions: "Opsionet e shfaqjes",
+            notifications: "Njoftimet",
+            batteryOptTitle: "Optimizimi i Baterisë",
+            batteryOptBody: "Optimizimi i baterisë mund të vonojë ose bllokojë njoftimet. Shtyp për të verifikuar.",
+            alarmAccessTitle: "Alarme dhe Kujtesa",
+            alarmAccessBody: "Alarmet dhe përkujtuesit mund të jenë të çaktivizuar. Shtyp për të verifikuar.",
         },
         // About screen specific
         about: {

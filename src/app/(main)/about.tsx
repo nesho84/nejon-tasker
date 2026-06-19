@@ -19,8 +19,8 @@ export default function AboutScreen() {
 
     // Safe area insets
     const insets = useSafeAreaInsets();
-    const topInset = 12;
-    const bottomInset = insets.bottom + 24
+    const topInset = 8;
+    const bottomInset = insets.bottom + 8;
 
     // ------------------------------------------------------------
     // Open app info/settings

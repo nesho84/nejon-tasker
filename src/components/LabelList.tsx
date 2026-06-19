@@ -142,10 +142,7 @@ export default function LabelList() {
         keyExtractor={(item) => item.id}
         onDragEnd={({ data }) => handleOrderLabels(data)}
         activationDistance={24}
-        contentContainerStyle={[
-          styles.container,
-          { paddingTop: topInset, paddingBottom: bottomInset }
-        ]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: topInset, paddingBottom: bottomInset }]}
         showsVerticalScrollIndicator={false}
       />
     ) : (
@@ -155,7 +152,7 @@ export default function LabelList() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 6,
     gap: 8,

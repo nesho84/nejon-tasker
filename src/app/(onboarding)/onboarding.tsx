@@ -1,12 +1,10 @@
+import AppScreen from '@/components/AppScreen';
 import { useLanguageStore } from '@/store/languageStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
 import { useThemeStore } from '@/store/themeStore';
-import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const { width } = Dimensions.get('window');
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type Language = "en" | "de" | "sq";
 
@@ -17,6 +15,8 @@ const LANGUAGES = [
     { code: 'sq' as Language, name: 'Shqip', flag: '🇦🇱' },
 ];
 
+const { width } = Dimensions.get('window');
+
 export default function OnboardingScreen() {
     // Stores
     const mode = useThemeStore((state) => state.themeMode);
@@ -24,7 +24,18 @@ export default function OnboardingScreen() {
     const language = useLanguageStore((state) => state.language);
     const tr = useLanguageStore((state) => state.tr);
 
-    const barStyle = mode === "dark" ? "light" : "dark";
+    // Local State
+    const [languageScreen, setLanguageScreen] = useState(true);
+    const [selectedLanguage, setSelectedLanguage] = useState<Language>(language || 'en');
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    // Refs
+    const scrollViewRef = useRef<ScrollView>(null);
+
+    // Safe area insets
+    const insets = useSafeAreaInsets();
+    const topInset = insets.top + 4;
+    const bottomInset = insets.bottom + 12;
 
     // Onboarding slides data
     const SLIDES = [
@@ -60,14 +71,6 @@ export default function OnboardingScreen() {
         },
     ] as const;
 
-    // Refs
-    const scrollViewRef = useRef<ScrollView>(null);
-
-    // Local State
-    const [languageScreen, setLanguageScreen] = useState(true);
-    const [selectedLanguage, setSelectedLanguage] = useState<Language>(language || 'en');
-    const [currentSlide, setCurrentSlide] = useState(0);
-
     // ------------------------------------------------------------
     // Handle language selection and proceed to features
     // ------------------------------------------------------------
@@ -77,9 +80,9 @@ export default function OnboardingScreen() {
     };
 
     // ------------------------------------------------------------
-    // Handle scroll to update current slide index
+    // Update current slide index once a swipe settles
     // ------------------------------------------------------------
-    const handleScroll = (event: any) => {
+    const handleMomentumScrollEnd = (event: any) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;
         const index = Math.round(event.nativeEvent.contentOffset.x / slideSize);
         setCurrentSlide(index);
@@ -114,11 +117,11 @@ export default function OnboardingScreen() {
     // Step 1: Language Selection
     if (languageScreen) {
         return (
-            <>
-                <StatusBar style={barStyle} />
-                <SafeAreaView
-                    style={[styles.container, { backgroundColor: theme.bgAlt }]}
-                    edges={['left', 'right', 'top', 'bottom']}
+            <AppScreen>
+                <ScrollView
+                    style={{ flex: 1, backgroundColor: theme.bgAlt }}
+                    contentContainerStyle={{ flexGrow: 1, paddingTop: topInset, paddingBottom: bottomInset }}
+                    showsVerticalScrollIndicator={false}
                 >
 
                     <View style={styles.languageContainer}>
@@ -183,120 +186,110 @@ export default function OnboardingScreen() {
                         </View>
                     </View>
 
-                </SafeAreaView>
-            </>
+                </ScrollView>
+            </AppScreen>
         );
     }
 
     // Step 2: Onboarding Slides
     return (
-        <>
-            <StatusBar style={barStyle} />
-            <SafeAreaView
-                style={[styles.container, { backgroundColor: theme.bgAlt }]}
-                edges={['top', 'bottom']}
-            >
-
-                <View style={styles.slidesContainer}>
-                    {/* Header with skip button */}
-                    <View style={styles.header}>
-                        <View style={styles.headerLeft} />
-                        <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-                            <Text style={[styles.skipText, { color: theme.muted }]}>{tr.onboarding.skip}</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Slides */}
-                    <ScrollView
-                        ref={scrollViewRef}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onScroll={handleScroll}
-                        scrollEventThrottle={16}
-                        style={styles.scrollView}
-                    >
-                        {SLIDES.map((slide) => (
-                            <View key={slide.id} style={styles.slide}>
-                                {/* Icon Container */}
-                                <View style={styles.iconContainer}>
-                                    <View
-                                        style={[
-                                            styles.iconCircle,
-                                            {
-                                                backgroundColor: mode === 'dark'
-                                                    ? 'rgba(99, 102, 241, 0.2)'
-                                                    : 'rgba(99, 102, 241, 0.1)',
-                                            },
-                                        ]}
-                                    >
-                                        <Text style={styles.icon}>{slide.icon}</Text>
-                                    </View>
-                                </View>
-
-                                {/* Content */}
-                                <View style={styles.content}>
-                                    <Text style={[styles.title, { color: theme.text }]}>{slide.title}</Text>
-                                    <Text style={[styles.description, { color: theme.muted }]}>{slide.description}</Text>
-                                </View>
-                            </View>
-                        ))}
-                    </ScrollView>
-
-                    {/* Pagination Dots */}
-                    <View style={styles.pagination}>
-                        {SLIDES.map((_, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => goToSlide(index)}
-                                style={[
-                                    styles.dot,
-                                    {
-                                        backgroundColor:
-                                            currentSlide === index
-                                                ? theme.action1
-                                                : theme.muted,
-                                        width: currentSlide === index ? 24 : 8,
-                                    },
-                                ]}
-                            />
-                        ))}
-                    </View>
-
-                    {/* Bottom Section */}
-                    <View style={styles.bottom}>
-                        {/* Next/Get Started Button */}
-                        <TouchableOpacity
-                            style={[styles.primaryButton, { backgroundColor: theme.action1 }]}
-                            onPress={handleNext}
-                            activeOpacity={0.8}
-                        >
-                            <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
-                                {currentSlide === SLIDES.length - 1
-                                    ? tr.onboarding.start
-                                    : tr.onboarding.next}
-                            </Text>
-                        </TouchableOpacity>
-
-                        {/* Progress Indicator */}
-                        <View style={styles.progressContainer}>
-                            <Text style={[styles.progressText, { color: theme.muted }]}>
-                                {currentSlide + 1} of {SLIDES.length}
-                            </Text>
-                        </View>
-                    </View>
+        <AppScreen>
+            <View style={[styles.slideContainer, { backgroundColor: theme.bgAlt }]}>
+                {/* Header with skip button */}
+                <View style={[styles.slideHeader, { paddingTop: topInset }]}>
+                    <View style={styles.slideHeaderSpaceLeft} />
+                    <TouchableOpacity onPress={handleSkip} style={styles.slideSkipButton}>
+                        <Text style={[styles.slideSkipText, { color: theme.muted }]}>{tr.onboarding.skip}</Text>
+                    </TouchableOpacity>
                 </View>
 
-            </SafeAreaView>
-        </>
+                {/* Slides */}
+                <ScrollView
+                    ref={scrollViewRef}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onMomentumScrollEnd={handleMomentumScrollEnd}
+                    style={styles.slideScrollView}
+                >
+
+                    {SLIDES.map((slide) => (
+                        <View key={slide.id} style={styles.slideItem}>
+                            {/* Icon Container */}
+                            <View style={styles.slideIconContainer}>
+                                <View
+                                    style={[
+                                        styles.slideIconBg,
+                                        {
+                                            backgroundColor: mode === 'dark'
+                                                ? 'rgba(99, 102, 241, 0.2)'
+                                                : 'rgba(99, 102, 241, 0.1)',
+                                        },
+                                    ]}
+                                >
+                                    <Text style={styles.slidesIcon}>{slide.icon}</Text>
+                                </View>
+                            </View>
+
+                            {/* Content */}
+                            <View style={styles.slideContent}>
+                                <Text style={[styles.slideTitle, { color: theme.text }]}>{slide.title}</Text>
+                                <Text style={[styles.slideDescription, { color: theme.muted }]}>{slide.description}</Text>
+                            </View>
+                        </View>
+                    ))}
+
+                </ScrollView>
+
+                {/* Pagination Dots */}
+                <View style={styles.pagination}>
+                    {SLIDES.map((_, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => goToSlide(index)}
+                            style={[
+                                styles.dot,
+                                {
+                                    backgroundColor:
+                                        currentSlide === index
+                                            ? theme.action1
+                                            : theme.muted,
+                                    width: currentSlide === index ? 24 : 8,
+                                },
+                            ]}
+                        />
+                    ))}
+                </View>
+
+                {/* Bottom Section */}
+                <View style={[styles.bottomSection, { paddingBottom: bottomInset }]}>
+                    {/* Next/Get Started Button */}
+                    <TouchableOpacity
+                        style={[styles.primaryButton, { backgroundColor: theme.action1 }]}
+                        onPress={handleNext}
+                        activeOpacity={0.8}
+                    >
+                        <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
+                            {currentSlide === SLIDES.length - 1
+                                ? tr.onboarding.start
+                                : tr.onboarding.next}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* Progress Indicator */}
+                    <View style={styles.progressContainer}>
+                        <Text style={[styles.progressText, { color: theme.muted }]}>
+                            {currentSlide + 1} of {SLIDES.length}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+        </AppScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-
     // Language Selection Styles
     languageContainer: {
         flex: 1,
@@ -349,10 +342,10 @@ const styles = StyleSheet.create({
     },
 
     // Features Onboarding Styles
-    slidesContainer: {
+    slideContainer: {
         flex: 1,
     },
-    header: {
+    slideHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -360,51 +353,51 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 20,
     },
-    headerLeft: {
+    slideHeaderSpaceLeft: {
         width: 60,
     },
-    skipButton: {
+    slideSkipButton: {
         paddingVertical: 8,
         paddingHorizontal: 16,
     },
-    skipText: {
+    slideSkipText: {
         fontSize: 16,
         fontWeight: '600',
     },
-    scrollView: {
+    slideScrollView: {
         flex: 1,
     },
-    slide: {
-        width: width,
+    slideItem: {
         flex: 1,
+        width: width,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 40,
     },
-    iconContainer: {
+    slideIconContainer: {
         marginBottom: 40,
     },
-    iconCircle: {
+    slideIconBg: {
         width: 140,
         height: 140,
         borderRadius: 70,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    icon: {
+    slidesIcon: {
         fontSize: 64,
     },
-    content: {
+    slideContent: {
         alignItems: 'center',
     },
-    title: {
+    slideTitle: {
         fontSize: 32,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 16,
         letterSpacing: -0.5,
     },
-    description: {
+    slideDescription: {
         fontSize: 17,
         textAlign: 'center',
         lineHeight: 26,
@@ -421,7 +414,7 @@ const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
     },
-    bottom: {
+    bottomSection: {
         paddingHorizontal: 20,
         paddingBottom: 20,
         gap: 16,

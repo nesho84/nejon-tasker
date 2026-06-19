@@ -30,6 +30,8 @@
       },
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ]
@@ -61,6 +63,7 @@
       "@react-native-community/datetimepicker",
       "expo-font",
       "expo-sqlite",
+      "expo-sharing",
       [
         "expo-splash-screen",
         {
@@ -101,8 +104,7 @@
             "deploymentTarget": "16.4"
           }
         }
-      ],
-      "expo-sharing"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

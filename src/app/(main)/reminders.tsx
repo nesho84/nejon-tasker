@@ -8,12 +8,15 @@ import { useThemeStore } from '@/store/themeStore';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RemindersScreen() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);
+
+    // Safe area insets
+    const insets = useSafeAreaInsets();
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
@@ -44,7 +47,7 @@ export default function RemindersScreen() {
     return (
         <SafeAreaView
             style={[styles.container, { backgroundColor: theme.bgAlt }]}
-            edges={['left', 'right', 'bottom']}
+            edges={['left', 'right']}
         >
             {/* Warning banner when notifications are disabled */}
             {reminderTasks.length > 0 && !notificationsEnabled && (
@@ -73,7 +76,7 @@ export default function RemindersScreen() {
                     />
                 )}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ flexGrow: 1, paddingVertical: 8 }}
+                contentContainerStyle={{ flexGrow: 1, paddingTop: 8, paddingBottom: insets.bottom + 8 }}
                 ListEmptyComponent={<AppEmpty type="reminder" />}
             />
         </SafeAreaView>

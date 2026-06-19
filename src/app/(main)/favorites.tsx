@@ -5,11 +5,16 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function FavoritesScreen() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
+
+    // Safe area insets
+    const insets = useSafeAreaInsets();
+    const topInset = 8;
+    const bottomInset = insets.bottom + 8;
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
@@ -37,7 +42,7 @@ export default function FavoritesScreen() {
     return (
         <SafeAreaView
             style={[styles.container, { backgroundColor: theme.bgAlt }]}
-            edges={['left', 'right', 'bottom']}
+            edges={['left', 'right']}
         >
             <FlatList
                 data={favoriteTasks}
@@ -50,7 +55,7 @@ export default function FavoritesScreen() {
                     />
                 )}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ flexGrow: 1, paddingVertical: 8 }}
+                contentContainerStyle={{ flexGrow: 1, paddingTop: topInset, paddingBottom: bottomInset }}
                 ListEmptyComponent={<AppEmpty type="favorite" />}
             />
         </SafeAreaView>
