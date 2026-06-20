@@ -2,18 +2,10 @@ import AppScreen from '@/components/AppScreen';
 import { useLanguageStore } from '@/store/languageStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
 import { useThemeStore } from '@/store/themeStore';
+import { Language, LANGUAGES } from '@/types/language.types';
 import { useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-export type Language = "en" | "de" | "sq";
-
-// Language options with flags
-const LANGUAGES = [
-    { code: 'en' as Language, name: 'English', flag: '🇬🇧' },
-    { code: 'de' as Language, name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'sq' as Language, name: 'Shqip', flag: '🇦🇱' },
-];
 
 const { width } = Dimensions.get('window');
 
@@ -139,35 +131,33 @@ export default function OnboardingScreen() {
                         <View style={styles.languageList}>
                             {LANGUAGES.map((lang) => (
                                 <TouchableOpacity
-                                    key={lang.code}
+                                    key={lang.value}
                                     style={[
                                         styles.languageOption,
                                         {
-                                            backgroundColor: selectedLanguage === lang.code
+                                            backgroundColor: selectedLanguage === lang.value
                                                 ? theme.card
                                                 : theme.bg,
-                                            borderColor: selectedLanguage === lang.code
-                                                ? theme.border
-                                                : theme.border,
+                                            borderColor: theme.border,
                                         },
                                     ]}
-                                    onPress={() => setSelectedLanguage(lang.code)}
+                                    onPress={() => setSelectedLanguage(lang.value)}
                                     activeOpacity={0.7}
                                 >
-                                    <Text style={styles.languageFlag}>{lang.flag}</Text>
+                                    <Text style={styles.languageFlag}>{lang.icon}</Text>
                                     <Text
                                         style={[
                                             styles.languageName,
                                             {
-                                                color: selectedLanguage === lang.code
+                                                color: selectedLanguage === lang.value
                                                     ? '#FFFFFF'
                                                     : theme.text,
                                             },
                                         ]}
                                     >
-                                        {lang.name}
+                                        {lang.label}
                                     </Text>
-                                    {selectedLanguage === lang.code && (
+                                    {selectedLanguage === lang.value && (
                                         <Text style={styles.checkmark}>✓</Text>
                                     )}
                                 </TouchableOpacity>

@@ -49,18 +49,18 @@ export async function setupDatabase(): Promise<void> {
       );
     `);
 
-    // // Indexes for performance
+    // Indexes for performance
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_labels_order ON labels(order_position);");
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_labels_favorite ON labels(isFavorite);");
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_labels_deleted ON labels(isDeleted);");
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_labels_category ON labels(category);");
 
-    // In setupDatabase() - add these back:
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_tasks_labelId ON tasks(labelId);");
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_tasks_order ON tasks(order_position);");
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_tasks_deleted ON tasks(isDeleted);");
     await db.execAsync("CREATE INDEX IF NOT EXISTS idx_tasks_checked ON tasks(checked);");
   } catch (error) {
     console.error("Failed to setup database:", error);
+    throw error;
   }
 }

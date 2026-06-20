@@ -5,7 +5,7 @@ import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@expo/vector-icons";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function AddLabel() {
@@ -49,38 +49,34 @@ export default function AddLabel() {
   // ------------------------------------------------------------
   // Handle TextInput change
   // ------------------------------------------------------------
-  const onChangeTitle = useCallback((title: string) => {
-    setLabelTitle(title);
-  }, []);
+  const onChangeTitle = (title: string) => setLabelTitle(title);
 
-  // Fixed Footer with Close/Today buttons
-  const FixedFooter = () => {
-    return (
-      <>
-        {/* Divider above footer */}
-        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+  // Fixed footer with Cancel/Save buttons — a plain element, not a component
+  const fixedFooter = (
+    <>
+      {/* Divider above footer */}
+      <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
-        <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
-          {/* Cancel button */}
-          <TouchableOpacity
-            style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
-            onPress={() => modalSheetRef.current?.close()}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
-          </TouchableOpacity>
-          {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.btnSave, { backgroundColor: labelColor }]}
-            onPress={handleAdd}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
-          </TouchableOpacity>
-        </View>
-      </>
-    );
-  };
+      <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
+        {/* Cancel button */}
+        <TouchableOpacity
+          style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
+          onPress={() => modalSheetRef.current?.close()}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
+        </TouchableOpacity>
+        {/* Save Button */}
+        <TouchableOpacity
+          style={[styles.btnSave, { backgroundColor: labelColor }]}
+          onPress={handleAdd}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
 
   // Main Content
   return (
@@ -88,7 +84,7 @@ export default function AddLabel() {
       ref={modalSheetRef}
       size={0.53}
       colors={{ sheetBackgroundColor: theme.bg2, handleColor: theme.handle, headerBarBorderColor: 'transparent' }}
-      footer={<FixedFooter />}
+      footer={fixedFooter}
     >
       <View style={styles.container}>
 

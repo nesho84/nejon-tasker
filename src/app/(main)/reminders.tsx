@@ -20,6 +20,7 @@ export default function RemindersScreen() {
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
+    const isLoading = useTaskStore((state) => state.isLoading);
     // Filter tasks
     const reminderTasks = useMemo(() => {
         return allTasks.filter(t => t.reminderDateTime && t.reminderId && !t.isDeleted);
@@ -30,7 +31,6 @@ export default function RemindersScreen() {
 
     // Local State
     const [isReady, setIsReady] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     // ------------------------------------------------------------
     // Wait for instant navigation

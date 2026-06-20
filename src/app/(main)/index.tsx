@@ -29,10 +29,14 @@ export default function LabelsScreen() {
     useEffect(() => {
         if (__DEV__) return; // Skip in dev mode
         const checkForUpdates = async () => {
-            const update = await Updates.checkForUpdateAsync();
-            if (update.isAvailable) {
-                await Updates.fetchUpdateAsync();
-                Updates.reloadAsync();
+            try {
+                const update = await Updates.checkForUpdateAsync();
+                if (update.isAvailable) {
+                    await Updates.fetchUpdateAsync();
+                    Updates.reloadAsync();
+                }
+            } catch {
+                // Network unavailable or EAS unreachable — silently ignore
             }
         };
         checkForUpdates();
@@ -48,7 +52,7 @@ export default function LabelsScreen() {
             await useLabelStore.getState().loadLabels();
             await useTaskStore.getState().loadTasks();
         } catch (error) {
-            console.log(error);
+            console.error('Failed to refresh labels/tasks:', error);
         } finally {
             // Delay for smoother UX
             setTimeout(() => setIsLoading(false), 500);
@@ -66,7 +70,6 @@ export default function LabelsScreen() {
             {/* Top Navigation bar icons */}
             <Stack.Screen
                 options={{
-                    // title: tr.labels.labels,
                     title: Constants?.expoConfig?.name,
                     headerTitleStyle: { fontSize: 24, fontWeight: '700' },
                     headerRight: () => (
@@ -124,7 +127,6 @@ const styles = StyleSheet.create({
     },
     fab: {
         position: "absolute",
-        // bottom: 28,
         right: 12,
         width: 56,
         height: 56,

@@ -180,7 +180,6 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
     try {
         // Let user pick a file
         const result = await DocumentPicker.getDocumentAsync({
-            // type: 'application/json',
             type: '*/*',
             copyToCacheDirectory: true,
             multiple: false,
@@ -198,7 +197,8 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
         try {
             backup = JSON.parse(fileContent);
         } catch (error) {
-            throw new Error('Invalid JSON file');
+            console.error('Failed to parse backup file:', error);
+            throw new Error('Invalid JSON format');
         }
 
         // Validate backup
@@ -211,8 +211,8 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
             // Import labels
             for (const label of backup.labels) {
                 await db.runAsync(
-                    `INSERT OR REPLACE INTO labels (id, title, color, category, order_position, isFavorite, isDeleted, createdAt, updatedAt)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    `INSERT OR REPLACE INTO labels (id, title, color, category, order_position, isFavorite, isDeleted, deletedAt, createdAt, updatedAt)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         label.id,
                         label.title,
@@ -221,6 +221,7 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
                         label.order_position || 0,
                         label.isFavorite || 0,
                         label.isDeleted || 0,
+                        label.deletedAt || null,
                         label.createdAt,
                         label.updatedAt,
                     ]
@@ -230,8 +231,8 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
             // Import tasks
             for (const task of backup.tasks) {
                 await db.runAsync(
-                    `INSERT OR REPLACE INTO tasks (id, labelId, text, date, checked, reminderDateTime, reminderId, isFavorite, isDeleted,   order_position, createdAt, updatedAt)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    `INSERT OR REPLACE INTO tasks (id, labelId, text, date, checked, reminderDateTime, reminderId, isFavorite, isDeleted, deletedAt, order_position, createdAt, updatedAt)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         task.id,
                         task.labelId,
@@ -242,6 +243,7 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
                         task.reminderId || null,
                         task.isFavorite || 0,
                         task.isDeleted || 0,
+                        task.deletedAt || null,
                         task.order_position || 0,
                         task.createdAt,
                         task.updatedAt,
@@ -251,8 +253,8 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
         });
 
         // Reload stores
-        useLabelStore.getState().loadLabels();
-        useTaskStore.getState().loadTasks();
+        await useLabelStore.getState().loadLabels();
+        await useTaskStore.getState().loadTasks();
 
         return {
             labelsCount: backup.labels.length,

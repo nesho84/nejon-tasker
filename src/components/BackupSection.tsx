@@ -5,7 +5,7 @@ import { useTaskStore } from '@/store/taskStore';
 import { useThemeStore } from '@/store/themeStore';
 import { dates } from '@/utils/dates';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function BackupSection() {
@@ -26,19 +26,20 @@ export function BackupSection() {
     const hasData = labels.length > 0 || allTasks.length > 0;
 
     // ------------------------------------------------------------
-    // Load last backup info on mount
+    // Load Backup Info
     // ------------------------------------------------------------
-    useEffect(() => {
-        loadBackupInfo();
+    const loadBackupInfo = useCallback(async () => {
+        const info = await getLastBackupInfo();
+        setLastBackup(info);
     }, []);
 
     // ------------------------------------------------------------
-    // Load Backup Info
+    // Load last backup info on mount (setState runs after the await, off render)
     // ------------------------------------------------------------
-    const loadBackupInfo = async () => {
-        const info = await getLastBackupInfo();
-        setLastBackup(info);
-    };
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadBackupInfo();
+    }, [loadBackupInfo]);
 
     // ------------------------------------------------------------
     // Handle Create Backup

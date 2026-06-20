@@ -1,16 +1,25 @@
 import { getDB } from "@/db/database";
 import { Label } from "@/types/label.types";
 
+// SQLite stores booleans as INTEGER 0/1 — map rows back to real booleans
+function mapLabelRow(row: any): Label {
+    return {
+        ...row,
+        isFavorite: !!row.isFavorite,
+        isDeleted: !!row.isDeleted,
+    };
+}
+
 // ------------------------------------------------------------
 // Load all labels from database on app startup
 // ------------------------------------------------------------
 export async function loadAllLabels(): Promise<Label[]> {
     const db = await getDB();
     try {
-        const rows = await db.getAllAsync<Label>(
+        const rows = await db.getAllAsync<any>(
             "SELECT * FROM labels ORDER BY order_position DESC"
         );
-        return rows;
+        return rows.map(mapLabelRow);
     } catch (error) {
         console.error('Failed to load labels from database:', error);
         throw error;

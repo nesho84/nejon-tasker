@@ -16,6 +16,7 @@ export default function TrashScreen() {
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
+    const isLoading = useTaskStore((state) => state.isLoading);
     // Filter tasks
     const deletedTasks = useMemo(() => {
         return allTasks.filter(t => t.isDeleted);
@@ -23,7 +24,6 @@ export default function TrashScreen() {
 
     // Local State
     const [isReady, setIsReady] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     // ------------------------------------------------------------
     // Wait for instant navigation

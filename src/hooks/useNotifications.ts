@@ -66,7 +66,7 @@ export default function useNotifications() {
             // Only schedule if the reminder is in the future. Use a DATE trigger
             // (absolute time) rather than TIME_INTERVAL so Android fires it at the
             // exact clock time instead of a drifting countdown.
-            if (reminderDateTime.getTime() > Date.now()) {
+            if (reminderDateTime.getTime() > new Date().getTime()) {
                 notificationId = await Notifications.scheduleNotificationAsync({
                     content: {
                         title: tr.notifications.taskReminder,
@@ -293,7 +293,7 @@ export default function useNotifications() {
             receivedListener.remove();
             responseReceivedListener.remove();
         };
-    }, []);
+    }, [updateTask]);
 
     return {
         requestPermission,

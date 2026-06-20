@@ -4,12 +4,16 @@ import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
-import { dates, isReminderActive } from "@/utils/dates";
+import { dates } from "@/utils/dates";
+import { isReminderActive } from "@/utils/utils";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+
+// Map the app language to a date-picker locale
+const DATE_PICKER_LOCALES: Record<string, string> = { en: "en_GB", de: "de_DE", sq: "sq_AL" };
 
 export default function EditTask() {
   // Get taskId from route params
@@ -18,10 +22,11 @@ export default function EditTask() {
   // Stores
   const theme = useThemeStore((state) => state.theme);
   const tr = useLanguageStore((state) => state.tr);
+  const language = useLanguageStore((state) => state.language);
   const labels = useLabelStore((state) => state.labels);
   const label = labels.find((l) => l.id === labelId);
   const allTasks = useTaskStore((state) => state.allTasks);
-  const task = allTasks.find((l) => l.id === taskId);
+  const task = allTasks.find((t) => t.id === taskId);
 
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
@@ -66,6 +71,8 @@ export default function EditTask() {
   // ------------------------------------------------------------
   // Update state when task prop changes
   // ------------------------------------------------------------
+  // Sync editable fields when the task changes (intentional prop → state sync)
+  /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
   useEffect(() => {
     if (task) {
       setTaskText(task.text);
@@ -73,6 +80,7 @@ export default function EditTask() {
       setReminderInput(dateTimeToString(task.reminderDateTime || null));
     }
   }, [task]);
+  /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
   // ------------------------------------------------------------
   // Handle DateTime picker open
@@ -204,38 +212,34 @@ export default function EditTask() {
   // ------------------------------------------------------------
   // Handle TextInput change
   // ------------------------------------------------------------
-  const onChangeText = useCallback((text: string) => {
-    setTaskText(text);
-  }, []);
+  const onChangeText = (text: string) => setTaskText(text);
 
-  // Fixed Footer with Close/Today buttons
-  const FixedFooter = () => {
-    return (
-      <>
-        {/* Divider above footer */}
-        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+  // Fixed footer with Cancel/Save buttons — a plain element, not a component
+  const fixedFooter = (
+    <>
+      {/* Divider above footer */}
+      <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
-        <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
-          {/* Cancel button */}
-          <TouchableOpacity
-            style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
-            onPress={() => modalSheetRef.current?.close()}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
-          </TouchableOpacity>
-          {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.btnSave, { backgroundColor: label?.color }]}
-            onPress={handleUpdate}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
-          </TouchableOpacity>
-        </View>
-      </>
-    );
-  };
+      <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
+        {/* Cancel button */}
+        <TouchableOpacity
+          style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
+          onPress={() => modalSheetRef.current?.close()}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
+        </TouchableOpacity>
+        {/* Save Button */}
+        <TouchableOpacity
+          style={[styles.btnSave, { backgroundColor: label?.color }]}
+          onPress={handleUpdate}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
 
   // Main Content
   return (
@@ -243,7 +247,7 @@ export default function EditTask() {
       ref={modalSheetRef}
       size={0.53}
       colors={{ sheetBackgroundColor: theme.bg2, handleColor: theme.handle, headerBarBorderColor: 'transparent' }}
-      footer={<FixedFooter />}
+      footer={fixedFooter}
     >
       <View style={styles.container}>
 
@@ -318,7 +322,7 @@ export default function EditTask() {
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="datetime"
-            locale="de_DE"
+            locale={DATE_PICKER_LOCALES[language] ?? "en_GB"}
             is24Hour
             onConfirm={handleDateConfirm}
             onCancel={() => setDatePickerVisible(false)}

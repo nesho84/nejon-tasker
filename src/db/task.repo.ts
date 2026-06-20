@@ -1,16 +1,26 @@
 import { getDB } from "@/db/database";
 import { Task } from "@/types/task.types";
 
+// SQLite stores booleans as INTEGER 0/1 — map rows back to real booleans
+function mapTaskRow(row: any): Task {
+    return {
+        ...row,
+        checked: !!row.checked,
+        isFavorite: !!row.isFavorite,
+        isDeleted: !!row.isDeleted,
+    };
+}
+
 // ------------------------------------------------------------
 // Load all tasks from database on app startup
 // ------------------------------------------------------------
 export async function loadAllTasks(): Promise<Task[]> {
     const db = await getDB();
     try {
-        const rows = await db.getAllAsync<Task>(
+        const rows = await db.getAllAsync<any>(
             "SELECT * FROM tasks ORDER BY order_position DESC"
         );
-        return rows;
+        return rows.map(mapTaskRow);
     } catch (error) {
         console.error('Failed to load tasks from database:', error);
         throw error;

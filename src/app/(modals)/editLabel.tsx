@@ -5,7 +5,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function EditLabel() {
@@ -30,12 +30,15 @@ export default function EditLabel() {
   // ------------------------------------------------------------
   // Update state when label prop changes
   // ------------------------------------------------------------
+  // Sync editable fields when the label changes (intentional prop → state sync)
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (label) {
       setLabelTitle(label.title);
       setLabelColor(label.color);
     }
   }, [label]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // ------------------------------------------------------------
   // Handle Label update
@@ -70,38 +73,34 @@ export default function EditLabel() {
   // ------------------------------------------------------------
   // Handle TextInput change
   // ------------------------------------------------------------
-  const onChangeTitle = useCallback((title: string) => {
-    setLabelTitle(title);
-  }, []);
+  const onChangeTitle = (title: string) => setLabelTitle(title);
 
-  // Fixed Footer with Close/Today buttons
-  const FixedFooter = () => {
-    return (
-      <>
-        {/* Divider above footer */}
-        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+  // Fixed footer with Cancel/Save buttons — a plain element, not a component
+  const fixedFooter = (
+    <>
+      {/* Divider above footer */}
+      <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
-        <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
-          {/* Cancel button */}
-          <TouchableOpacity
-            style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
-            onPress={() => modalSheetRef.current?.close()}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
-          </TouchableOpacity>
-          {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.btnSave, { backgroundColor: labelColor }]}
-            onPress={handleUpdate}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
-          </TouchableOpacity>
-        </View>
-      </>
-    );
-  };
+      <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
+        {/* Cancel button */}
+        <TouchableOpacity
+          style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
+          onPress={() => modalSheetRef.current?.close()}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
+        </TouchableOpacity>
+        {/* Save Button */}
+        <TouchableOpacity
+          style={[styles.btnSave, { backgroundColor: labelColor }]}
+          onPress={handleUpdate}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
 
   // Main Content
   return (
@@ -109,7 +108,7 @@ export default function EditLabel() {
       ref={modalSheetRef}
       size={0.53}
       colors={{ sheetBackgroundColor: theme.bg2, handleColor: theme.handle, headerBarBorderColor: 'transparent' }}
-      footer={<FixedFooter />}
+      footer={fixedFooter}
     >
       <View style={styles.container}>
 

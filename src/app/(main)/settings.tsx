@@ -4,18 +4,10 @@ import { DARK, LIGHT } from "@/constants/colors";
 import useNotifications from "@/hooks/useNotifications";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
+import { Language, LANGUAGES } from "@/types/language.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-
-export type Language = "en" | "de" | "sq";
-
-// Language options with flags
-const LANGUAGES = [
-    { value: 'en' as Language, label: 'English', icon: '🇬🇧' },
-    { value: 'de' as Language, label: 'Deutsch', icon: '🇩🇪' },
-    { value: 'sq' as Language, label: 'Shqip', icon: '🇦🇱' },
-];
 
 export default function SettingsScreen() {
     // Stores

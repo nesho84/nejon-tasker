@@ -10,7 +10,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -42,7 +42,6 @@ export default function TasksScreen() {
 
   // Safe area insets
   const insets = useSafeAreaInsets();
-  const topInset = 12;
   const bottomInset = insets.bottom;
 
   // Keyboard state
@@ -157,9 +156,7 @@ export default function TasksScreen() {
   // ------------------------------------------------------------
   // Handle TextInput change
   // ------------------------------------------------------------
-  const onChangeText = useCallback((text: string) => {
-    setTaskTextInput(text);
-  }, []);
+  const onChangeText = (text: string) => setTaskTextInput(text);
 
   // ------------------------------------------------------------
   // Wait for instant navigation

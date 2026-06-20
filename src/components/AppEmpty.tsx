@@ -12,47 +12,33 @@ export default function AppEmpty({ type = "task" }: Props) {
   const theme = useThemeStore((state) => state.theme);
   const tr = useLanguageStore((state) => state.tr);
 
-  // ------------------------------------------------------------
-  // Render empty text based on type
-  // ------------------------------------------------------------
-  const RenderItemText = () => {
-    switch (type) {
-      case "label":
-        return tr.empty.noLabels;
-      case "task":
-        return tr.empty.noTasks;
-      case "reminder":
-        return tr.empty.noReminders;
-      case "favorite":
-        return tr.empty.noFavorites;
-      case "trash":
-        return tr.empty.noTrash;
-    }
-  }
+  // Empty-state text per type
+  const emptyText: Record<NonNullable<Props["type"]>, string> = {
+    label: tr.empty.noLabels,
+    task: tr.empty.noTasks,
+    reminder: tr.empty.noReminders,
+    favorite: tr.empty.noFavorites,
+    trash: tr.empty.noTrash,
+  };
 
-  // ------------------------------------------------------------
-  // Render Icon based on type
-  // ------------------------------------------------------------
-  const RenderItemIcon = () => {
-    switch (type) {
-      case "label":
-        return <MaterialCommunityIcons name="label-outline" size={75} style={[styles.itemIcon, { color: theme.muted }]} />;
-      case "task":
-        return <MaterialCommunityIcons name="check-circle-outline" size={75} style={[styles.itemIcon, { color: theme.muted }]} />;
-      case "reminder":
-        return <MaterialCommunityIcons name="bell-outline" size={75} style={[styles.itemIcon, { color: theme.muted }]} />;
-      case "favorite":
-        return <MaterialCommunityIcons name="star-outline" size={75} style={[styles.itemIcon, { color: theme.muted }]} />;
-      case "trash":
-        return <MaterialCommunityIcons name="trash-can-outline" size={75} style={[styles.itemIcon, { color: theme.muted }]} />;
-    }
-  }
+  // Empty-state icon per type
+  const emptyIcon: Record<NonNullable<Props["type"]>, keyof typeof MaterialCommunityIcons.glyphMap> = {
+    label: "label-outline",
+    task: "check-circle-outline",
+    reminder: "bell-outline",
+    favorite: "star-outline",
+    trash: "trash-can-outline",
+  };
 
   return (
     <View style={[styles.container, { borderColor: theme.border }]}>
-      <RenderItemIcon />
+      <MaterialCommunityIcons
+        name={emptyIcon[type]}
+        size={75}
+        style={[styles.itemIcon, { color: theme.muted }]}
+      />
       <Text style={[styles.itemText, { color: theme.muted }]}>
-        <RenderItemText />
+        {emptyText[type]}
       </Text>
     </View>
   );

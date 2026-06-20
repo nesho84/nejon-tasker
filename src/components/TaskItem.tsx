@@ -3,8 +3,8 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
-import { dates, isReminderActive } from "@/utils/dates";
-import { shareText } from "@/utils/utils";
+import { dates } from "@/utils/dates";
+import { isReminderActive, shareText } from "@/utils/utils";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Checkbox } from "expo-checkbox";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -182,7 +182,7 @@ export default function TaskItem({
                 {
                     backgroundColor: task.checked ? theme.disabled : theme.bgAlt,
                     borderColor: theme.border,
-                    opacity: (isActive ? 0.5 : 1) && (task.checked ? 0.5 : 1),
+                    opacity: (isActive || task.checked) ? 0.5 : 1,
                     borderWidth: isActive ? 3 : 1,
                 },
             ]}
@@ -195,7 +195,7 @@ export default function TaskItem({
                     <View style={styles.checkBoxContainer}>
                         <Checkbox
                             color={task.checked ? theme.border : theme.secondary}
-                            value={!!task.checked}
+                            value={task.checked}
                             onValueChange={(value) => handleToggleCheck(value, task)}
                         />
                     </View>
@@ -205,9 +205,9 @@ export default function TaskItem({
                 <View style={styles.taskTextContainer}>
                     <Hyperlink linkDefault={true} linkStyle={{ color: theme.primary }}>
                         <Text
-                            style={[styles.teaskText, {
+                            style={[styles.taskText, {
                                 color: task.checked ? theme.muted : theme.text,
-                                textDecorationLine: !!task.checked ? "line-through" : "none",
+                                textDecorationLine: task.checked ? "line-through" : "none",
                             }]}
                         >
                             {task.text}
@@ -329,7 +329,7 @@ export default function TaskItem({
                 {/* Share icon */}
                 {shareAction && (
                     <TouchableOpacity
-                        onPress={() => shareText("My Task", task.text)}
+                        onPress={() => shareText(tr.forms.task, task.text)}
                         delayPressIn={0}
                         delayPressOut={0}
                         activeOpacity={0.7}
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         marginLeft: 2,
     },
-    teaskText: {
+    taskText: {
         fontSize: 15,
         lineHeight: 22,
     },

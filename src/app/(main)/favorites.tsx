@@ -18,6 +18,7 @@ export default function FavoritesScreen() {
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
+    const isLoading = useTaskStore((state) => state.isLoading);
     // Filter tasks
     const favoriteTasks = useMemo(() => {
         return allTasks.filter(t => !t.isDeleted && t.isFavorite)
@@ -25,7 +26,6 @@ export default function FavoritesScreen() {
 
     // Local State
     const [isReady, setIsReady] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     // ------------------------------------------------------------
     // Wait for instant navigation

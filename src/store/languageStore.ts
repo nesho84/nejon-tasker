@@ -1,13 +1,12 @@
 import { TRANSLATIONS } from "@/constants/translations";
+import { Language, Translations } from "@/types/language.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type Language = keyof typeof TRANSLATIONS;
-
 interface LanguageState {
     language: Language;
-    tr: typeof TRANSLATIONS.en;
+    tr: Translations;
     isReady: boolean;
     setLanguage: (language: Language) => void;
 }
