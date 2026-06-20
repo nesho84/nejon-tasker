@@ -1,10 +1,11 @@
-import useNotifications from "@/hooks/useNotifications";
+import { cancelScheduledNotification } from "@/services/notificationsService";
+import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
-import { isReminderActive, shareText } from "@/utils/utils";
+import { getReminderStatus, shareText } from "@/utils/system";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Checkbox } from "expo-checkbox";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -50,11 +51,15 @@ export default function TaskItem({
     const hardDeleteTask = useTaskStore((state) => state.hardDeleteTask);
     const restoreTask = useTaskStore((state) => state.restoreTask);
 
-    // Notifications hook
-    const { notificationsEnabled, cancelScheduledNotification } = useNotifications();
+    // Notification permission — single source of truth lives in deviceSettingsStore
+    const notificationsEnabled = useDeviceSettingsStore((state) => state.notificationPermission);
 
-    // Check if reminder is active (has reminderId AND datetime is in the future)
-    const hasActiveReminder = isReminderActive(task.reminderDateTime, task.reminderId);
+    // Reminder display state: 'active' (will fire), 'muted' (set but notifications off), 'past', 'none'
+    const reminderStatus = getReminderStatus(task.reminderDateTime, task.reminderId, notificationsEnabled);
+    const reminderColor =
+        reminderStatus === 'active' ? theme.success
+            : reminderStatus === 'muted' ? theme.danger
+                : theme.muted;
 
     // ------------------------------------------------------------
     // Toggle task checked/unchecked
@@ -303,11 +308,11 @@ export default function TaskItem({
             <View style={[styles.bottom, { backgroundColor: theme.shadow }]}>
                 {/* Reminder */}
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                    {/* Reminder icon */}
+                    {/* Reminder icon — bell when it will fire, bell-off when muted (notifications off) or past */}
                     {task.reminderId && task.reminderDateTime && (
                         <MaterialCommunityIcons
-                            name={(notificationsEnabled || hasActiveReminder) ? "bell" : "bell-off"}
-                            color={hasActiveReminder ? theme.success : theme.muted}
+                            name={reminderStatus === 'active' ? "bell" : "bell-off"}
+                            color={reminderColor}
                             size={16}
                         />
                     )}
@@ -317,8 +322,8 @@ export default function TaskItem({
                         <Text
                             style={{
                                 fontSize: 11,
-                                color: hasActiveReminder ? theme.success : theme.muted,
-                                textDecorationLine: hasActiveReminder ? 'none' : 'line-through'
+                                color: reminderColor,
+                                textDecorationLine: reminderStatus === 'past' ? 'line-through' : 'none'
                             }}
                         >
                             {dates.format(task.reminderDateTime)}

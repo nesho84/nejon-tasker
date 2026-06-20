@@ -1,10 +1,11 @@
 import AppEmpty from "@/components/AppEmpty";
+import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
-import { isReminderActive } from "@/utils/utils";
+import { getReminderStatus } from "@/utils/system";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo } from "react";
@@ -21,14 +22,18 @@ function LabelCard({ item, getIndex, isActive, drag }: RenderItemParams<Label>) 
   const theme = useThemeStore((state) => state.theme);
   const tr = useLanguageStore((state) => state.tr);
   const allTasks = useTaskStore((state) => state.allTasks);
+  const notificationsEnabled = useDeviceSettingsStore((state) => state.notificationPermission);
 
   // This label's tasks + counts
   const tasks = useMemo(() => allTasks.filter(t => t.labelId === item.id && !t.isDeleted), [allTasks, item.id]);
   const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
   const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
   const reminderTasks = useMemo(
-    () => tasks.filter(t => isReminderActive(t.reminderDateTime, t.reminderId)),
-    [tasks]
+    () => tasks.filter(t => {
+      const status = getReminderStatus(t.reminderDateTime, t.reminderId, notificationsEnabled);
+      return status === 'active' || status === 'muted';
+    }),
+    [tasks, notificationsEnabled]
   );
 
   return (

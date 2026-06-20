@@ -1,19 +1,16 @@
 import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
+import NotificationsBanner from "@/components/NotificationsBanner";
 import TaskItem from "@/components/TaskItem";
-import useNotifications from "@/hooks/useNotifications";
-import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
-import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RemindersScreen() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
-    const tr = useLanguageStore((state) => state.tr);
 
     // Safe area insets
     const insets = useSafeAreaInsets();
@@ -25,9 +22,6 @@ export default function RemindersScreen() {
     const reminderTasks = useMemo(() => {
         return allTasks.filter(t => t.reminderDateTime && t.reminderId && !t.isDeleted);
     }, [allTasks]);
-
-    // Notifications hook
-    const { notificationsEnabled } = useNotifications();
 
     // Local State
     const [isReady, setIsReady] = useState(false);
@@ -50,20 +44,7 @@ export default function RemindersScreen() {
             edges={['left', 'right']}
         >
             {/* Warning banner when notifications are disabled */}
-            {reminderTasks.length > 0 && !notificationsEnabled && (
-                <TouchableOpacity
-                    onPress={() => Linking.openSettings()}
-                    activeOpacity={0.8}
-                    style={[styles.warningBanner, { backgroundColor: theme.danger }]}
-                >
-                    <MaterialCommunityIcons name="alert-circle" color="#fff" size={20} />
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.warningTitle}>{tr.notifications.title1}</Text>
-                        <Text style={styles.warningSubtitle}>{tr.notifications.message1}</Text>
-                    </View>
-                    <MaterialCommunityIcons name="chevron-right" color="#fff" size={20} />
-                </TouchableOpacity>
-            )}
+            <NotificationsBanner show={reminderTasks.length > 0} />
 
             <FlatList
                 data={reminderTasks}
@@ -87,25 +68,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: -6,
-    },
-    warningBanner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        gap: 12,
-        marginHorizontal: 8,
-        marginTop: 20,
-        borderRadius: 8,
-    },
-    warningTitle: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    warningSubtitle: {
-        color: '#fff',
-        fontSize: 12,
-        opacity: 0.9,
-        marginTop: 2,
     },
 });

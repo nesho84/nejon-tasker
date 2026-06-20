@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
 import { Image, Linking, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CONTACT_EMAIL = 'mailto:support@nejon.net';
 const HELP_EMAIL = 'mailto:help@nejon.net';
@@ -62,155 +62,160 @@ export default function AboutScreen() {
     };
 
     return (
-        <ScrollView
-            style={[styles.scrollContainer, { backgroundColor: theme.bgAlt }]}
-            contentContainerStyle={[
-                styles.scrollContent,
-                { paddingTop: topInset, paddingBottom: bottomInset }
-            ]}
-            showsVerticalScrollIndicator={false}
+        <SafeAreaView
+            style={[styles.container, { backgroundColor: theme.bgAlt }]}
+            edges={['left', 'right']}
         >
+            <ScrollView
+                style={[styles.scrollContainer, { backgroundColor: theme.bgAlt }]}
+                contentContainerStyle={[
+                    styles.scrollContent,
+                    { paddingTop: topInset, paddingBottom: bottomInset }
+                ]}
+                showsVerticalScrollIndicator={false}
+            >
 
-            {/* Top Navigation bar */}
-            <Stack.Screen
-                options={{
-                    title: tr.labels.about,
-                    headerRight: () => (
-                        <TouchableOpacity onPress={openAppInfo} style={styles.infoIcon} activeOpacity={0.3}>
-                            <MaterialCommunityIcons name="information-outline" size={22} color={theme.text} />
-                        </TouchableOpacity>
-                    ),
-                }}
-            />
+                {/* Top Navigation bar */}
+                <Stack.Screen
+                    options={{
+                        title: tr.labels.about,
+                        headerRight: () => (
+                            <TouchableOpacity onPress={openAppInfo} style={styles.infoIcon} activeOpacity={0.3}>
+                                <MaterialCommunityIcons name="information-outline" size={22} color={theme.text} />
+                            </TouchableOpacity>
+                        ),
+                    }}
+                />
 
-            {/* Logo */}
-            <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
+                {/* Logo */}
+                <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
 
-            {/* Title */}
-            <Text style={[styles.title, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
+                {/* Title */}
+                <Text style={[styles.title, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
 
-            {/* Version */}
-            <Text style={[styles.versionText, { color: theme.placeholder }]}>
-                Version {Constants?.expoConfig?.version}
-            </Text>
+                {/* Version */}
+                <Text style={[styles.versionText, { color: theme.placeholder }]}>
+                    Version {Constants?.expoConfig?.version}
+                </Text>
 
-            {/* Description */}
-            <Text style={[styles.desc, { color: theme.placeholder }]} adjustsFontSizeToFit>
-                {tr.about.desc}
-            </Text>
+                {/* Description */}
+                <Text style={[styles.desc, { color: theme.placeholder }]} adjustsFontSizeToFit>
+                    {tr.about.desc}
+                </Text>
 
-            {/* Action buttons */}
-            <View style={styles.actionButtonsGroup}>
-                {/* Support Button */}
-                <TouchableOpacity
-                    style={[styles.actionButton, {
-                        backgroundColor: theme.primary + '08',
-                        borderColor: theme.primary + '20'
-                    }]}
-                    onPress={() => Linking.openURL('https://paypal.me/NeshatAdemi?locale.x=de_DE&country.x=AT')}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                        <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
-                    </View>
-                    <View style={styles.actionTextContainer}>
-                        <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
-                        <Text style={[styles.actionSubtitle, { color: theme.primary }]}>via PayPal</Text>
-                    </View>
-                    <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
-                </TouchableOpacity>
+                {/* Action buttons */}
+                <View style={styles.actionButtonsGroup}>
+                    {/* Support Button */}
+                    <TouchableOpacity
+                        style={[styles.actionButton, {
+                            backgroundColor: theme.primary + '08',
+                            borderColor: theme.primary + '20'
+                        }]}
+                        onPress={() => Linking.openURL('https://paypal.me/NeshatAdemi?locale.x=de_DE&country.x=AT')}
+                        activeOpacity={0.8}
+                    >
+                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                            <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
+                        </View>
+                        <View style={styles.actionTextContainer}>
+                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>via PayPal</Text>
+                        </View>
+                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                    </TouchableOpacity>
 
-                {/* Rate the App */}
-                <TouchableOpacity
-                    style={[styles.actionButton, {
-                        backgroundColor: theme.primary + '08',
-                        borderColor: theme.primary + '20'
-                    }]}
-                    onPress={() => openLink(GOOGLE_PLAY_URL)}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                        <MaterialCommunityIcons name="star-outline" size={22} color={theme.primary} />
-                    </View>
-                    <View style={styles.actionTextContainer}>
-                        <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.rateApp}</Text>
-                        <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.labels.rateAppDesc}</Text>
-                    </View>
-                    <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
-                </TouchableOpacity>
+                    {/* Rate the App */}
+                    <TouchableOpacity
+                        style={[styles.actionButton, {
+                            backgroundColor: theme.primary + '08',
+                            borderColor: theme.primary + '20'
+                        }]}
+                        onPress={() => openLink(GOOGLE_PLAY_URL)}
+                        activeOpacity={0.8}
+                    >
+                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                            <MaterialCommunityIcons name="star-outline" size={22} color={theme.primary} />
+                        </View>
+                        <View style={styles.actionTextContainer}>
+                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.rateApp}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.labels.rateAppDesc}</Text>
+                        </View>
+                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                    </TouchableOpacity>
 
-                {/* Share with a Friend */}
-                <TouchableOpacity
-                    style={[styles.actionButton, {
-                        backgroundColor: theme.primary + '08',
-                        borderColor: theme.primary + '20'
-                    }]}
-                    onPress={handleShare}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                        <MaterialCommunityIcons name="share-outline" size={22} color={theme.primary} />
-                    </View>
-                    <View style={styles.actionTextContainer}>
-                        <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.shareApp}</Text>
-                        <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.shareAppDesc}</Text>
-                    </View>
-                    <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
-                </TouchableOpacity>
+                    {/* Share with a Friend */}
+                    <TouchableOpacity
+                        style={[styles.actionButton, {
+                            backgroundColor: theme.primary + '08',
+                            borderColor: theme.primary + '20'
+                        }]}
+                        onPress={handleShare}
+                        activeOpacity={0.8}
+                    >
+                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                            <MaterialCommunityIcons name="share-outline" size={22} color={theme.primary} />
+                        </View>
+                        <View style={styles.actionTextContainer}>
+                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.shareApp}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.shareAppDesc}</Text>
+                        </View>
+                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                    </TouchableOpacity>
 
-                {/* Contact Us */}
-                <TouchableOpacity
-                    style={[styles.actionButton, {
-                        backgroundColor: theme.primary + '08',
-                        borderColor: theme.primary + '20'
-                    }]}
-                    onPress={() => Linking.openURL(CONTACT_EMAIL)}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                        <MaterialCommunityIcons name="email-outline" size={22} color={theme.primary} />
-                    </View>
-                    <View style={styles.actionTextContainer}>
-                        <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.contactUs}</Text>
-                        <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.contactUsDesc}</Text>
-                    </View>
-                    <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
-                </TouchableOpacity>
+                    {/* Contact Us */}
+                    <TouchableOpacity
+                        style={[styles.actionButton, {
+                            backgroundColor: theme.primary + '08',
+                            borderColor: theme.primary + '20'
+                        }]}
+                        onPress={() => Linking.openURL(CONTACT_EMAIL)}
+                        activeOpacity={0.8}
+                    >
+                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                            <MaterialCommunityIcons name="email-outline" size={22} color={theme.primary} />
+                        </View>
+                        <View style={styles.actionTextContainer}>
+                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.contactUs}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.contactUsDesc}</Text>
+                        </View>
+                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                    </TouchableOpacity>
 
-                {/* More Apps */}
-                <TouchableOpacity
-                    style={[styles.actionButton, {
-                        backgroundColor: theme.primary + '08',
-                        borderColor: theme.primary + '20'
-                    }]}
-                    onPress={() => openLink(MORE_APPS_GOOGLE_PLAY_URL)}
-                    activeOpacity={0.8}
-                >
-                    <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                        <MaterialCommunityIcons name="view-grid-outline" size={22} color={theme.primary} />
-                    </View>
-                    <View style={styles.actionTextContainer}>
-                        <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.moreApps}</Text>
-                        <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.moreAppsDesc}</Text>
-                    </View>
-                    <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
-                </TouchableOpacity>
-            </View>
+                    {/* More Apps */}
+                    <TouchableOpacity
+                        style={[styles.actionButton, {
+                            backgroundColor: theme.primary + '08',
+                            borderColor: theme.primary + '20'
+                        }]}
+                        onPress={() => openLink(MORE_APPS_GOOGLE_PLAY_URL)}
+                        activeOpacity={0.8}
+                    >
+                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                            <MaterialCommunityIcons name="view-grid-outline" size={22} color={theme.primary} />
+                        </View>
+                        <View style={styles.actionTextContainer}>
+                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.moreApps}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.moreAppsDesc}</Text>
+                        </View>
+                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                    </TouchableOpacity>
+                </View>
 
-            {/* Website & Privacy */}
-            <View style={styles.linksContainer}>
-                <TouchableOpacity onPress={() => openLink("https://nejon-tasker.nejon.net/privacy.html")}>
-                    <Text style={[styles.linkText, { color: theme.info }]}>Privacy</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => Linking.openURL(HELP_EMAIL)} activeOpacity={0.6}>
-                    <Text style={[styles.linkText, { color: theme.info }]}>Help</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => openLink("https://nejon.net")}>
-                    <Text style={[styles.linkText, { color: theme.info }]}>nejon.net</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Website & Privacy */}
+                <View style={styles.linksContainer}>
+                    <TouchableOpacity onPress={() => openLink("https://nejon-tasker.nejon.net/privacy.html")}>
+                        <Text style={[styles.linkText, { color: theme.info }]}>Privacy</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => Linking.openURL(HELP_EMAIL)} activeOpacity={0.6}>
+                        <Text style={[styles.linkText, { color: theme.info }]}>Help</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => openLink("https://nejon.net")}>
+                        <Text style={[styles.linkText, { color: theme.info }]}>nejon.net</Text>
+                    </TouchableOpacity>
+                </View>
 
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
@@ -219,6 +224,10 @@ const styles = StyleSheet.create({
     infoIcon: {
         paddingHorizontal: 8,
         paddingVertical: 4,
+    },
+
+    container: {
+        flex: 1,
     },
 
     // ScrollView content

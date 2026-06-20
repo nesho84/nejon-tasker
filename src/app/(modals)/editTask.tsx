@@ -1,11 +1,12 @@
 import ModalSheet, { ModalSheetRef } from "@/components/ModalSheet";
-import useNotifications from "@/hooks/useNotifications";
+import { cancelScheduledNotification, scheduleNotification } from "@/services/notificationsService";
+import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { dates } from "@/utils/dates";
-import { isReminderActive } from "@/utils/utils";
+import { getReminderStatus, requestNotificationPermission } from "@/utils/system";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -37,13 +38,8 @@ export default function EditTask() {
     return date ? dates.format(date) : tr.forms.setReminder;
   }
 
-  // Notifications hook
-  const {
-    notificationsEnabled,
-    requestPermission,
-    scheduleNotification,
-    cancelScheduledNotification
-  } = useNotifications();
+  // Notification permission — single source of truth lives in deviceSettingsStore
+  const notificationsEnabled = useDeviceSettingsStore((state) => state.notificationPermission);
 
   // Local State
   const [isEditing, setIsEditing] = useState(false);
@@ -53,8 +49,16 @@ export default function EditTask() {
   const [reminderInput, setReminderInput] = useState(dateTimeToString(task?.reminderDateTime || null));
   const [selectedDateTime, setSelectedDateTime] = useState<string | null>(task?.reminderDateTime || null);
 
-  // Check if reminder is active (has reminderId AND datetime is in the future)
-  const hasActiveReminder = isReminderActive(task?.reminderDateTime || null, task?.reminderId || null);
+  // A reminder is scheduled in the future when its status is 'active' or 'muted'
+  const reminderStatus = getReminderStatus(task?.reminderDateTime ?? null, task?.reminderId ?? null, notificationsEnabled);
+  const hasFutureReminder = reminderStatus === 'active' || reminderStatus === 'muted';
+
+  // A reminder is set for display when there's a saved future one, or a freshly picked
+  // (not yet saved) one. When set but notifications are off it is "muted" — the field stays
+  // neutral (bell-off icon carries the signal) and the hint text below explains why.
+  const reminderSet = hasFutureReminder || isReminderUpdated;
+  const reminderColor = (reminderSet && notificationsEnabled) ? theme.success : theme.muted;
+  const reminderIcon = (reminderSet && notificationsEnabled) ? "bell" : "bell-off";
 
   // ------------------------------------------------------------
   // Handle keyboard hide to blur TextInput
@@ -87,7 +91,7 @@ export default function EditTask() {
   // ------------------------------------------------------------
   const handleDateTimePicker = async () => {
     if (!notificationsEnabled) {
-      const status = await requestPermission();
+      const status = await requestNotificationPermission(tr);
       if (status === 'granted') {
         setDatePickerVisible(true);
       }
@@ -153,7 +157,7 @@ export default function EditTask() {
         ...task,
         text: taskText,
         reminderDateTime: selectedDateTime,
-      });
+      }, tr);
 
       // Update Task
       await useTaskStore.getState().updateTask(task.id, {
@@ -288,65 +292,74 @@ export default function EditTask() {
 
         {/* DateTimeInput Container */}
         <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.reminder}</Text>
-        <View style={styles.dateTimeInputRow}>
-          {/* TextInput with bell Icon */}
-          <TouchableOpacity
-            style={[
-              styles.dateTimeTextInput,
-              {
-                backgroundColor: theme.shadow,
-                borderColor: `${label?.color}30`,
-              }]}
-            onPress={handleDateTimePicker}
-          >
-            <MaterialCommunityIcons
-              name={(hasActiveReminder || isReminderUpdated) ? "bell" : "bell-off"}
-              color={(hasActiveReminder || isReminderUpdated) ? theme.success : theme.muted}
-              size={20}
-              style={{ marginRight: 4 }}
-            />
-            <TextInput
-              style={{
-                height: 48,
-                fontWeight: '600',
-                color: (hasActiveReminder || isReminderUpdated) ? theme.success : theme.muted,
-                textDecorationLine: (!task?.reminderDateTime || hasActiveReminder || isReminderUpdated) ? 'none' : 'line-through'
-              }}
-              placeholder={tr.forms.setReminder}
-              value={reminderInput}
-              editable={false}
-            />
-          </TouchableOpacity>
+        <View style={styles.reminderGroup}>
+          <View style={styles.dateTimeInputRow}>
+            {/* TextInput with bell Icon */}
+            <TouchableOpacity
+              style={[
+                styles.dateTimeTextInput,
+                {
+                  backgroundColor: theme.shadow,
+                  borderColor: `${label?.color}30`,
+                }]}
+              onPress={handleDateTimePicker}
+            >
+              <MaterialCommunityIcons
+                name={reminderIcon}
+                color={reminderColor}
+                size={20}
+                style={{ marginRight: 4 }}
+              />
+              <TextInput
+                style={{
+                  height: 48,
+                  fontWeight: '600',
+                  color: reminderColor,
+                  textDecorationLine: (!task?.reminderDateTime || reminderSet) ? 'none' : 'line-through'
+                }}
+                placeholder={tr.forms.setReminder}
+                value={reminderInput}
+                editable={false}
+              />
+            </TouchableOpacity>
 
-          {/* Reminder DateTimePickerModal */}
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="datetime"
-            locale={DATE_PICKER_LOCALES[language] ?? "en_GB"}
-            is24Hour
-            onConfirm={handleDateConfirm}
-            onCancel={() => setDatePickerVisible(false)}
-          />
-
-          {/* Reminder Cancel/Delete Icon */}
-          <TouchableOpacity
-            disabled={!hasActiveReminder}
-            style={[
-              styles.btnCancelReminder,
-              {
-                backgroundColor: theme.shadow,
-                borderColor: `${label?.color}30`,
-              }
-            ]}
-            onPress={handleCancelReminder}
-          >
-            <MaterialCommunityIcons
-              name="bell-remove-outline"
-              size={20}
-              color={hasActiveReminder ? theme.danger : theme.muted}
-              style={{ opacity: hasActiveReminder ? 1 : 0.4 }}
+            {/* Reminder DateTimePickerModal */}
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="datetime"
+              locale={DATE_PICKER_LOCALES[language] ?? "en_GB"}
+              is24Hour
+              onConfirm={handleDateConfirm}
+              onCancel={() => setDatePickerVisible(false)}
             />
-          </TouchableOpacity>
+
+            {/* Reminder Cancel/Delete Icon */}
+            <TouchableOpacity
+              disabled={!hasFutureReminder}
+              style={[
+                styles.btnCancelReminder,
+                {
+                  backgroundColor: theme.shadow,
+                  borderColor: `${label?.color}30`,
+                }
+              ]}
+              onPress={handleCancelReminder}
+            >
+              <MaterialCommunityIcons
+                name="bell-remove-outline"
+                size={20}
+                color={hasFutureReminder ? theme.danger : theme.muted}
+                style={{ opacity: hasFutureReminder ? 1 : 0.4 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Muted reminder hint — set but notifications are off, so it will not fire */}
+          {reminderSet && !notificationsEnabled && (
+            <Text style={[styles.reminderOffHint, { color: theme.danger }]}>
+              ⚠ {tr.notifications.wontFire}
+            </Text>
+          )}
         </View>
 
       </View>
@@ -405,6 +418,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
 
+  reminderGroup: {
+    gap: 4,
+  },
   dateTimeInputRow: {
     flexDirection: "row",
     gap: 10,
@@ -424,6 +440,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1.5,
     borderRadius: 12,
+  },
+  reminderOffHint: {
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 2,
+    paddingHorizontal: 6,
   },
 
   btnRow: {

@@ -2,10 +2,11 @@ import { BackupSection } from "@/components/BackupSection";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
 import DataSeeder from "@/debug/DataSeeder";
-import useNotifications from "@/hooks/useNotifications";
+import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Language, LANGUAGES } from "@/types/language.types";
+import { openAlarmPermissionSettings, openBatteryOptimizationSettings, openNotificationSettings, requestNotificationPermission } from "@/utils/system";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,19 +17,13 @@ export default function SettingsScreen() {
     const mode = useThemeStore((state) => state.themeMode);
     const language = useLanguageStore((state) => state.language);
     const tr = useLanguageStore((state) => state.tr);
+    const notificationsEnabled = useDeviceSettingsStore((state) => state.notificationPermission);
+    const batteryOptimization = useDeviceSettingsStore((state) => state.batteryOptimization);
 
     // Safe area insets
     const insets = useSafeAreaInsets();
     const topInset = 8;
     const bottomInset = insets.bottom + 8;
-
-    // Notifications hook
-    const {
-        notificationsEnabled,
-        handleNotificationsToggle,
-        openBatteryOptimizationSettings,
-        openAlarmPermissionSettings,
-    } = useNotifications();
 
     // ------------------------------------------------------------
     // Handle Theme Toggle
@@ -42,6 +37,17 @@ export default function SettingsScreen() {
     // ------------------------------------------------------------
     const handleLanguage = (lang: Language) => {
         useLanguageStore.getState().setLanguage(lang);
+    };
+
+    // ------------------------------------------------------------
+    // Toggle notifications (request when off, open settings when on)
+    // ------------------------------------------------------------
+    const handleNotificationsToggle = async () => {
+        if (notificationsEnabled) {
+            await openNotificationSettings();
+        } else {
+            await requestNotificationPermission(tr);
+        }
     };
 
     return (
@@ -123,7 +129,11 @@ export default function SettingsScreen() {
                             {/* Battery optimization */}
                             <TouchableOpacity style={styles.row} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
                                 <View style={[styles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
-                                    <MaterialCommunityIcons name="battery-alert-variant-outline" size={22} color={theme.primary} />
+                                    <MaterialCommunityIcons
+                                        name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
+                                        size={22}
+                                        color={batteryOptimization ? theme.primary : theme.success}
+                                    />
                                 </View>
                                 <View style={styles.rowText}>
                                     <Text style={[styles.rowTitle, { color: theme.muted }]}>
@@ -185,6 +195,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+
     scrollContainer: {
         flex: 1,
     },

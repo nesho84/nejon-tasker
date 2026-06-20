@@ -1,5 +1,6 @@
 import AppLoading from "@/components/AppLoading";
 import { setupDatabase } from "@/db/database";
+import { useDeviceSettingsSync } from "@/hooks/useDeviceSettingsSync";
 import useNotifications from "@/hooks/useNotifications";
 import { useLabelStore } from "@/store/labelStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
@@ -60,6 +61,9 @@ export default function RootLayout() {
 
   // Initialize notifications
   useNotifications();
+
+  // Keep OS permission state in sync (mount + foreground)
+  useDeviceSettingsSync();
 
   // Show error if initialization failed
   if (initError) {

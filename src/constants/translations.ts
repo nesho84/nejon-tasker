@@ -150,6 +150,7 @@ export const TRANSLATIONS = {
             taskReminder: "Task Reminder",
             title1: "Notifications are off",
             message1: "Tap to enable in Settings",
+            wontFire: "Notifications are off — this reminder won't fire",
         },
         // Empty states
         empty: {
@@ -344,6 +345,7 @@ export const TRANSLATIONS = {
             taskReminder: "Aufgabenerinnerung",
             title1: "Benachrichtigungen sind deaktiviert",
             message1: "Tippen Sie, um sie in den Einstellungen zu aktivieren",
+            wontFire: "Benachrichtigungen sind aus — diese Erinnerung wird nicht ausgelöst",
         },
         // Empty states
         empty: {
@@ -538,6 +540,7 @@ export const TRANSLATIONS = {
             taskReminder: "Kujtesa e detyrës",
             title1: "Njoftimet janë çaktivizuar",
             message1: "Shtyp për të aktivizuar te Cilësimet",
+            wontFire: "Njoftimet janë çaktivizuar — kjo kujtesë nuk do të funksionojë",
         },
         // Empty states
         empty: {

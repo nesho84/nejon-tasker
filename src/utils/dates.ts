@@ -1,3 +1,7 @@
+
+// ------------------------------------------------------------
+// Utility functions for handling dates in ISO format.
+// ------------------------------------------------------------
 export const dates = {
     now(): string {
         return new Date().toISOString();
