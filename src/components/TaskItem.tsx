@@ -103,6 +103,7 @@ export default function TaskItem({
             [
                 {
                     text: tr.buttons.yes,
+                    style: 'destructive',
                     onPress: async () => {
                         // Cancel the existing notification
                         if (task?.reminderId) {
@@ -117,6 +118,7 @@ export default function TaskItem({
                 },
                 {
                     text: tr.buttons.cancel,
+                    style: 'cancel',
                 },
             ],
             { cancelable: false }
@@ -133,6 +135,7 @@ export default function TaskItem({
             [
                 {
                     text: tr.buttons.yes,
+                    style: 'destructive',
                     onPress: async () => {
                         // Cancel the existing notification
                         if (task?.reminderId) {
@@ -148,6 +151,7 @@ export default function TaskItem({
                 },
                 {
                     text: tr.buttons.cancel,
+                    style: 'cancel',
                 },
             ],
             { cancelable: false }
@@ -164,6 +168,7 @@ export default function TaskItem({
             [
                 {
                     text: tr.buttons.yes,
+                    style: 'destructive',
                     onPress: async () => {
                         // Cancel the existing notification
                         if (task?.reminderId) {
@@ -174,6 +179,7 @@ export default function TaskItem({
                 },
                 {
                     text: tr.buttons.cancel,
+                    style: 'cancel',
                 },
             ],
             { cancelable: false }

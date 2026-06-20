@@ -15,6 +15,41 @@ import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpaci
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// ------------------------------------------------------------
+// Single task row — top-level component so its hooks/memoization are stable
+// ------------------------------------------------------------
+function TaskRow({ item, getIndex, isActive, drag }: RenderItemParams<Task>) {
+  const handleEdit = () => {
+    router.navigate({
+      pathname: '/editTask',
+      params: { labelId: item.labelId, taskId: item.id },
+    });
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={handleEdit}
+      onLongPress={drag}
+      disabled={isActive}
+      delayLongPress={400}
+      delayPressIn={0}
+      delayPressOut={0}
+      activeOpacity={0.7}
+      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+    >
+      <TaskItem
+        task={item}
+        index={getIndex()}
+        isActive={isActive}
+        checkAction={true}
+        favoriteAction={true}
+        softDeleteAction={true}
+        shareAction={true}
+      />
+    </TouchableOpacity>
+  );
+}
+
 export default function TasksScreen() {
   // Get labelId from route params
   const { labelId } = useLocalSearchParams();
@@ -33,9 +68,6 @@ export default function TasksScreen() {
   const tasks = useMemo(() => allTasks.filter(t => t.labelId === labelId && !t.isDeleted), [allTasks, labelId]);
   const checkedTasks = useMemo(() => tasks.filter(t => t.checked), [tasks]);
   const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
-  // Get last task for styling
-  const lastChecked = useMemo(() => checkedTasks[checkedTasks.length - 1], [checkedTasks]);
-  const lastUnchecked = useMemo(() => uncheckedTasks[uncheckedTasks.length - 1], [uncheckedTasks]);
 
   // Refs
   const textInputRef = useRef<TextInput>(null);
@@ -88,7 +120,8 @@ export default function TasksScreen() {
                     },
                   },
                   { text: tr.buttons.cancel, style: 'cancel' },
-                ]
+                ],
+                { cancelable: false }
               );
             } else {
               // No tasks, delete immediately
@@ -106,7 +139,7 @@ export default function TasksScreen() {
         },
         { text: tr.buttons.cancel, style: 'cancel' },
       ],
-      { cancelable: true }
+      { cancelable: false }
     );
   };
 
@@ -144,16 +177,6 @@ export default function TasksScreen() {
   };
 
   // ------------------------------------------------------------
-  // Handle selecting a Task from the list
-  // ------------------------------------------------------------
-  const handleEdit = (task: Task) => {
-    router.navigate({
-      pathname: '/editTask',
-      params: { labelId: labelId, taskId: task.id },
-    });
-  };
-
-  // ------------------------------------------------------------
   // Handle TextInput change
   // ------------------------------------------------------------
   const onChangeText = (text: string) => setTaskTextInput(text);
@@ -169,36 +192,6 @@ export default function TasksScreen() {
   if (!isReady || isLoading) {
     return <AppLoading />;
   }
-
-  // Render Single Task template
-  const RenderTask = ({ item, getIndex, isActive, drag }: RenderItemParams<Task>) => {
-    const lastItemMargin = lastChecked === item || lastUnchecked === item ? 8 : 0;
-
-    return (
-      <View style={{ marginBottom: lastItemMargin }}>
-        <TouchableOpacity
-          onPress={() => handleEdit(item)}
-          onLongPress={drag}
-          disabled={isActive}
-          delayLongPress={400}
-          delayPressIn={0}
-          delayPressOut={0}
-          activeOpacity={0.7}
-          hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-        >
-          <TaskItem
-            task={item}
-            index={getIndex()}
-            isActive={isActive}
-            checkAction={true}
-            favoriteAction={true}
-            softDeleteAction={true}
-            shareAction={true}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
 
   return (
     <AppScreen>
@@ -236,9 +229,10 @@ export default function TasksScreen() {
             {uncheckedTasks.length > 0 ? (
               <DraggableFlatList
                 containerStyle={{ flex: 3 }}
+                contentContainerStyle={styles.taskListContent}
                 showsVerticalScrollIndicator={false}
                 data={uncheckedTasks}
-                renderItem={RenderTask}
+                renderItem={TaskRow}
                 keyExtractor={(item) => item.id}
                 onDragEnd={({ data }) => handleOrderTasks(data)}
               />
@@ -256,8 +250,9 @@ export default function TasksScreen() {
                 </View>
                 <DraggableFlatList
                   containerStyle={{ flex: 1 }}
+                  contentContainerStyle={styles.taskListContent}
                   data={checkedTasks}
-                  renderItem={RenderTask}
+                  renderItem={TaskRow}
                   keyExtractor={(item) => item.id}
                   onDragEnd={({ data }) => handleOrderTasks(data)}
                 />
@@ -324,6 +319,9 @@ const styles = StyleSheet.create({
 
   tasksContainer: {
     flex: 1,
+  },
+  taskListContent: {
+    paddingBottom: 8,
   },
   tasksDivider: {
     width: "100%",

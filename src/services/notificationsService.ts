@@ -53,7 +53,7 @@ export async function scheduleNotification(task: Task, tr: Translations): Promis
             notificationId = await Notifications.scheduleNotificationAsync({
                 content: {
                     title: tr.notifications.taskReminder,
-                    body: `${task.text.substring(0, 40)}...`,
+                    body: task.text.length > 40 ? `${task.text.substring(0, 40)}...` : task.text,
                     data: {
                         taskId: task.id,
                     },

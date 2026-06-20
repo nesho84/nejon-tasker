@@ -112,56 +112,62 @@ export default function EditLabel() {
     >
       <View style={styles.container}>
 
-        {/* Title row */}
-        <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: labelColor }]}>
-            {tr.forms.editLabel}
-          </Text>
-          <View style={[styles.accentDot, { backgroundColor: labelColor, shadowColor: labelColor }]} />
-        </View>
+        {/* Bail out on a missing/stale label (e.g. it was deleted while this modal was
+            open) — keep the sheet itself mounted so Cancel/drag-to-dismiss still work. */}
+        {label && (
+          <>
+            {/* Title row */}
+            <View style={styles.titleRow}>
+              <Text style={[styles.title, { color: labelColor }]}>
+                {tr.forms.editLabel}
+              </Text>
+              <View style={[styles.accentDot, { backgroundColor: labelColor, shadowColor: labelColor }]} />
+            </View>
 
-        {/* Divider below title */}
-        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+            {/* Divider below title */}
+            <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
-        {/* Text input */}
-        <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.label}</Text>
-        <View style={{ position: 'relative' }}>
-          <TextInput
-            ref={inputRef}
-            style={[styles.textInput, {
-              backgroundColor: theme.shadow,
-              color: theme.text2,
-              borderColor: `${labelColor}30`,
-            }]}
-            defaultValue={labelTitle}
-            maxLength={100}
-            autoCorrect={false}
-            placeholder={tr.forms.inputPlaceholder}
-            placeholderTextColor={theme.placeholder}
-            onChangeText={(text) => {
-              setHasText(text.length > 0);
-              onChangeTitle(text);
-            }}
-          />
-          {/* Clear Icon */}
-          {hasText && (
-            <Pressable
-              style={styles.clearIcon}
-              hitSlop={8}
-              onPress={() => {
-                inputRef.current?.clear();
-                setHasText(false);
-                onChangeTitle('');
-              }}
-            >
-              <Ionicons name="close-circle" size={18} color={theme.placeholder} />
-            </Pressable>
-          )}
-        </View>
+            {/* Text input */}
+            <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.label}</Text>
+            <View style={{ position: 'relative' }}>
+              <TextInput
+                ref={inputRef}
+                style={[styles.textInput, {
+                  backgroundColor: theme.shadow,
+                  color: theme.text2,
+                  borderColor: `${labelColor}30`,
+                }]}
+                defaultValue={labelTitle}
+                maxLength={100}
+                autoCorrect={false}
+                placeholder={tr.forms.inputPlaceholder}
+                placeholderTextColor={theme.placeholder}
+                onChangeText={(text) => {
+                  setHasText(text.length > 0);
+                  onChangeTitle(text);
+                }}
+              />
+              {/* Clear Icon */}
+              {hasText && (
+                <Pressable
+                  style={styles.clearIcon}
+                  hitSlop={8}
+                  onPress={() => {
+                    inputRef.current?.clear();
+                    setHasText(false);
+                    onChangeTitle('');
+                  }}
+                >
+                  <Ionicons name="close-circle" size={18} color={theme.placeholder} />
+                </Pressable>
+              )}
+            </View>
 
-        {/* Color Picker */}
-        <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.color}</Text>
-        <ColorPicker labelColor={labelColor} onValueChange={setLabelColor} />
+            {/* Color Picker */}
+            <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.color}</Text>
+            <ColorPicker labelColor={labelColor} onValueChange={setLabelColor} />
+          </>
+        )}
 
       </View>
     </ModalSheet>

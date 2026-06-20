@@ -410,7 +410,6 @@ export const TRANSLATIONS = {
             lastBackup: "Backup i fundit",
             restore: "Rikthe",
             success: "Sukses",
-            of: "prej",
             backupHelp: "Së pari Krijo disa etiketa dhe detyra",
             noBackup: "Nuk ka ende një backup",
             // About screen specific
@@ -423,6 +422,7 @@ export const TRANSLATIONS = {
             contactUsDesc: "Reagime & raporte gabimesh",
             moreApps: "Më shumë Apps",
             moreAppsDesc: "Aplikacione tjera nga Nejon",
+            of: "prej",
             displayOptions: "Opsionet e shfaqjes",
             checkedItems: "Detyra të kryera",
         },

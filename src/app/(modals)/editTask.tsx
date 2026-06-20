@@ -191,6 +191,7 @@ export default function EditTask() {
       [
         {
           text: tr.buttons.yes,
+          style: 'destructive',
           onPress: async () => {
             // Cancel the existing notification
             if (task?.reminderId) {
@@ -207,6 +208,7 @@ export default function EditTask() {
         },
         {
           text: tr.buttons.cancel,
+          style: 'cancel',
         },
       ],
       { cancelable: false }
