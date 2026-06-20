@@ -13,6 +13,8 @@ export default function TrashScreen() {
 
     // Safe area insets
     const insets = useSafeAreaInsets();
+    const topInset = 8;
+    const bottomInset = insets.bottom + 8;
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
@@ -53,7 +55,7 @@ export default function TrashScreen() {
                     />
                 )}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ flexGrow: 1, paddingTop: 8, paddingBottom: insets.bottom + 8 }}
+                contentContainerStyle={{ flexGrow: 1, paddingTop: topInset, paddingBottom: bottomInset }}
                 ListEmptyComponent={<AppEmpty type="trash" />}
             />
         </SafeAreaView>
