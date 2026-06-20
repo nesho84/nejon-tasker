@@ -1,12 +1,19 @@
+import {
+    cancelScheduledNotification,
+    getPermissionStatus,
+    openAlarmPermissionSettings,
+    openBatteryOptimizationSettings,
+    openNotificationSettings,
+    requestNotificationPermission,
+    scheduleNotification as scheduleNotificationService,
+    setNotificationChannel,
+} from '@/services/notificationsService';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTaskStore } from "@/store/taskStore";
 import { Task } from '@/types/task.types';
-import * as Application from 'expo-application';
-import * as Battery from 'expo-battery';
-import * as IntentLauncher from 'expo-intent-launcher';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, AppState, AppStateStatus, Linking, Platform } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -29,160 +36,18 @@ export default function useNotifications() {
     const appStateListenerRef = useRef<any>(null);
 
     // ------------------------------------------------------------
-    // Set Android notification channel
+    // Request notification permission and sync the enabled state
     // ------------------------------------------------------------
-    const setNotificationChannel = async () => {
-        if (Platform.OS === 'android') {
-            await Notifications.setNotificationChannelAsync('default', {
-                name: 'default',
-                importance: Notifications.AndroidImportance.HIGH,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#ffffff',
-            });
-        }
-    }
-
-    // ------------------------------------------------------------
-    // Schedule a notification
-    // ------------------------------------------------------------
-    const scheduleNotification = async (task: Task) => {
-        // First request permission
-        await requestPermission();
-
-        // Android channel configuration
-        await setNotificationChannel();
-
-        try {
-            let notificationId = null;
-
-            // Guard against null reminderDateTime
-            if (!task.reminderDateTime) {
-                console.warn('Task has no reminderDateTime set');
-                return null;
-            }
-
-            const reminderDateTime = new Date(task.reminderDateTime);
-
-            // Only schedule if the reminder is in the future. Use a DATE trigger
-            // (absolute time) rather than TIME_INTERVAL so Android fires it at the
-            // exact clock time instead of a drifting countdown.
-            if (reminderDateTime.getTime() > new Date().getTime()) {
-                notificationId = await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: tr.notifications.taskReminder,
-                        body: `${task.text.substring(0, 40)}...`,
-                        data: {
-                            taskId: task.id,
-                        },
-                    },
-                    trigger: {
-                        type: Notifications.SchedulableTriggerInputTypes.DATE,
-                        date: reminderDateTime,
-                        channelId: 'default',
-                    },
-                });
-
-                console.log(`Scheduled notification for task "${task.text}" at ${reminderDateTime.toISOString()}.`);
-            }
-            return notificationId;
-        } catch (error) {
-            console.error('Error scheduling notification:', error);
-            return null;
-        }
+    const requestPermission = async () => {
+        const status = await requestNotificationPermission(tr);
+        setNotificationsEnabled(status === 'granted');
+        return status;
     };
 
     // ------------------------------------------------------------
-    // Cancel a scheduled notification
+    // Schedule a notification for a task (injects active translations)
     // ------------------------------------------------------------
-    const cancelScheduledNotification = async (notificationId: string) => {
-        try {
-            await Notifications.cancelScheduledNotificationAsync(notificationId);
-        } catch (error) {
-            console.error('Error canceling notification:', error);
-        }
-    };
-
-    // ------------------------------------------------------------
-    // Request battery optimization exemption
-    // ------------------------------------------------------------
-    const openBatteryOptimizationSettings = async () => {
-        if (Platform.OS !== 'android') {
-            Linking.openSettings();
-            return;
-        }
-
-        // true = app is being optimized (not yet exempt)
-        let optimizationEnabled = true;
-        try {
-            optimizationEnabled = await Battery.isBatteryOptimizationEnabledAsync();
-        } catch (error) {
-            console.warn('Could not read battery optimization status:', error);
-        }
-
-        // Not exempt yet → one-tap "Allow" dialog.
-        if (optimizationEnabled) {
-            try {
-                await IntentLauncher.startActivityAsync(
-                    IntentLauncher.ActivityAction.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    { data: `package:${Application.applicationId}` }
-                );
-                return;
-            } catch (error) {
-                console.warn('Battery optimization request failed, falling back to list:', error);
-            }
-        }
-
-        // Already exempt (or the request failed) → open the list to review/toggle.
-        try {
-            await IntentLauncher.startActivityAsync(
-                IntentLauncher.ActivityAction.IGNORE_BATTERY_OPTIMIZATION_SETTINGS
-            );
-        } catch {
-            Linking.openSettings();
-        }
-    };
-
-    // ------------------------------------------------------------
-    // Open the "Alarms & reminders" settings screen
-    // ------------------------------------------------------------
-    const openAlarmPermissionSettings = async () => {
-        if (Platform.OS !== 'android') {
-            Linking.openSettings();
-            return;
-        }
-        if (typeof Platform.Version === 'number' && Platform.Version < 31) {
-            Linking.openSettings();
-            return;
-        }
-        try {
-            await IntentLauncher.startActivityAsync(
-                IntentLauncher.ActivityAction.REQUEST_SCHEDULE_EXACT_ALARM,
-                { data: `package:${Application.applicationId}` }
-            );
-        } catch (error) {
-            console.warn('Could not open alarm permission settings:', error);
-            Linking.openSettings();
-        }
-    };
-
-    // ------------------------------------------------------------
-    // Open the app's notification settings screen
-    // ------------------------------------------------------------
-    const openNotificationSettings = async () => {
-        if (Platform.OS !== 'android') {
-            Linking.openSettings();
-            return;
-        }
-        try {
-            await IntentLauncher.startActivityAsync(
-                IntentLauncher.ActivityAction.APP_NOTIFICATION_SETTINGS,
-                { extra: { 'android.provider.extra.APP_PACKAGE': Application.applicationId } }
-            );
-        } catch (error) {
-            console.warn('Could not open notification settings:', error);
-            Linking.openSettings();
-        }
-    };
+    const scheduleNotification = (task: Task) => scheduleNotificationService(task, tr);
 
     // ------------------------------------------------------------
     // Toggle notifications (request when off, open settings when on)
@@ -196,40 +61,12 @@ export default function useNotifications() {
     };
 
     // ------------------------------------------------------------
-    // Request notification permission
-    // ------------------------------------------------------------
-    const requestPermission = async () => {
-        try {
-            const { status } = await Notifications.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert(
-                    tr.alerts.notificationPermission.title,
-                    tr.alerts.notificationPermission.message,
-                    [
-                        { text: tr.buttons.cancel, onPress: () => { }, style: 'cancel' },
-                        { text: tr.buttons.openSettings, onPress: async () => { Linking.openSettings(); } }
-                    ],
-                    { cancelable: false }
-                );
-                setNotificationsEnabled(false);
-                return 'denied';
-            }
-
-            setNotificationsEnabled(true);
-            return 'granted';
-        } catch (error) {
-            console.error('Error requesting notification permission:', error);
-            return 'denied';
-        }
-    };
-
-    // ------------------------------------------------------------
     // Check notification permissions on mount and app state change
     // ------------------------------------------------------------
     useEffect(() => {
         // Initial check
         const checkPermissions = async () => {
-            const { status } = await Notifications.getPermissionsAsync();
+            const status = await getPermissionStatus();
             setNotificationsEnabled(status === 'granted');
         };
         checkPermissions();

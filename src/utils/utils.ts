@@ -6,6 +6,7 @@ export const isReminderActive = (dateTime: string | Date | null, reminderId: str
     return new Date(dateTime).getTime() > new Date().getTime();
 };
 
+// Share text using the system share dialog
 export const shareText = async (title: string, message: string) => {
     try {
         await Share.share(

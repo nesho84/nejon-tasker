@@ -1,6 +1,7 @@
 import { BackupSection } from "@/components/BackupSection";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
+import DataSeeder from "@/debug/DataSeeder";
 import useNotifications from "@/hooks/useNotifications";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -156,6 +157,16 @@ export default function SettingsScreen() {
                     )}
                 </View>
 
+                {/* Debug tools (dev builds only) */}
+                {__DEV__ &&
+                    <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                        <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
+                            Debug Tools
+                        </Text>
+                        <DataSeeder />
+                    </View>
+                }
+
                 {/* Backup */}
                 <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
@@ -163,6 +174,7 @@ export default function SettingsScreen() {
                     </Text>
                     <BackupSection />
                 </View>
+
 
             </ScrollView>
         </SafeAreaView>
