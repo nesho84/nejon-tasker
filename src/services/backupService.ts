@@ -1,5 +1,7 @@
 import { getDB } from "@/db/database";
+import { scheduleNotification } from '@/services/notificationsService';
 import { useLabelStore } from '@/store/labelStore';
+import { useLanguageStore } from '@/store/languageStore';
 import { useTaskStore } from '@/store/taskStore';
 import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
@@ -206,6 +208,16 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
             throw new Error('Invalid backup file format or wrong app backup');
         }
 
+        // A backed-up reminderId never corresponds to a real OS notification on this
+        // install (or it's simply expired) — reschedule the ones still in the future
+        // and drop the rest, instead of trusting whatever reminderId was in the file.
+        const tr = useLanguageStore.getState().tr;
+        const reminderIds = new Map<string, string | null>();
+        for (const task of backup.tasks) {
+            const isFuture = task.reminderDateTime && new Date(task.reminderDateTime).getTime() > Date.now();
+            reminderIds.set(task.id, isFuture ? await scheduleNotification(task, tr) : null);
+        }
+
         // Import data with transaction
         await db.withTransactionAsync(async () => {
             // Import labels
@@ -240,7 +252,7 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
                         task.date || null,
                         task.checked || 0,
                         task.reminderDateTime || null,
-                        task.reminderId || null,
+                        reminderIds.get(task.id) ?? null,
                         task.isFavorite || 0,
                         task.isDeleted || 0,
                         task.deletedAt || null,

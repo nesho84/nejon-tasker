@@ -1,4 +1,5 @@
 import * as TasksRepo from '@/db/task.repo';
+import { cancelScheduledNotification } from '@/services/notificationsService';
 import { Task } from '@/types/task.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';
@@ -17,6 +18,7 @@ interface TaskState {
     toggleTask: (id: string) => Promise<void>;
     toggleFavoriteTask: (id: string) => Promise<void>;
     reorderTasks: (taskIds: string[]) => Promise<void>;
+    removeTasksByLabelId: (labelId: string) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -134,8 +136,20 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         const previousTask = { ...task };
 
         try {
+            // Cancel any scheduled reminder — a deleted task shouldn't still notify
+            if (task.reminderId) {
+                await cancelScheduledNotification(task.reminderId);
+            }
+
             const now = new Date().toISOString();
-            const updatedTask = { ...task, isDeleted: true, deletedAt: now, updatedAt: now };
+            const updatedTask = {
+                ...task,
+                isDeleted: true,
+                deletedAt: now,
+                updatedAt: now,
+                reminderDateTime: null,
+                reminderId: null,
+            };
 
             // Update state
             set((state) => ({ allTasks: state.allTasks.map(t => t.id === id ? updatedTask : t) }));
@@ -159,6 +173,11 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         const previousTask = { ...task };
 
         try {
+            // Cancel any scheduled reminder before the row disappears entirely
+            if (task.reminderId) {
+                await cancelScheduledNotification(task.reminderId);
+            }
+
             // Update state
             set((state) => ({ allTasks: state.allTasks.filter(t => t.id !== id) }));
 
@@ -283,5 +302,23 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             console.error('Failed to reorder tasks:', error);
             throw error;
         }
+    },
+
+    // ------------------------------------------------------------
+    // Drop all tasks under a label from the in-memory store, cancelling their
+    // reminders first. Used when a label is deleted — SQLite cascade-deletes
+    // the task rows via FK, but that doesn't touch the OS notifications or
+    // this store's cache, so the caller (labelStore) does both here.
+    // ------------------------------------------------------------
+    removeTasksByLabelId: async (labelId) => {
+        const tasksToRemove = get().allTasks.filter(t => t.labelId === labelId);
+
+        for (const task of tasksToRemove) {
+            if (task.reminderId) {
+                await cancelScheduledNotification(task.reminderId);
+            }
+        }
+
+        set((state) => ({ allTasks: state.allTasks.filter(t => t.labelId !== labelId) }));
     },
 }));

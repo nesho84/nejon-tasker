@@ -137,15 +137,7 @@ export default function TaskItem({
                     text: tr.buttons.yes,
                     style: 'destructive',
                     onPress: async () => {
-                        // Cancel the existing notification
-                        if (task?.reminderId) {
-                            await cancelScheduledNotification(task.reminderId);
-                            // Clear reminder data when deleting the task
-                            await updateTask(task.id, {
-                                reminderDateTime: null,
-                                reminderId: null,
-                            });
-                        }
+                        // softDeleteTask cancels the reminder and clears it too
                         await softDeleteTask(task.id);
                     },
                 },
@@ -170,10 +162,7 @@ export default function TaskItem({
                     text: tr.buttons.yes,
                     style: 'destructive',
                     onPress: async () => {
-                        // Cancel the existing notification
-                        if (task?.reminderId) {
-                            await cancelScheduledNotification(task.reminderId);
-                        }
+                        // hardDeleteTask cancels the reminder before deleting
                         await hardDeleteTask(task.id);
                     },
                 },

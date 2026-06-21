@@ -37,7 +37,7 @@ export default function DataSeeder() {
         <View style={[styles.container, { borderColor: theme.danger }]}>
             {/* Toggle header */}
             <TouchableOpacity style={styles.header} activeOpacity={0.6} onPress={() => setExpanded((v) => !v)}>
-                <Text style={[styles.headerText, { color: theme.danger }]}>
+                <Text style={[styles.headerText, { color: theme.placeholder }]}>
                     {expanded ? "▼" : "▶"} Debug · Dummy Data
                 </Text>
             </TouchableOpacity>
@@ -50,7 +50,7 @@ export default function DataSeeder() {
                         disabled={busy}
                         onPress={() => run(seedDummyData)}
                     >
-                        <Text style={[styles.buttonText, { color: theme.text }]}>Seed dummy data</Text>
+                        <Text style={[styles.buttonText, { color: theme.success }]}>Seed dummy data</Text>
                         {busy && <ActivityIndicator size="small" color={theme.text2} />}
                     </TouchableOpacity>
 

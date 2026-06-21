@@ -65,7 +65,8 @@ export async function scheduleNotification(task: Task, tr: Translations): Promis
                 },
             });
 
-            console.log(`Scheduled notification for task "${task.text}" at ${reminderDateTime.toISOString()}.`);
+            const taskText = task.text.length > 20 ? `${task.text.substring(0, 20)}...` : task.text;
+            console.log(`Scheduled notification for task "${taskText}" at ${reminderDateTime.toLocaleString('en-GB')}.`);
         }
         return notificationId;
     } catch (error) {

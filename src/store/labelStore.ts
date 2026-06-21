@@ -1,4 +1,5 @@
 import * as LabelsRepo from '@/db/label.repo';
+import { useTaskStore } from '@/store/taskStore';
 import { Label } from '@/types/label.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';
@@ -112,12 +113,21 @@ export const useLabelStore = create<LabelState>((set, get) => ({
         const label = get().labels.find(l => l.id === id);
         if (!label) throw new Error(`Label not found: ${id}`);
         const previousLabel = { ...label };
+        const previousTasks = useTaskStore.getState().allTasks;
 
         try {
             set(state => ({ labels: state.labels.filter(l => l.id !== id) }));
+
+            // SQLite cascade-deletes this label's tasks via FK ON DELETE CASCADE —
+            // cancel their reminders and drop them from the task store too, or
+            // they'd go stale and any pending notification would still fire.
+            await useTaskStore.getState().removeTasksByLabelId(id);
+
             await LabelsRepo.deleteLabel(id);
         } catch (error) {
             set(state => ({ labels: [...state.labels, previousLabel] }));
+            useTaskStore.setState({ allTasks: previousTasks });
+            console.error('Failed to delete label:', error);
             throw error;
         }
     },

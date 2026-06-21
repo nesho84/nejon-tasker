@@ -2,9 +2,12 @@ import { labelBgColors } from "@/constants/colors";
 import { getDB } from "@/db/database";
 import * as LabelsRepo from "@/db/label.repo";
 import * as TasksRepo from "@/db/task.repo";
+import { cancelScheduledNotification, scheduleNotification } from "@/services/notificationsService";
 import { useLabelStore } from "@/store/labelStore";
+import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { Label } from "@/types/label.types";
+import { Translations } from "@/types/language.types";
 import { Task } from "@/types/task.types";
 import uuid from "react-native-uuid";
 
@@ -16,8 +19,8 @@ import uuid from "react-native-uuid";
 
 // --- Tunables: bump these for more/less volume ---
 const LABEL_COUNT = 16;          // active labels generated
-const TASKS_MIN = 25;            // min tasks per label
-const TASKS_MAX = 60;            // max tasks per label
+const TASKS_MIN = 8;             // min tasks per label
+const TASKS_MAX = 20;            // max tasks per label
 // Per-task state probabilities
 const P_CHECKED = 0.25;
 const P_FAVORITE = 0.12;
@@ -101,21 +104,26 @@ function buildLabels(): Label[] {
 }
 
 // ------------------------------------------------------------
-// Build a varied reminder timestamp (mostly future, some overdue)
+// Overdue reminder timestamp — display-only, never actually scheduled
 // ------------------------------------------------------------
-function makeReminder(): string {
-    if (chance(P_REMINDER_PAST)) {
-        return isoOffset(-rand(1, 5) * DAY); // overdue
-    }
-    // spread across the next minutes → days
-    const buckets = [rand(5, 55), rand(1, 12) * HOUR, rand(1, 14) * DAY];
-    return isoOffset(pick(buckets));
+function makePastReminder(): string {
+    return isoOffset(-rand(1, 5) * DAY);
 }
 
 // ------------------------------------------------------------
-// Build tasks for every label (TASKS_MIN..TASKS_MAX each)
+// Future reminder timestamp — pushed several months out on purpose, so a real
+// scheduled notification never fires mid-debugging-session by accident.
 // ------------------------------------------------------------
-function buildTasks(labels: Label[]): Task[] {
+function makeFutureReminder(): string {
+    return isoOffset(rand(90, 270) * DAY);
+}
+
+// ------------------------------------------------------------
+// Build tasks for every label (TASKS_MIN..TASKS_MAX each). Past reminders are
+// fake (display-only — nothing left to fire); future ones get a real OS
+// notification scheduled so reminder delivery can actually be tested.
+// ------------------------------------------------------------
+async function buildTasks(labels: Label[], tr: Translations): Promise<Task[]> {
     const tasks: Task[] = [];
 
     for (const label of labels) {
@@ -123,8 +131,10 @@ function buildTasks(labels: Label[]): Task[] {
         for (let i = 0; i < count; i++) {
             const now = isoOffset(0);
             const hasReminder = chance(P_REMINDER);
-            const reminderDateTime = hasReminder ? makeReminder() : null;
-            tasks.push({
+            const isPast = hasReminder && chance(P_REMINDER_PAST);
+            const reminderDateTime = hasReminder ? (isPast ? makePastReminder() : makeFutureReminder()) : null;
+
+            const task: Task = {
                 id: uuid.v4() as string,
                 labelId: label.id,
                 text: makeTaskText(),
@@ -132,13 +142,19 @@ function buildTasks(labels: Label[]): Task[] {
                 checked: chance(P_CHECKED),
                 order_position: i,
                 reminderDateTime,
-                reminderId: hasReminder ? `seed-${uuid.v4()}` : null,
+                reminderId: null,
                 isFavorite: chance(P_FAVORITE),
                 isDeleted: chance(P_DELETED),
                 deletedAt: null,
                 createdAt: now,
                 updatedAt: now,
-            });
+            };
+
+            if (hasReminder) {
+                task.reminderId = isPast ? `seed-${uuid.v4()}` : await scheduleNotification(task, tr);
+            }
+
+            tasks.push(task);
         }
     }
 
@@ -154,6 +170,15 @@ function buildTasks(labels: Label[]): Task[] {
 // Wipe every label + task from the database and refresh stores
 // ------------------------------------------------------------
 export async function clearAllData(): Promise<void> {
+    // Cancel any real OS notifications before wiping rows, or they'd still
+    // fire later even though the tasks backing them no longer exist.
+    const existingTasks = await TasksRepo.loadAllTasks();
+    for (const task of existingTasks) {
+        if (task.reminderId) {
+            await cancelScheduledNotification(task.reminderId);
+        }
+    }
+
     const db = await getDB();
     await db.withTransactionAsync(async () => {
         // tasks first (FK), though labels would cascade anyway
@@ -172,8 +197,9 @@ export async function clearAllData(): Promise<void> {
 export async function seedDummyData(): Promise<void> {
     await clearAllData();
 
+    const tr = useLanguageStore.getState().tr;
     const labels = buildLabels();
-    const tasks = buildTasks(labels);
+    const tasks = await buildTasks(labels, tr);
 
     const db = await getDB();
     await db.withTransactionAsync(async () => {
