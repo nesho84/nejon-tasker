@@ -174,7 +174,7 @@ export default function SettingsScreen() {
                 {/* Debug tools (dev builds only) */}
                 {__DEV__ &&
                     <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
+                        <Text style={[styles.sectionTitle, { color: theme.danger }]}>
                             Debug Tools
                         </Text>
                         <DebugPanel />

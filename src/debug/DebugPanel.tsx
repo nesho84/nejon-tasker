@@ -45,14 +45,14 @@ export default function DebugPanel() {
 
             {expanded && (
                 <View style={styles.body}>
-                    {/* Show onboarding */}
+                    {/* Show Onboarding */}
                     <TouchableOpacity
                         style={[styles.button, { borderColor: theme.border }]}
                         activeOpacity={0.6}
                         disabled={busy}
                         onPress={() => useOnboardingStore.getState().setOnboarding(false)}
                     >
-                        <Text style={[styles.buttonText, { color: theme.info }]}>Show onboarding</Text>
+                        <Text style={[styles.buttonText, { color: theme.info }]}>Show Onboarding</Text>
                     </TouchableOpacity>
 
                     {/* Seed dummy data */}
