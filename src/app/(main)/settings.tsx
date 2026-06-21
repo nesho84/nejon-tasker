@@ -1,7 +1,7 @@
 import { BackupSection } from "@/components/BackupSection";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
-import DataSeeder from "@/debug/DataSeeder";
+import DebugPanel from "@/debug/DebugPanel";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -128,11 +128,11 @@ export default function SettingsScreen() {
 
                             {/* Battery optimization */}
                             <TouchableOpacity style={styles.row} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
-                                <View style={[styles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
+                                <View style={[styles.rowIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.primary) + '15' }]}>
                                     <MaterialCommunityIcons
                                         name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
                                         size={22}
-                                        color={batteryOptimization ? theme.primary : theme.success}
+                                        color={batteryOptimization ? theme.warning : theme.success}
                                     />
                                 </View>
                                 <View style={styles.rowText}>
@@ -143,7 +143,11 @@ export default function SettingsScreen() {
                                         {tr.settings.batteryOptBody}
                                     </Text>
                                 </View>
-                                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                                {batteryOptimization ? (
+                                    <MaterialCommunityIcons name="alert-circle-outline" size={22} color={theme.warning} />
+                                ) : (
+                                    <MaterialCommunityIcons name="check-circle" size={24} color={theme.success} />
+                                )}
                             </TouchableOpacity>
 
                             <View style={[styles.divider, { backgroundColor: theme.border }]} />
@@ -173,7 +177,7 @@ export default function SettingsScreen() {
                         <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
                             Debug Tools
                         </Text>
-                        <DataSeeder />
+                        <DebugPanel />
                     </View>
                 }
 

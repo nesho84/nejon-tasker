@@ -1,13 +1,18 @@
 import AppScreen from '@/components/AppScreen';
+import { useDeviceSettingsStore } from '@/store/deviceSettingsStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
 import { useThemeStore } from '@/store/themeStore';
 import { Language, LANGUAGES } from '@/types/language.types';
+import { openAlarmPermissionSettings, openBatteryOptimizationSettings, requestNotificationPermission } from '@/utils/system';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get('window');
+
+type OnboardingStep = 'language' | 'slides' | 'permissions';
 
 export default function OnboardingScreen() {
     // Stores
@@ -15,9 +20,11 @@ export default function OnboardingScreen() {
     const theme = useThemeStore((state) => state.theme);
     const language = useLanguageStore((state) => state.language);
     const tr = useLanguageStore((state) => state.tr);
+    const notificationPermission = useDeviceSettingsStore((state) => state.notificationPermission);
+    const batteryOptimization = useDeviceSettingsStore((state) => state.batteryOptimization);
 
     // Local State
-    const [languageScreen, setLanguageScreen] = useState(true);
+    const [step, setStep] = useState<OnboardingStep>('language');
     const [selectedLanguage, setSelectedLanguage] = useState<Language>(language || 'en');
     const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -68,7 +75,7 @@ export default function OnboardingScreen() {
     // ------------------------------------------------------------
     const handleLanguageNext = () => {
         useLanguageStore.getState().setLanguage(selectedLanguage);
-        setLanguageScreen(false);
+        setStep('slides');
     };
 
     // ------------------------------------------------------------
@@ -95,7 +102,7 @@ export default function OnboardingScreen() {
         if (currentSlide < SLIDES.length - 1) {
             goToSlide(currentSlide + 1);
         } else {
-            useOnboardingStore.getState().setOnboarding(true);
+            setStep('permissions');
         }
     };
 
@@ -103,11 +110,25 @@ export default function OnboardingScreen() {
     // Handle Skip button press
     // ------------------------------------------------------------
     const handleSkip = () => {
+        setStep('permissions');
+    };
+
+    // ------------------------------------------------------------
+    // Handle Allow Notifications button press
+    // ------------------------------------------------------------
+    const handleAllowNotifications = () => {
+        requestNotificationPermission(tr);
+    };
+
+    // ------------------------------------------------------------
+    // Handle Continue button press (finish onboarding)
+    // ------------------------------------------------------------
+    const handleFinish = () => {
         useOnboardingStore.getState().setOnboarding(true);
     };
 
     // Step 1: Language Selection
-    if (languageScreen) {
+    if (step === 'language') {
         return (
             <AppScreen>
                 <ScrollView
@@ -172,6 +193,121 @@ export default function OnboardingScreen() {
                                 activeOpacity={0.8}
                             >
                                 <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>Next</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                </ScrollView>
+            </AppScreen>
+        );
+    }
+
+    // Step 3: Permissions
+    if (step === 'permissions') {
+        return (
+            <AppScreen>
+                <ScrollView
+                    style={{ flex: 1, backgroundColor: theme.bgAlt }}
+                    contentContainerStyle={{ flexGrow: 1, paddingTop: topInset, paddingBottom: bottomInset }}
+                    showsVerticalScrollIndicator={false}
+                >
+
+                    <View style={styles.permissionsContainer}>
+                        {/* Header */}
+                        <View style={styles.languageHeader}>
+                            <Text style={[styles.languageTitle, { color: theme.text }]}>
+                                {tr.onboarding.permissionsTitle}
+                            </Text>
+                            <Text style={[styles.languageSubtitle, { color: theme.muted }]}>
+                                {tr.onboarding.permissionsSubtitle}
+                            </Text>
+                        </View>
+
+                        {/* Permission Rows */}
+                        <View style={[styles.permissionsCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                            {/* Notifications */}
+                            <TouchableOpacity style={styles.permissionRow} onPress={handleAllowNotifications} activeOpacity={0.7}>
+                                <View style={[styles.permissionIcon, { backgroundColor: (notificationPermission ? theme.action1 : theme.warning) + '15' }]}>
+                                    <MaterialCommunityIcons
+                                        name={notificationPermission ? "bell-check-outline" : "bell-alert-outline"}
+                                        size={22}
+                                        color={notificationPermission ? theme.action1 : theme.warning}
+                                    />
+                                </View>
+                                <View style={styles.permissionText}>
+                                    <Text style={[styles.permissionTitle, { color: theme.text }]}>
+                                        {tr.onboarding.notificationsTitle}
+                                    </Text>
+                                    <Text style={[styles.permissionSubtitle, { color: theme.muted }]}>
+                                        {tr.onboarding.notificationsBody}
+                                    </Text>
+                                </View>
+                                {notificationPermission ? (
+                                    <MaterialCommunityIcons name="check-circle" size={24} color={theme.success} />
+                                ) : (
+                                    <MaterialCommunityIcons name="alert-circle-outline" size={22} color={theme.warning} />
+                                )}
+                            </TouchableOpacity>
+
+                            {Platform.OS === 'android' && (
+                                <>
+                                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+                                    {/* Battery optimization */}
+                                    <TouchableOpacity style={styles.permissionRow} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
+                                        <View style={[styles.permissionIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.action1) + '15' }]}>
+                                            <MaterialCommunityIcons
+                                                name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
+                                                size={22}
+                                                color={batteryOptimization ? theme.warning : theme.success}
+                                            />
+                                        </View>
+                                        <View style={styles.permissionText}>
+                                            <Text style={[styles.permissionTitle, { color: theme.text }]}>
+                                                {tr.settings.batteryOptTitle}
+                                            </Text>
+                                            <Text style={[styles.permissionSubtitle, { color: theme.muted }]}>
+                                                {tr.settings.batteryOptBody}
+                                            </Text>
+                                        </View>
+                                        {batteryOptimization ? (
+                                            <MaterialCommunityIcons name="alert-circle-outline" size={22} color={theme.warning} />
+                                        ) : (
+                                            <MaterialCommunityIcons name="check-circle" size={24} color={theme.success} />
+                                        )}
+                                    </TouchableOpacity>
+
+                                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+                                    {/* Alarms & reminders */}
+                                    <TouchableOpacity style={styles.permissionRow} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
+                                        <View style={[styles.permissionIcon, { backgroundColor: theme.action1 + '15' }]}>
+                                            <MaterialCommunityIcons name="alarm" size={22} color={theme.action1} />
+                                        </View>
+                                        <View style={styles.permissionText}>
+                                            <Text style={[styles.permissionTitle, { color: theme.text }]}>
+                                                {tr.settings.alarmAccessTitle}
+                                            </Text>
+                                            <Text style={[styles.permissionSubtitle, { color: theme.muted }]}>
+                                                {tr.settings.alarmAccessBody}
+                                            </Text>
+                                        </View>
+                                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.action1} style={{ opacity: 0.5 }} />
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                        </View>
+
+                        {/* Continue Button */}
+                        <View style={styles.languageBottom}>
+                            <TouchableOpacity
+                                style={[styles.primaryButton, { backgroundColor: theme.action1 }]}
+                                onPress={handleFinish}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>
+                                    {tr.onboarding.continueButton}
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -329,6 +465,49 @@ const styles = StyleSheet.create({
     },
     languageBottom: {
         paddingVertical: 20,
+    },
+
+    // Permissions Step Styles
+    permissionsContainer: {
+        flex: 1,
+        paddingHorizontal: 20,
+        justifyContent: 'space-between',
+    },
+    permissionsCard: {
+        borderWidth: 1,
+        borderRadius: 16,
+        padding: 16,
+    },
+    permissionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingVertical: 6,
+    },
+    permissionIcon: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    permissionText: {
+        flex: 1,
+        gap: 3,
+    },
+    permissionTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+        letterSpacing: -0.3,
+    },
+    permissionSubtitle: {
+        fontSize: 12,
+        lineHeight: 16,
+        opacity: 0.8,
+    },
+    divider: {
+        height: StyleSheet.hairlineWidth,
+        marginVertical: 10,
     },
 
     // Features Onboarding Styles

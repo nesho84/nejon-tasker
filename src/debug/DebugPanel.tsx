@@ -1,9 +1,10 @@
+import { useOnboardingStore } from "@/store/onboardingStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { clearAllData, seedDummyData } from "./seedData";
 
-export default function DataSeeder() {
+export default function DebugPanel() {
     const theme = useThemeStore((state) => state.theme);
 
     const [expanded, setExpanded] = useState(false);
@@ -15,7 +16,7 @@ export default function DataSeeder() {
         try {
             await fn();
         } catch (err) {
-            console.error("[DataSeeder] action failed:", err);
+            console.error("[DebugPanel] action failed:", err);
             Alert.alert("Seed error", err instanceof Error ? err.message : String(err));
         } finally {
             setBusy(false);
@@ -38,12 +39,23 @@ export default function DataSeeder() {
             {/* Toggle header */}
             <TouchableOpacity style={styles.header} activeOpacity={0.6} onPress={() => setExpanded((v) => !v)}>
                 <Text style={[styles.headerText, { color: theme.placeholder }]}>
-                    {expanded ? "▼" : "▶"} Debug · Dummy Data
+                    {expanded ? "▼" : "▶"} Debug
                 </Text>
             </TouchableOpacity>
 
             {expanded && (
                 <View style={styles.body}>
+                    {/* Show onboarding */}
+                    <TouchableOpacity
+                        style={[styles.button, { borderColor: theme.border }]}
+                        activeOpacity={0.6}
+                        disabled={busy}
+                        onPress={() => useOnboardingStore.getState().setOnboarding(false)}
+                    >
+                        <Text style={[styles.buttonText, { color: theme.info }]}>Show onboarding</Text>
+                    </TouchableOpacity>
+
+                    {/* Seed dummy data */}
                     <TouchableOpacity
                         style={[styles.button, { borderColor: theme.border }]}
                         activeOpacity={0.6}
@@ -54,6 +66,7 @@ export default function DataSeeder() {
                         {busy && <ActivityIndicator size="small" color={theme.text2} />}
                     </TouchableOpacity>
 
+                    {/* Clear all data */}
                     <TouchableOpacity
                         style={[styles.button, { borderColor: theme.border }]}
                         activeOpacity={0.6}
