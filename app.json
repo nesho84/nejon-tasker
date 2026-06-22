@@ -2,7 +2,7 @@
   "expo": {
     "name": "Nejon Tasker",
     "slug": "nejon-tasker",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "scheme": "nejontasker",
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "versionCode": 8,
+      "versionCode": 9,
       "package": "com.nejon.nejontasker",
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
@@ -37,7 +37,7 @@
       ]
     },
     "ios": {
-      "buildNumber": "8",
+      "buildNumber": "9",
       "bundleIdentifier": "com.nejon.nejontasker",
       "supportsTablet": true,
       "infoPlist": {
