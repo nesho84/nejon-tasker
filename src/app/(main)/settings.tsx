@@ -61,6 +61,16 @@ export default function SettingsScreen() {
                 showsVerticalScrollIndicator={false}
             >
 
+                {/* Debug tools (dev builds only) */}
+                {__DEV__ &&
+                    <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                        <Text style={[styles.sectionTitle, { color: theme.danger }]}>
+                            Debug Tools
+                        </Text>
+                        <DebugPanel />
+                    </View>
+                }
+
                 {/* Display Options */}
                 <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
@@ -101,7 +111,7 @@ export default function SettingsScreen() {
                         selectedColor={theme.action1}
                         backgroundColor={theme.bgAlt}
                         modalBackgroundColor={theme.surface}
-                        borderColor={theme.border}
+                        borderColor={theme.divider}
                     />
                 </View>
 
@@ -171,16 +181,6 @@ export default function SettingsScreen() {
                     )}
                 </View>
 
-                {/* Debug tools (dev builds only) */}
-                {__DEV__ &&
-                    <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.danger }]}>
-                            Debug Tools
-                        </Text>
-                        <DebugPanel />
-                    </View>
-                }
-
                 {/* Backup */}
                 <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
@@ -205,9 +205,8 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        paddingHorizontal: 16,
-        paddingBottom: 24,
-        gap: 16,
+        paddingHorizontal: 10,
+        gap: 10,
     },
 
     sectionCard: {

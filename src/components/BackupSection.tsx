@@ -5,7 +5,7 @@ import { useTaskStore } from '@/store/taskStore';
 import { useThemeStore } from '@/store/themeStore';
 import { dates } from '@/utils/dates';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function BackupSection() {
@@ -140,12 +140,13 @@ export function BackupSection() {
         );
     };
 
+    // Main component
     return (
         <View style={styles.container}>
 
             {/* Last Backup Info */}
             {lastBackup ? (
-                <View style={[styles.infoCard, { borderColor: theme.border }]}>
+                <View style={[styles.infoCard, { borderColor: theme.divider }]}>
                     <Text style={[styles.infoLabel, { color: theme.success }]}>{tr.labels.lastBackup}</Text>
                     <Text style={[styles.infoDate, { color: theme.muted }]}>{dates.format(lastBackup.date)}</Text>
                     <Text style={[styles.infoDetails, { color: theme.placeholder }]}>
@@ -153,7 +154,7 @@ export function BackupSection() {
                     </Text>
                 </View>
             ) : (
-                <View style={[styles.infoCard, { borderColor: theme.border }]}>
+                <View style={[styles.infoCard, { borderColor: theme.divider }]}>
                     <Text style={[styles.noBackupText, { color: theme.danger }]}>{tr.labels.noBackup}</Text>
                 </View>
             )}
@@ -162,7 +163,7 @@ export function BackupSection() {
             <View style={styles.backupButtonsContainer}>
                 {/* Create Backup Button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: hasData ? theme.border : theme.disabled }]}
+                    style={[styles.button, { backgroundColor: hasData ? theme.divider : theme.disabled }]}
                     onPress={handleCreateBackup}
                     disabled={!hasData || isCreatingBackup || isRestoring}
                 >
@@ -180,7 +181,7 @@ export function BackupSection() {
 
                 {/* Restore Backup Button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: theme.active }]}
+                    style={[styles.button, { backgroundColor: theme.divider }]}
                     onPress={handleRestoreBackup}
                     disabled={isCreatingBackup || isRestoring}
                 >
