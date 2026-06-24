@@ -46,6 +46,7 @@ export const LIGHT = {
   // Special use
   shadow: "rgba(0, 0, 0, 0.1)",
   overlay: "rgba(0, 0, 0, 0.5)",
+  overlayLight: "#00000012",
 };
 
 export const DARK = {
@@ -96,6 +97,7 @@ export const DARK = {
   // Special use
   shadow: "rgba(0, 0, 0, 0.3)",
   overlay: "rgba(0, 0, 0, 0.7)",
+  overlayLight: "#00000033",
 };
 
 // Label colors

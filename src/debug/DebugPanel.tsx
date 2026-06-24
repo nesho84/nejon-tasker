@@ -3,6 +3,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { debugChannelsAndScheduled, testTaskReminder } from "./notificationsTests";
 import { clearAllData, seedDummyData } from "./seedData";
 
 interface DebugButtonProps {
@@ -13,6 +14,26 @@ interface DebugButtonProps {
     onPress: () => void;
 }
 
+interface PillProps {
+    label: string;
+    color: string;
+    bg: string;
+}
+
+// Delay before the test reminder fires (shown as a badge on the button)
+const TEST_DELAY_SECONDS = 10;
+
+// ------------------------------------------------------------
+// Small rounded status badge (e.g. the test-reminder delay)
+// ------------------------------------------------------------
+function Pill({ label, color, bg }: PillProps) {
+    return (
+        <View style={[styles.pill, { backgroundColor: bg }]}>
+            <Text style={[styles.pillText, { color }]}>{label}</Text>
+        </View>
+    );
+}
+
 // ------------------------------------------------------------
 // Reusable debug row — label on the left, optional
 // value/indicator (e.g. a spinner) on the right
@@ -21,7 +42,7 @@ function DebugButton({ label, color, right, disabled, onPress }: DebugButtonProp
     const theme = useThemeStore((state) => state.theme);
     return (
         <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme.bgAlt, opacity: 0.75 }]}
+            style={[styles.button, { backgroundColor: theme.overlayLight }]}
             activeOpacity={0.6}
             disabled={disabled}
             onPress={onPress}
@@ -122,7 +143,6 @@ export default function DebugPanel() {
                         disabled={busy}
                         onPress={confirmClear}
                     />
-
                     <Text style={[styles.hint, { color: theme.placeholder }]}>
                         Seeding wipes existing data first, then generates a large set
                         (~16 labels, hundreds of tasks — checked, favorites, reminders,
@@ -131,6 +151,23 @@ export default function DebugPanel() {
 
                     {/* Divider */}
                     <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+
+                    {/* Test notifications */}
+                    <DebugButton
+                        label="Test Reminder"
+                        color={theme.warning}
+                        disabled={busy}
+                        onPress={() => run(() => testTaskReminder(TEST_DELAY_SECONDS))}
+                        right={<Pill label={`${TEST_DELAY_SECONDS}s`} color={theme.placeholder} bg={theme.divider} />}
+                    />
+                    {/* Channels & scheduled dump */}
+                    <DebugButton
+                        label="Debug Channels & Scheduled"
+                        color={theme.secondary}
+                        disabled={busy}
+                        onPress={() => run(debugChannelsAndScheduled)}
+                    />
+
                 </View>
             )}
         </>
@@ -173,6 +210,19 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 13,
         fontWeight: "500",
+    },
+
+    // Rounded status badge (e.g. test-reminder delay)
+    pill: {
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 10,
+        minWidth: 36,
+        alignItems: "center",
+    },
+    pillText: {
+        fontSize: 11,
+        fontWeight: "700",
     },
 
     divider: {
