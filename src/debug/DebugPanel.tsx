@@ -3,10 +3,10 @@ import { useThemeStore } from "@/store/themeStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { debugChannelsAndScheduled, testTaskReminder } from "./notificationsTests";
-import { clearAllData, seedDummyData } from "./seedData";
+import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
+import { clearAllData, seedDummyData } from "./debugSeed";
 
-interface DebugButtonProps {
+interface ButtonProps {
     label: string;
     color: string;
     right?: ReactNode;
@@ -14,22 +14,19 @@ interface DebugButtonProps {
     onPress: () => void;
 }
 
-interface PillProps {
+interface BadgeProps {
     label: string;
     color: string;
     bg: string;
 }
 
-// Delay before the test reminder fires (shown as a badge on the button)
-const TEST_DELAY_SECONDS = 10;
-
 // ------------------------------------------------------------
 // Small rounded status badge (e.g. the test-reminder delay)
 // ------------------------------------------------------------
-function Pill({ label, color, bg }: PillProps) {
+function Badge({ label, color, bg }: BadgeProps) {
     return (
-        <View style={[styles.pill, { backgroundColor: bg }]}>
-            <Text style={[styles.pillText, { color }]}>{label}</Text>
+        <View style={[styles.badge, { backgroundColor: bg }]}>
+            <Text style={[styles.badgeText, { color }]}>{label}</Text>
         </View>
     );
 }
@@ -38,7 +35,7 @@ function Pill({ label, color, bg }: PillProps) {
 // Reusable debug row — label on the left, optional
 // value/indicator (e.g. a spinner) on the right
 // ------------------------------------------------------------
-function DebugButton({ label, color, right, disabled, onPress }: DebugButtonProps) {
+function DebugButton({ label, color, right, disabled, onPress }: ButtonProps) {
     const theme = useThemeStore((state) => state.theme);
     return (
         <TouchableOpacity
@@ -54,7 +51,6 @@ function DebugButton({ label, color, right, disabled, onPress }: DebugButtonProp
 }
 
 // Renders the debug controls only — the containing card + "Debug Tools"
-// title live in the Settings screen, so it matches the other setting cards.
 export default function DebugPanel() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
@@ -66,14 +62,14 @@ export default function DebugPanel() {
     // ------------------------------------------------------------
     // Run an async action with a busy spinner and error handling
     // ------------------------------------------------------------
-    const run = async (fn: () => Promise<void>) => {
+    const runAsync = async (fn: () => Promise<void>) => {
         if (busy) return;
         setBusy(true);
         try {
             await fn();
         } catch (err) {
             console.error("[DebugPanel] action failed:", err);
-            Alert.alert("Seed error", err instanceof Error ? err.message : String(err));
+            Alert.alert("Debug action error", err instanceof Error ? err.message : String(err));
         } finally {
             setBusy(false);
         }
@@ -82,16 +78,20 @@ export default function DebugPanel() {
     // ------------------------------------------------------------
     // Confirm before clearing all data
     // ------------------------------------------------------------
-    const confirmClear = () => {
+    const confirmClearAlert = () => {
         Alert.alert(
             "Clear all data?",
             "This permanently deletes every label and task from the database.",
             [
                 { text: "Cancel", style: "cancel" },
-                { text: "Clear all", style: "destructive", onPress: () => run(clearAllData) },
+                { text: "Clear all", style: "destructive", onPress: () => runAsync(clearAllData) },
             ],
         );
     };
+
+    // Shared params and handlers
+    const notifSeconds = 10; // seconds until the test reminder fires
+    const notifSecondsBadge = <Badge label={`${notifSeconds}s`} color={theme.placeholder} bg={theme.divider} />;
 
     // Main component
     return (
@@ -114,6 +114,7 @@ export default function DebugPanel() {
             </TouchableOpacity>
 
             {expanded && (
+                // The debug panel body
                 <View style={styles.body}>
 
                     {/* Divider */}
@@ -134,19 +135,19 @@ export default function DebugPanel() {
                         label="Seed dummy data"
                         color={theme.success}
                         disabled={busy}
-                        onPress={() => run(seedDummyData)}
+                        onPress={() => runAsync(seedDummyData)}
                         right={busy ? <ActivityIndicator size="small" color={theme.text2} /> : undefined}
                     />
                     <DebugButton
                         label="Clear all data"
                         color={theme.danger}
                         disabled={busy}
-                        onPress={confirmClear}
+                        onPress={confirmClearAlert}
                     />
                     <Text style={[styles.hint, { color: theme.placeholder }]}>
                         Seeding wipes existing data first, then generates a large set
                         (~16 labels, hundreds of tasks — checked, favorites, reminders,
-                        deleted items) for scroll/perf testing. Tune counts in seedData.ts.
+                        deleted items) for scroll/perf testing. Tune counts in debugSeed.ts.
                     </Text>
 
                     {/* Divider */}
@@ -154,18 +155,17 @@ export default function DebugPanel() {
 
                     {/* Test notifications */}
                     <DebugButton
-                        label="Test Reminder"
+                        label="Test Task Reminder Not."
                         color={theme.warning}
                         disabled={busy}
-                        onPress={() => run(() => testTaskReminder(TEST_DELAY_SECONDS))}
-                        right={<Pill label={`${TEST_DELAY_SECONDS}s`} color={theme.placeholder} bg={theme.divider} />}
+                        onPress={() => runAsync(() => debugTaskReminderN(notifSeconds))}
+                        right={notifSecondsBadge}
                     />
-                    {/* Channels & scheduled dump */}
                     <DebugButton
-                        label="Debug Channels & Scheduled"
+                        label="Log Channels & Scheduled"
                         color={theme.secondary}
                         disabled={busy}
-                        onPress={() => run(debugChannelsAndScheduled)}
+                        onPress={() => runAsync(logScheduledN)}
                     />
 
                 </View>
@@ -195,7 +195,6 @@ const styles = StyleSheet.create({
         gap: 6,
         marginVertical: 8,
         marginHorizontal: 4,
-        // backgroundColor: "red",
     },
 
     // Action row + right-side indicators
@@ -213,14 +212,14 @@ const styles = StyleSheet.create({
     },
 
     // Rounded status badge (e.g. test-reminder delay)
-    pill: {
+    badge: {
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
         minWidth: 36,
         alignItems: "center",
     },
-    pillText: {
+    badgeText: {
         fontSize: 11,
         fontWeight: "700",
     },

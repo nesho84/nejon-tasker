@@ -9,7 +9,7 @@ import { Platform } from "react-native";
 // real delivery path (channel + DATE trigger). Uses a debug-only data payload —
 // no real task id — so the useNotifications listeners don't mutate any task.
 // ------------------------------------------------------------
-export async function testTaskReminder(seconds = 10): Promise<void> {
+export async function debugTaskReminderN(seconds = 10): Promise<void> {
     try {
         await setNotificationChannel();
 
@@ -53,7 +53,7 @@ function formatTriggerDate(trigger: Notifications.NotificationTrigger | null): s
 // ------------------------------------------------------------
 // Debug utility: log all channels, scheduled notifications and permissions.
 // ------------------------------------------------------------
-export async function debugChannelsAndScheduled(): Promise<void> {
+export async function logScheduledN(): Promise<void> {
     try {
         if (Platform.OS === "android") {
             const channels = await Notifications.getNotificationChannelsAsync();
@@ -76,6 +76,6 @@ export async function debugChannelsAndScheduled(): Promise<void> {
         const permissions = await Notifications.getPermissionsAsync();
         console.log("🔧 Notification permissions:", permissions);
     } catch (err) {
-        console.error("❌ debugChannelsAndScheduled failed:", err);
+        console.error("❌ logScheduledN failed:", err);
     }
 }

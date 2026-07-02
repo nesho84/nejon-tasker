@@ -1,8 +1,10 @@
+import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
+import { useState } from 'react';
 import { Image, Linking, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -12,21 +14,42 @@ const HELP_EMAIL = 'mailto:help@nejon.net';
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.nejon.nejontasker';
 const MORE_APPS_GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/developer?id=Neshat%20Ademi';
 
+const DEBUG_MODE_TAP_THRESHOLD = 5;
+const DEBUG_MODE_TAP_HINT_START = 3;
+
 export default function AboutScreen() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);
+    const debugModeEnabled = useDebugStore((state) => state.debugModeEnabled);
+    const toggleDebugMode = useDebugStore((state) => state.toggleDebugMode);
 
     // Safe area insets
     const insets = useSafeAreaInsets();
     const topInset = 8;
     const bottomInset = insets.bottom + 8;
 
+    // Local state
+    const [tapCount, setTapCount] = useState(0);
+
     // ------------------------------------------------------------
     // Open app info/settings
     // ------------------------------------------------------------
     const openAppInfo = () => {
         Linking.openSettings();
+    };
+
+    // ------------------------------------------------------------
+    // Tap the version number N times to toggle debug mode
+    // ------------------------------------------------------------
+    const handleVersionTap = () => {
+        const nextCount = tapCount + 1;
+        if (nextCount >= DEBUG_MODE_TAP_THRESHOLD) {
+            setTapCount(0);
+            toggleDebugMode();
+        } else {
+            setTapCount(nextCount);
+        }
     };
 
     // ------------------------------------------------------------
@@ -93,10 +116,29 @@ export default function AboutScreen() {
                 {/* Title */}
                 <Text style={[styles.title, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
 
-                {/* Version */}
-                <Text style={[styles.versionText, { color: theme.placeholder }]}>
-                    Version {Constants?.expoConfig?.version}
-                </Text>
+                {/* Version (5 times Press activates debug mode) */}
+                <TouchableOpacity style={styles.versionButton} onPress={handleVersionTap} activeOpacity={0.6}>
+                    <Text style={[styles.versionText, { color: theme.placeholder }]}>
+                        Version {Constants?.expoConfig?.version}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Debug-mode hint */}
+                {tapCount >= DEBUG_MODE_TAP_HINT_START && (
+                    <View style={[styles.debugBadge, { borderColor: 'transparent' }]}>
+                        <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
+                            Tap {DEBUG_MODE_TAP_THRESHOLD - tapCount} more time{DEBUG_MODE_TAP_THRESHOLD - tapCount === 1 ? "" : "s"} to {debugModeEnabled ? "deactivate" : "activate"} debug mode.
+                        </Text>
+                    </View>
+                )}
+                {/* Debug-mode status badge */}
+                {tapCount < DEBUG_MODE_TAP_HINT_START && debugModeEnabled && (
+                    <View style={[styles.debugBadge, { borderColor: theme.danger }]}>
+                        <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
+                            Debug mode activated. Tap {DEBUG_MODE_TAP_THRESHOLD} times to deactivate.
+                        </Text>
+                    </View>
+                )}
 
                 {/* Description */}
                 <Text style={[styles.desc, { color: theme.placeholder }]} adjustsFontSizeToFit>
@@ -255,11 +297,30 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         textAlign: "center",
     },
+    versionButton: {
+        alignSelf: "center",
+        marginTop: -6,
+    },
     versionText: {
         fontSize: 14,
         fontWeight: "400",
         textAlign: "center",
-        marginTop: -6,
+    },
+    debugBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "center",
+        borderWidth: 1,
+        borderRadius: 20,
+        // marginTop: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        gap: 6,
+    },
+    debugBadgeText: {
+        fontSize: 12,
+        fontWeight: "500",
+        includeFontPadding: false,
     },
     desc: {
         fontSize: 15,

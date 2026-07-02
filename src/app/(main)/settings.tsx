@@ -2,6 +2,7 @@ import { BackupSection } from "@/components/BackupSection";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
 import DebugPanel from "@/debug/DebugPanel";
+import { useDebugStore } from "@/debug/debugStore";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -19,6 +20,7 @@ export default function SettingsScreen() {
     const tr = useLanguageStore((state) => state.tr);
     const notificationsEnabled = useDeviceSettingsStore((state) => state.notificationPermission);
     const batteryOptimization = useDeviceSettingsStore((state) => state.batteryOptimization);
+    const debugModeEnabled = useDebugStore((state) => state.debugModeEnabled);
 
     // Safe area insets
     const insets = useSafeAreaInsets();
@@ -61,15 +63,15 @@ export default function SettingsScreen() {
                 showsVerticalScrollIndicator={false}
             >
 
-                {/* Debug tools (dev builds only) */}
-                {__DEV__ &&
+                {/* Debug tools (dev builds, or debug mode toggled on the About screen) */}
+                {(__DEV__ || debugModeEnabled) && (
                     <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                         <Text style={[styles.sectionTitle, { color: theme.danger }]}>
                             Debug Tools
                         </Text>
                         <DebugPanel />
                     </View>
-                }
+                )}
 
                 {/* Display Options */}
                 <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>

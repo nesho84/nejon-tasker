@@ -12,9 +12,9 @@ import { Task } from "@/types/task.types";
 import uuid from "react-native-uuid";
 
 // ============================================================
-// DEV-ONLY: dummy data for debugging (volume — for scroll/perf tests).
-// Not referenced in production code paths — only the debug
-// tester component (rendered behind __DEV__) calls these.
+// Debug-only: dummy data for debugging (volume — for scroll/perf tests).
+// Not referenced in production code paths — only the DebugPanel
+// (rendered behind __DEV__ or debug mode) calls these.
 // ============================================================
 
 // --- Tunables: bump these for more/less volume ---
