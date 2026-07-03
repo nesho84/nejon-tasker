@@ -1,7 +1,7 @@
 import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
@@ -104,7 +104,7 @@ export default function AboutScreen() {
                         title: tr.labels.about,
                         headerRight: () => (
                             <TouchableOpacity onPress={openAppInfo} style={styles.infoIcon} activeOpacity={0.3}>
-                                <MaterialCommunityIcons name="information-outline" size={22} color={theme.text} />
+                                <MaterialDesignIcons name="information-outline" size={22} color={theme.text} />
                             </TouchableOpacity>
                         ),
                     }}
@@ -157,13 +157,13 @@ export default function AboutScreen() {
                         activeOpacity={0.8}
                     >
                         <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                            <MaterialCommunityIcons name="heart-outline" size={22} color={theme.danger} />
+                            <MaterialDesignIcons name="heart-outline" size={22} color={theme.danger} />
                         </View>
                         <View style={styles.actionTextContainer}>
                             <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>via PayPal</Text>
                         </View>
-                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
 
                     {/* Rate the App */}
@@ -176,13 +176,13 @@ export default function AboutScreen() {
                         activeOpacity={0.8}
                     >
                         <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                            <MaterialCommunityIcons name="star-outline" size={22} color={theme.primary} />
+                            <MaterialDesignIcons name="star-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={styles.actionTextContainer}>
                             <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.rateApp}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.labels.rateAppDesc}</Text>
                         </View>
-                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
 
                     {/* Share with a Friend */}
@@ -195,13 +195,13 @@ export default function AboutScreen() {
                         activeOpacity={0.8}
                     >
                         <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                            <MaterialCommunityIcons name="share-outline" size={22} color={theme.primary} />
+                            <MaterialDesignIcons name="share-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={styles.actionTextContainer}>
                             <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.shareApp}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.shareAppDesc}</Text>
                         </View>
-                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
 
                     {/* Contact Us */}
@@ -214,13 +214,13 @@ export default function AboutScreen() {
                         activeOpacity={0.8}
                     >
                         <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                            <MaterialCommunityIcons name="email-outline" size={22} color={theme.primary} />
+                            <MaterialDesignIcons name="email-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={styles.actionTextContainer}>
                             <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.contactUs}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.contactUsDesc}</Text>
                         </View>
-                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
 
                     {/* More Apps */}
@@ -233,13 +233,13 @@ export default function AboutScreen() {
                         activeOpacity={0.8}
                     >
                         <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-                            <MaterialCommunityIcons name="view-grid-outline" size={22} color={theme.primary} />
+                            <MaterialDesignIcons name="view-grid-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={styles.actionTextContainer}>
                             <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.moreApps}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.moreAppsDesc}</Text>
                         </View>
-                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
                 </View>
 

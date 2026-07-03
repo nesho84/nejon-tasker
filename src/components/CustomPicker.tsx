@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useState } from "react";
 import { FlatList, Modal, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
 
@@ -74,7 +74,7 @@ export default function CustomPicker({
           </Text>
         )}
         {/* Selected Item icon right */}
-        <MaterialCommunityIcons
+        <MaterialDesignIcons
           name="chevron-down"
           size={24}
           color={selectedColor}
@@ -123,7 +123,7 @@ export default function CustomPicker({
                   </Text>
                   {/* Item icon right */}
                   {selectedValue === item.value && (
-                    <MaterialCommunityIcons
+                    <MaterialDesignIcons
                       name="check-circle"
                       size={24}
                       color={selectedColor}

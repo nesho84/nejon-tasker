@@ -7,7 +7,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { dates } from "@/utils/dates";
 import { getReminderStatus, requestNotificationPermission } from "@/utils/system";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -306,7 +306,7 @@ export default function EditTask() {
                 }]}
               onPress={handleDateTimePicker}
             >
-              <MaterialCommunityIcons
+              <MaterialDesignIcons
                 name={reminderIcon}
                 color={reminderColor}
                 size={20}
@@ -347,7 +347,7 @@ export default function EditTask() {
               ]}
               onPress={handleCancelReminder}
             >
-              <MaterialCommunityIcons
+              <MaterialDesignIcons
                 name="bell-remove-outline"
                 size={20}
                 color={hasFutureReminder ? theme.danger : theme.muted}

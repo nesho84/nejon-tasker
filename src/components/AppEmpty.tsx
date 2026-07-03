@@ -1,6 +1,6 @@
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons, MaterialDesignIconsIconName } from "@react-native-vector-icons/material-design-icons/static";
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
@@ -22,7 +22,7 @@ export default function AppEmpty({ type = "task" }: Props) {
   };
 
   // Empty-state icon per type
-  const emptyIcon: Record<NonNullable<Props["type"]>, keyof typeof MaterialCommunityIcons.glyphMap> = {
+  const emptyIcon: Record<NonNullable<Props["type"]>, MaterialDesignIconsIconName> = {
     label: "label-outline",
     task: "check-circle-outline",
     reminder: "bell-outline",
@@ -32,7 +32,7 @@ export default function AppEmpty({ type = "task" }: Props) {
 
   return (
     <View style={[styles.container, { borderColor: theme.border }]}>
-      <MaterialCommunityIcons
+      <MaterialDesignIcons
         name={emptyIcon[type]}
         size={75}
         style={[styles.itemIcon, { color: theme.muted }]}

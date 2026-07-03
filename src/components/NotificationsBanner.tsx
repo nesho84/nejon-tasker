@@ -2,7 +2,7 @@ import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { openNotificationSettings } from "@/utils/system";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface Props {
@@ -31,12 +31,12 @@ export default function NotificationsBanner({ show = true }: Props) {
             activeOpacity={0.8}
             style={[styles.warningBanner, { backgroundColor: theme.danger }]}
         >
-            <MaterialCommunityIcons name="alert-circle" color="#fff" size={20} />
+            <MaterialDesignIcons name="alert-circle" color="#fff" size={20} />
             <View style={{ flex: 1 }}>
                 <Text style={styles.warningTitle}>{tr.notifications.title1}</Text>
                 <Text style={styles.warningSubtitle}>{tr.notifications.message1}</Text>
             </View>
-            <MaterialCommunityIcons name="chevron-right" color="#fff" size={20} />
+            <MaterialDesignIcons name="chevron-right" color="#fff" size={20} />
         </TouchableOpacity>
     );
 }

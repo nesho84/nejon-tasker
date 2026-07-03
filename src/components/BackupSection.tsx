@@ -4,7 +4,8 @@ import { useLanguageStore } from '@/store/languageStore';
 import { useTaskStore } from '@/store/taskStore';
 import { useThemeStore } from '@/store/themeStore';
 import { dates } from '@/utils/dates';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -189,7 +190,7 @@ export function BackupSection() {
                         <ActivityIndicator color={theme.info} size="small" />
                     ) : (
                         <View style={styles.backupButtonsContent}>
-                            <MaterialCommunityIcons name="backup-restore" size={20} color={theme.danger} />
+                            <MaterialDesignIcons name="backup-restore" size={20} color={theme.danger} />
                             <Text style={[styles.buttonText, { color: theme.text }]}>{tr.labels.restore}</Text>
                         </View>
                     )}

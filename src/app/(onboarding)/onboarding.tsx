@@ -5,7 +5,7 @@ import { useOnboardingStore } from '@/store/onboardingStore';
 import { useThemeStore } from '@/store/themeStore';
 import { Language, LANGUAGES } from '@/types/language.types';
 import { openAlarmPermissionSettings, openBatteryOptimizationSettings, requestNotificationPermission } from '@/utils/system';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useRef, useState } from 'react';
 import { Dimensions, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -228,7 +228,7 @@ export default function OnboardingScreen() {
                             {/* Notifications */}
                             <TouchableOpacity style={styles.permissionRow} onPress={handleAllowNotifications} activeOpacity={0.7}>
                                 <View style={[styles.permissionIcon, { backgroundColor: (notificationPermission ? theme.action1 : theme.warning) + '15' }]}>
-                                    <MaterialCommunityIcons
+                                    <MaterialDesignIcons
                                         name={notificationPermission ? "bell-check-outline" : "bell-alert-outline"}
                                         size={22}
                                         color={notificationPermission ? theme.action1 : theme.warning}
@@ -243,9 +243,9 @@ export default function OnboardingScreen() {
                                     </Text>
                                 </View>
                                 {notificationPermission ? (
-                                    <MaterialCommunityIcons name="check-circle" size={24} color={theme.success} />
+                                    <MaterialDesignIcons name="check-circle" size={24} color={theme.success} />
                                 ) : (
-                                    <MaterialCommunityIcons name="alert-circle-outline" size={22} color={theme.warning} />
+                                    <MaterialDesignIcons name="alert-circle-outline" size={22} color={theme.warning} />
                                 )}
                             </TouchableOpacity>
 
@@ -256,7 +256,7 @@ export default function OnboardingScreen() {
                                     {/* Battery optimization */}
                                     <TouchableOpacity style={styles.permissionRow} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
                                         <View style={[styles.permissionIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.action1) + '15' }]}>
-                                            <MaterialCommunityIcons
+                                            <MaterialDesignIcons
                                                 name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
                                                 size={22}
                                                 color={batteryOptimization ? theme.warning : theme.success}
@@ -271,9 +271,9 @@ export default function OnboardingScreen() {
                                             </Text>
                                         </View>
                                         {batteryOptimization ? (
-                                            <MaterialCommunityIcons name="alert-circle-outline" size={22} color={theme.warning} />
+                                            <MaterialDesignIcons name="alert-circle-outline" size={22} color={theme.warning} />
                                         ) : (
-                                            <MaterialCommunityIcons name="check-circle" size={24} color={theme.success} />
+                                            <MaterialDesignIcons name="check-circle" size={24} color={theme.success} />
                                         )}
                                     </TouchableOpacity>
 
@@ -282,7 +282,7 @@ export default function OnboardingScreen() {
                                     {/* Alarms & reminders */}
                                     <TouchableOpacity style={styles.permissionRow} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
                                         <View style={[styles.permissionIcon, { backgroundColor: theme.action1 + '15' }]}>
-                                            <MaterialCommunityIcons name="alarm" size={22} color={theme.action1} />
+                                            <MaterialDesignIcons name="alarm" size={22} color={theme.action1} />
                                         </View>
                                         <View style={styles.permissionText}>
                                             <Text style={[styles.permissionTitle, { color: theme.text }]}>
@@ -292,7 +292,7 @@ export default function OnboardingScreen() {
                                                 {tr.settings.alarmAccessBody}
                                             </Text>
                                         </View>
-                                        <MaterialCommunityIcons name="open-in-new" size={18} color={theme.action1} style={{ opacity: 0.5 }} />
+                                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.action1} style={{ opacity: 0.5 }} />
                                     </TouchableOpacity>
                                 </>
                             )}

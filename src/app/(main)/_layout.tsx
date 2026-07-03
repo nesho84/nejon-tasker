@@ -2,7 +2,8 @@ import { useLabelStore } from '@/store/labelStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
 import { Label } from '@/types/label.types';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import Constants from 'expo-constants';
 import { router, Stack } from "expo-router";
 import { useState } from 'react';
@@ -51,7 +52,7 @@ export default function StackLayout() {
                         style={[styles.selectedItem, { backgroundColor: theme.disabled }]}
                         activeOpacity={0.85}
                     >
-                        <MaterialCommunityIcons name="home" size={22} color={theme.text} />
+                        <MaterialDesignIcons name="home" size={22} color={theme.text} />
                         <Text style={[styles.selectedLabel, { color: theme.text }]}>{tr.labels.home}</Text>
                     </TouchableOpacity>
 
@@ -64,7 +65,7 @@ export default function StackLayout() {
                         }}
                         activeOpacity={0.7}
                     >
-                        <MaterialCommunityIcons name="bell-outline" size={22} color={theme.text} />
+                        <MaterialDesignIcons name="bell-outline" size={22} color={theme.text} />
                         <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.reminders}</Text>
                     </TouchableOpacity>
 
@@ -77,7 +78,7 @@ export default function StackLayout() {
                         }}
                         activeOpacity={0.7}
                     >
-                        <MaterialCommunityIcons name="bookmark-outline" size={22} color={theme.text} />
+                        <MaterialDesignIcons name="bookmark-outline" size={22} color={theme.text} />
                         <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.favorites}</Text>
                     </TouchableOpacity>
 
@@ -101,7 +102,7 @@ export default function StackLayout() {
                                         router.navigate(`/tasks?labelId=${item.id}`)
                                     }}
                                 >
-                                    <MaterialCommunityIcons name="label-outline" size={22} color={theme.text} />
+                                    <MaterialDesignIcons name="label-outline" size={22} color={theme.text} />
                                     <Text style={[styles.menuLabel, { color: theme.text }]}>
                                         {item.title.length > 25 ? item.title.slice(0, 20) + "..." : item.title}
                                     </Text>
@@ -136,7 +137,7 @@ export default function StackLayout() {
                             router.navigate("/(main)/trash");
                         }}
                     >
-                        <MaterialCommunityIcons name="trash-can-outline" size={22} color={theme.text} />
+                        <MaterialDesignIcons name="trash-can-outline" size={22} color={theme.text} />
                         <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.trash}</Text>
                     </TouchableOpacity>
 
@@ -149,7 +150,7 @@ export default function StackLayout() {
                             router.navigate("/(main)/settings");
                         }}
                     >
-                        <MaterialCommunityIcons name="cog-outline" size={22} color={theme.text} />
+                        <MaterialDesignIcons name="cog-outline" size={22} color={theme.text} />
                         <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.settings}</Text>
                     </TouchableOpacity>
 
@@ -162,7 +163,7 @@ export default function StackLayout() {
                             router.navigate("/(main)/about");
                         }}
                     >
-                        <MaterialCommunityIcons name="information-outline" size={22} color={theme.text} />
+                        <MaterialDesignIcons name="information-outline" size={22} color={theme.text} />
                         <Text style={[styles.menuLabel, { color: theme.text }]}>{tr.labels.about}</Text>
                     </TouchableOpacity>
 
@@ -200,7 +201,7 @@ export default function StackLayout() {
                             <TouchableOpacity
                                 style={{ top: 1, paddingRight: 15 }}
                                 onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}>
-                                <MaterialCommunityIcons name="menu" size={30} color={theme.text} />
+                                <MaterialDesignIcons name="menu" size={30} color={theme.text} />
                             </TouchableOpacity>
                         ),
                     }}

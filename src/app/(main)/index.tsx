@@ -4,7 +4,8 @@ import LabelList from "@/components/LabelList";
 import { useLabelStore } from "@/store/labelStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
 import * as Updates from "expo-updates";
@@ -87,7 +88,7 @@ export default function LabelsScreen() {
                                 style={{ top: 1, marginRight: -3 }}
                                 onPress={() => router.navigate("/(main)/settings")}
                             >
-                                <MaterialCommunityIcons name="cog-outline" size={25} color={theme.inverse} />
+                                <MaterialDesignIcons name="cog-outline" size={25} color={theme.inverse} />
                             </TouchableOpacity>
                         </>
                     ),
@@ -113,7 +114,7 @@ export default function LabelsScreen() {
                     onPress={() => router.navigate("/(modals)/addLabel")}
                     activeOpacity={0.8}
                 >
-                    <MaterialCommunityIcons name="plus" size={28} color={theme.inverse} />
+                    <MaterialDesignIcons name="plus" size={28} color={theme.inverse} />
                 </TouchableOpacity>
             </View>
 

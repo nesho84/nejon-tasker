@@ -8,7 +8,8 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -208,7 +209,7 @@ export default function TasksScreen() {
                 if (label) handleDeleteLabel(label.id);
               }}
             >
-              <MaterialCommunityIcons name="delete-alert-outline" size={24} color={theme.danger} />
+              <MaterialDesignIcons name="delete-alert-outline" size={24} color={theme.danger} />
             </TouchableOpacity>
           ),
         }}

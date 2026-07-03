@@ -6,7 +6,8 @@ import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
 import { getReminderStatus, shareText } from "@/utils/system";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@react-native-vector-icons/ionicons/static";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { Checkbox } from "expo-checkbox";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Hyperlink from 'react-native-hyperlink';
@@ -225,7 +226,7 @@ export default function TaskItem({
                             delayPressOut={0}
                             activeOpacity={0.7}
                         >
-                            <MaterialCommunityIcons
+                            <MaterialDesignIcons
                                 name={task.isFavorite ? "star" : "star-outline"}
                                 color={theme.muted}
                                 size={23}
@@ -241,7 +242,7 @@ export default function TaskItem({
                             delayPressOut={0}
                             activeOpacity={0.7}
                         >
-                            <MaterialCommunityIcons
+                            <MaterialDesignIcons
                                 name="backup-restore"
                                 color={theme.success}
                                 size={22}
@@ -257,7 +258,7 @@ export default function TaskItem({
                             delayPressOut={0}
                             activeOpacity={0.7}
                         >
-                            <MaterialCommunityIcons
+                            <MaterialDesignIcons
                                 name="bell-remove-outline"
                                 color={theme.muted}
                                 size={22}
@@ -273,7 +274,7 @@ export default function TaskItem({
                             delayPressOut={0}
                             activeOpacity={0.7}
                         >
-                            <MaterialCommunityIcons
+                            <MaterialDesignIcons
                                 name="close"
                                 color={theme.muted}
                                 size={24}
@@ -289,7 +290,7 @@ export default function TaskItem({
                             delayPressOut={0}
                             activeOpacity={0.7}
                         >
-                            <MaterialCommunityIcons
+                            <MaterialDesignIcons
                                 name="close"
                                 color={theme.danger}
                                 size={24}
@@ -305,7 +306,7 @@ export default function TaskItem({
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                     {/* Reminder icon — bell when it will fire, bell-off when muted (notifications off) or past */}
                     {task.reminderId && task.reminderDateTime && (
-                        <MaterialCommunityIcons
+                        <MaterialDesignIcons
                             name={reminderStatus === 'active' ? "bell" : "bell-off"}
                             color={reminderColor}
                             size={16}

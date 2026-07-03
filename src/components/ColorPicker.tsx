@@ -1,5 +1,5 @@
 import { labelBgColors } from "@/constants/colors";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 
 interface Props {

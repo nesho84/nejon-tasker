@@ -6,7 +6,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Label } from "@/types/label.types";
 import { getReminderStatus } from "@/utils/system";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -67,7 +67,7 @@ function LabelCard({ item, getIndex, isActive, drag }: RenderItemParams<Label>) 
         {/* ----- Title row ----- */}
         <View style={styles.cardHeaderContainer}>
           {/* Icon before label title */}
-          <MaterialCommunityIcons
+          <MaterialDesignIcons
             style={{ marginTop: 2, marginRight: 8 }}
             name="label-outline"
             size={26}
@@ -79,7 +79,7 @@ function LabelCard({ item, getIndex, isActive, drag }: RenderItemParams<Label>) 
           </Text>
           {/* Edit Label Icon */}
           <TouchableOpacity delayPressIn={0} delayPressOut={0} onPress={() => router.navigate(`/editLabel?labelId=${item.id}`)}>
-            <MaterialCommunityIcons
+            <MaterialDesignIcons
               name="dots-horizontal"
               size={32}
               color={theme.muted}

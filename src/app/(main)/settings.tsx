@@ -8,7 +8,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Language, LANGUAGES } from "@/types/language.types";
 import { openAlarmPermissionSettings, openBatteryOptimizationSettings, openNotificationSettings, requestNotificationPermission } from "@/utils/system";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -80,7 +80,7 @@ export default function SettingsScreen() {
                     </Text>
                     <TouchableOpacity style={styles.row} onPress={handleTheme} activeOpacity={0.7}>
                         <View style={[styles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
-                            <MaterialCommunityIcons
+                            <MaterialDesignIcons
                                 name={mode === "light" ? "white-balance-sunny" : "weather-night"}
                                 size={22}
                                 color={theme.primary}
@@ -92,7 +92,7 @@ export default function SettingsScreen() {
                                 {mode === "light" ? "Light" : "Dark"}
                             </Text>
                         </View>
-                        <MaterialCommunityIcons
+                        <MaterialDesignIcons
                             name={mode === "light" ? "toggle-switch-off-outline" : "toggle-switch"}
                             size={40}
                             color={mode === "light" ? LIGHT.border : DARK.disabled}
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
                         <Text style={[styles.sectionTitle, styles.sectionTitleInline, { color: theme.primaryAlt }]}>
                             {tr.settings.notifications}
                         </Text>
-                        <MaterialCommunityIcons
+                        <MaterialDesignIcons
                             name={notificationsEnabled ? "toggle-switch" : "toggle-switch-off-outline"}
                             size={40}
                             color={notificationsEnabled ? theme.primary : (mode === "light" ? LIGHT.border : DARK.disabled)}
@@ -141,7 +141,7 @@ export default function SettingsScreen() {
                             {/* Battery optimization */}
                             <TouchableOpacity style={styles.row} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
                                 <View style={[styles.rowIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.primary) + '15' }]}>
-                                    <MaterialCommunityIcons
+                                    <MaterialDesignIcons
                                         name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
                                         size={22}
                                         color={batteryOptimization ? theme.warning : theme.success}
@@ -156,9 +156,9 @@ export default function SettingsScreen() {
                                     </Text>
                                 </View>
                                 {batteryOptimization ? (
-                                    <MaterialCommunityIcons name="alert-circle-outline" size={22} color={theme.warning} />
+                                    <MaterialDesignIcons name="alert-circle-outline" size={22} color={theme.warning} />
                                 ) : (
-                                    <MaterialCommunityIcons name="check-circle" size={24} color={theme.success} />
+                                    <MaterialDesignIcons name="check-circle" size={24} color={theme.success} />
                                 )}
                             </TouchableOpacity>
 
@@ -167,7 +167,7 @@ export default function SettingsScreen() {
                             {/* Alarms & reminders */}
                             <TouchableOpacity style={styles.row} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
                                 <View style={[styles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
-                                    <MaterialCommunityIcons name="alarm" size={22} color={theme.primary} />
+                                    <MaterialDesignIcons name="alarm" size={22} color={theme.primary} />
                                 </View>
                                 <View style={styles.rowText}>
                                     <Text style={[styles.rowTitle, { color: theme.muted }]}>
@@ -177,7 +177,7 @@ export default function SettingsScreen() {
                                         {tr.settings.alarmAccessBody}
                                     </Text>
                                 </View>
-                                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                                <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                             </TouchableOpacity>
                         </View>
                     )}
