@@ -191,15 +191,24 @@ export default function TaskItem({
 
             {/* ----- Top Section ----- */}
             <View style={styles.top}>
-                {/* Task checkbox */}
+                {/* Task checkbox — wrapper owns the tap (bigger target + press feedback) */}
                 {checkAction && (
-                    <View style={styles.checkBoxContainer}>
+                    <TouchableOpacity
+                        style={styles.checkBoxContainer}
+                        onPress={() => handleToggleCheck(!task.checked, task)}
+                        delayPressIn={0}
+                        delayPressOut={0}
+                        activeOpacity={0.5}
+                        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: task.checked }}
+                    >
                         <Checkbox
                             color={task.checked ? theme.border : theme.secondary}
                             value={task.checked}
-                            onValueChange={(value) => handleToggleCheck(value, task)}
+                            pointerEvents="none"
                         />
-                    </View>
+                    </TouchableOpacity>
                 )}
 
                 {/* Task Text */}
@@ -221,6 +230,7 @@ export default function TaskItem({
                     {/* Favorite icon */}
                     {favoriteAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.divider }]}
                             onPress={() => handleToggleFavorite(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -237,6 +247,7 @@ export default function TaskItem({
                     {/* Restore icon */}
                     {restoreAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.divider }]}
                             onPress={() => handleRestore(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -370,9 +381,12 @@ const styles = StyleSheet.create({
     },
     checkBoxContainer: {
         alignSelf: "flex-start",
-        marginTop: 3,
-        marginLeft: 3,
         flexShrink: 0,
+        padding: 10,
+        marginTop: -8,
+        marginLeft: -7,
+        marginRight: -10,
+        marginBottom: -10,
     },
     taskTextContainer: {
         width: "100%",
@@ -381,7 +395,7 @@ const styles = StyleSheet.create({
     },
     taskText: {
         fontSize: 15,
-        lineHeight: 22,
+        lineHeight: 20,
     },
     topRight: {
         alignSelf: "flex-start",
