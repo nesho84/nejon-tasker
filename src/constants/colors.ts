@@ -81,7 +81,7 @@ export const DARK = {
 
   // Surfaces
   card: "#1f2937",
-  section: "#202124",
+  section: "#1c1d1f",
   border: "#5f6368",
   divider: "rgba(255,255,255,0.07)",
   handle: "#5d5d5d",

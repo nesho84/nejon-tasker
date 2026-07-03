@@ -256,7 +256,7 @@ export default function TasksScreen() {
                   </Text>
                   <MaterialDesignIcons
                     name={isCheckedOpen ? "chevron-down" : "chevron-up"}
-                    size={24}
+                    size={26}
                     color={theme.muted}
                     style={{ marginRight: -4, opacity: 0.8 }}
                   />
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     // borderRadius: 4,
     marginHorizontal: 6,
     marginVertical: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
   },
   tasksDividerText: {
     flex: 1,

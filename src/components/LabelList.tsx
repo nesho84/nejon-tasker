@@ -17,7 +17,7 @@ import AppLoading from "./AppLoading";
 // ------------------------------------------------------------
 // Single label card — top-level component so its hooks/memoization are stable
 // ------------------------------------------------------------
-function LabelCard({ item, getIndex, isActive, drag }: RenderItemParams<Label>) {
+function LabelCard({ item, isActive, drag }: RenderItemParams<Label>) {
   // Stores
   const theme = useThemeStore((state) => state.theme);
   const tr = useLanguageStore((state) => state.tr);
@@ -59,7 +59,6 @@ function LabelCard({ item, getIndex, isActive, drag }: RenderItemParams<Label>) 
             borderRadius: 8,
             elevation: 2,
             opacity: isActive ? 0.5 : 1,
-            marginTop: getIndex && getIndex() === 0 ? 6 : 0,
           },
         ]}
       >
@@ -119,8 +118,8 @@ export default function LabelList() {
 
   // Safe area insets
   const insets = useSafeAreaInsets();
-  const topInset = 4;
-  const bottomInset = insets.bottom + 24;
+  const topInset = 8;
+  const bottomInset = insets.bottom + 8;
 
   // ------------------------------------------------------------
   // Reorder labels
