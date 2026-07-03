@@ -29,6 +29,7 @@ export const LIGHT = {
 
   // Surfaces
   card: "#f1f1f1",
+  section: "#e8eaed",
   border: "#dadce0",
   divider: "rgba(0,0,0,0.07)",
   handle: "#c6c6c6",
@@ -80,6 +81,7 @@ export const DARK = {
 
   // Surfaces
   card: "#1f2937",
+  section: "#202124",
   border: "#5f6368",
   divider: "rgba(255,255,255,0.07)",
   handle: "#5d5d5d",

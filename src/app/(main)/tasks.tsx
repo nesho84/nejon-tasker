@@ -84,6 +84,7 @@ export default function TasksScreen() {
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [taskTextInput, setTaskTextInput] = useState("");
+  const [isCheckedOpen, setIsCheckedOpen] = useState(false);
 
   // ------------------------------------------------------------
   // Hard delete label
@@ -229,7 +230,7 @@ export default function TasksScreen() {
             {/* ----- Unchecked tasks ----- */}
             {uncheckedTasks.length > 0 ? (
               <DraggableFlatList
-                containerStyle={{ flex: 3 }}
+                containerStyle={{ flex: 1 }}
                 contentContainerStyle={styles.taskListContent}
                 showsVerticalScrollIndicator={false}
                 data={uncheckedTasks}
@@ -244,19 +245,36 @@ export default function TasksScreen() {
             {/* ----- Checked tasks ----- */}
             {(checkedTasks.length > 0 && !isKeyboardVisible) && (
               <>
-                <View style={[styles.tasksDivider, { borderColor: label.color }]}>
-                  <Text style={[styles.tasksDividerText, { color: theme.muted }]}>
+                <View style={[styles.checkedSectionBorder, { borderTopColor: label.color }]} />
+                <TouchableOpacity
+                  style={[styles.tasksDivider, { backgroundColor: theme.section }]}
+                  onPress={() => setIsCheckedOpen(!isCheckedOpen)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.tasksDividerText, { color: theme.muted, opacity: 0.8 }]}>
                     {`${checkedTasks.length} ${tr.labels.checkedItems}`}
                   </Text>
-                </View>
-                <DraggableFlatList
-                  containerStyle={{ flex: 1 }}
-                  contentContainerStyle={styles.taskListContent}
-                  data={checkedTasks}
-                  renderItem={TaskRow}
-                  keyExtractor={(item) => item.id}
-                  onDragEnd={({ data }) => handleOrderTasks(data)}
-                />
+                  <MaterialDesignIcons
+                    name={isCheckedOpen ? "chevron-down" : "chevron-up"}
+                    size={24}
+                    color={theme.muted}
+                    style={{ marginRight: -4, opacity: 0.8 }}
+                  />
+                </TouchableOpacity>
+                {isCheckedOpen && (
+                  <>
+                    <View style={[styles.checkedSectionBorder, { borderTopColor: theme.bg2 }]} />
+                    <DraggableFlatList
+                      containerStyle={{ flexGrow: 0, maxHeight: "40%" }}
+                      contentContainerStyle={styles.taskListContent}
+                      showsVerticalScrollIndicator={false}
+                      data={checkedTasks}
+                      renderItem={TaskRow}
+                      keyExtractor={(item) => item.id}
+                      onDragEnd={({ data }) => handleOrderTasks(data)}
+                    />
+                  </>
+                )}
               </>
             )}
           </View>
@@ -311,7 +329,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignSelf: "stretch",
     paddingVertical: 4,
-    borderBottomWidth: 1,
+    borderBottomWidth: 1.5,
   },
   headerText: {
     fontSize: 13,
@@ -324,17 +342,22 @@ const styles = StyleSheet.create({
   taskListContent: {
     paddingBottom: 8,
   },
+  checkedSectionBorder: {
+    borderTopWidth: 1.5,
+  },
   tasksDivider: {
-    width: "100%",
-    borderBottomWidth: 1,
-    paddingHorizontal: 8,
-    paddingTop: 3,
-    paddingBottom: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: 28,
+    // borderRadius: 4,
+    marginHorizontal: 6,
+    marginVertical: 4,
+    paddingHorizontal: 10,
   },
   tasksDividerText: {
-    width: "100%",
-    alignSelf: "flex-start",
-    fontSize: 13,
+    flex: 1,
+    fontSize: 14,
   },
 
   // AddTask styles
