@@ -230,7 +230,8 @@ export default function TaskItem({
                     {/* Favorite icon */}
                     {favoriteAction && (
                         <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: theme.divider }]}
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleToggleFavorite(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -239,7 +240,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name={task.isFavorite ? "star" : "star-outline"}
                                 color={theme.muted}
-                                size={23}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -247,7 +248,8 @@ export default function TaskItem({
                     {/* Restore icon */}
                     {restoreAction && (
                         <TouchableOpacity
-                            style={[styles.actionButton, { backgroundColor: theme.divider }]}
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleRestore(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -256,7 +258,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="backup-restore"
                                 color={theme.success}
-                                size={22}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -264,6 +266,8 @@ export default function TaskItem({
                     {/* Reminder Cancel icon */}
                     {cancelReminderAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleCancelReminder(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -272,7 +276,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="bell-remove-outline"
                                 color={theme.muted}
-                                size={22}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -280,6 +284,8 @@ export default function TaskItem({
                     {/* Delete icon */}
                     {softDeleteAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleSoftDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -288,7 +294,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="close"
                                 color={theme.muted}
-                                size={24}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -296,6 +302,8 @@ export default function TaskItem({
                     {/* Hard Delete icon */}
                     {hardDeleteAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleHardDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -304,7 +312,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="close"
                                 color={theme.danger}
-                                size={24}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -402,7 +410,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         flexShrink: 0,
-        gap: 12,
+        gap: 8,
+    },
+    actionButton: {
+        width: 26,
+        height: 26,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 4,
     },
 
     bottom: {
