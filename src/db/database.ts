@@ -13,6 +13,8 @@ export async function setupDatabase(): Promise<void> {
   const db = await getDB();
 
   try {
+    await db.execAsync("PRAGMA journal_mode = WAL;");
+    await db.execAsync("PRAGMA busy_timeout = 5000;");
     await db.execAsync("PRAGMA foreign_keys = ON;");
 
     await db.execAsync(`

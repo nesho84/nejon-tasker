@@ -106,9 +106,11 @@ export async function reorderLabels(labelIds: string[]): Promise<void> {
     const db = await getDB();
     try {
         const now = new Date().toISOString();
-        await db.withTransactionAsync(async () => {
+        await db.withExclusiveTransactionAsync(async (txn) => {
+            // exclusive txn runs on its own connection; busy_timeout is per-connection
+            await txn.execAsync("PRAGMA busy_timeout = 5000;");
             for (let i = 0; i < labelIds.length; i++) {
-                await db.runAsync(
+                await txn.runAsync(
                     "UPDATE labels SET order_position = ?, updatedAt = ? WHERE id = ?",
                     [i, now, labelIds[i]]
                 );
