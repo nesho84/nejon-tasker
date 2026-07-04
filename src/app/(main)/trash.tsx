@@ -51,7 +51,6 @@ export default function TrashScreen() {
                         task={item}
                         restoreAction={true}
                         hardDeleteAction={true}
-                        shareAction={true}
                     />
                 )}
                 keyExtractor={(item) => item.id}

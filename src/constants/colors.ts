@@ -32,6 +32,8 @@ export const LIGHT = {
   section: "#e8eaed",
   border: "#dadce0",
   divider: "rgba(0,0,0,0.07)",
+  iconBg: "rgba(0,0,0,0.05)",
+  iconBg2: "rgba(0,0,0,0.08)",
   handle: "#c6c6c6",
   placeholder: "#9aa0a6",
   placeholder2: "#b0b4b8",
@@ -48,6 +50,7 @@ export const LIGHT = {
   shadow: "rgba(0, 0, 0, 0.1)",
   overlay: "rgba(0, 0, 0, 0.5)",
   overlayLight: "#00000012",
+  surfaceBg: "#d9dbde",
 };
 
 export const DARK = {
@@ -84,6 +87,8 @@ export const DARK = {
   section: "#1c1d1f",
   border: "#5f6368",
   divider: "rgba(255,255,255,0.07)",
+  iconBg: "rgba(255,255,255,0.05)",
+  iconBg2: "rgba(255,255,255,0.08)",
   handle: "#5d5d5d",
   placeholder: "#80868b",
   placeholder2: "#313335",
@@ -100,6 +105,7 @@ export const DARK = {
   shadow: "rgba(0, 0, 0, 0.3)",
   overlay: "rgba(0, 0, 0, 0.7)",
   overlayLight: "#00000033",
+  surfaceBg: "#2a3244",
 };
 
 // Label colors

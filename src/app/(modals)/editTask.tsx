@@ -6,7 +6,8 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { dates } from "@/utils/dates";
-import { getReminderStatus, requestNotificationPermission } from "@/utils/system";
+import { getReminderStatus, requestNotificationPermission, shareText } from "@/utils/system";
+import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -262,7 +263,15 @@ export default function EditTask() {
           <Text style={[styles.title, { color: label?.color }]}>
             {tr.forms.editTask}
           </Text>
-          <View style={[styles.accentDot, { backgroundColor: label?.color, shadowColor: label?.color }]} />
+          {/* Share task button */}
+          <TouchableOpacity
+            style={[styles.shareButton, { backgroundColor: 'transparent' }]}
+            onPress={() => task && shareText(tr.forms.task, task.text)}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="share-social" color={label?.color} size={18} />
+          </TouchableOpacity>
         </View>
 
         {/* Divider below title */}
@@ -389,15 +398,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  accentDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,
-    shadowRadius: 6,
-    elevation: 4,
+  shareButton: {
+    width: 26,
+    height: 26,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   divider: {

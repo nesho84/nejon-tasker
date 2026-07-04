@@ -9,7 +9,8 @@ import { getReminderStatus, shareText } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { Checkbox } from "expo-checkbox";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import * as Haptics from "expo-haptics";
+import { Alert, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
@@ -57,15 +58,16 @@ export default function TaskItem({
 
     // Reminder display state: 'active' (will fire), 'muted' (set but notifications off), 'past', 'none'
     const reminderStatus = getReminderStatus(task.reminderDateTime, task.reminderId, notificationsEnabled);
-    const reminderColor =
-        reminderStatus === 'active' ? theme.success
-            : reminderStatus === 'muted' ? theme.danger
-                : theme.muted;
+    const reminderColor = reminderStatus === 'active' ? theme.success
+        : reminderStatus === 'muted'
+            ? theme.danger : theme.muted;
 
     // ------------------------------------------------------------
     // Toggle task checked/unchecked
     // ------------------------------------------------------------
     const handleToggleCheck = async (value: boolean, task: Task) => {
+        // Fire-and-forget so the toggle isn't delayed
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         // If checking a task with active reminder, cancel notification
         if (value === true && task?.reminderId) {
             await cancelScheduledNotification(task.reminderId);
@@ -191,15 +193,20 @@ export default function TaskItem({
 
             {/* ----- Top Section ----- */}
             <View style={styles.top}>
-                {/* Task checkbox */}
+                {/* Task checkbox — wrapper owns the tap (bigger target + press feedback) */}
                 {checkAction && (
-                    <View style={styles.checkBoxContainer}>
+                    <Pressable style={({ pressed }) => [styles.checkBoxContainer, pressed && { backgroundColor: theme.border }]}
+                        onPress={() => handleToggleCheck(!task.checked, task)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: task.checked }}
+                    >
                         <Checkbox
                             color={task.checked ? theme.border : theme.secondary}
                             value={task.checked}
-                            onValueChange={(value) => handleToggleCheck(value, task)}
+                            pointerEvents="none"
                         />
-                    </View>
+                    </Pressable>
                 )}
 
                 {/* Task Text */}
@@ -221,6 +228,8 @@ export default function TaskItem({
                     {/* Favorite icon */}
                     {favoriteAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleToggleFavorite(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -229,7 +238,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name={task.isFavorite ? "star" : "star-outline"}
                                 color={theme.muted}
-                                size={23}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -237,6 +246,8 @@ export default function TaskItem({
                     {/* Restore icon */}
                     {restoreAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleRestore(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -245,7 +256,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="backup-restore"
                                 color={theme.success}
-                                size={22}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -253,6 +264,8 @@ export default function TaskItem({
                     {/* Reminder Cancel icon */}
                     {cancelReminderAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleCancelReminder(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -261,7 +274,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="bell-remove-outline"
                                 color={theme.muted}
-                                size={22}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -269,6 +282,8 @@ export default function TaskItem({
                     {/* Delete icon */}
                     {softDeleteAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleSoftDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -277,7 +292,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="close"
                                 color={theme.muted}
-                                size={24}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -285,6 +300,8 @@ export default function TaskItem({
                     {/* Hard Delete icon */}
                     {hardDeleteAction && (
                         <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
+                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
                             onPress={() => handleHardDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -293,7 +310,7 @@ export default function TaskItem({
                             <MaterialDesignIcons
                                 name="close"
                                 color={theme.danger}
-                                size={24}
+                                size={18}
                             />
                         </TouchableOpacity>
                     )}
@@ -324,6 +341,16 @@ export default function TaskItem({
                         >
                             {dates.format(task.reminderDateTime)}
                         </Text>
+                    )}
+
+                    {/* No reminder at all — quiet placeholder */}
+                    {reminderStatus === 'none' && !task.checked && !task.isDeleted && (
+                        <MaterialDesignIcons
+                            name="bell-cancel-outline"
+                            color={theme.muted}
+                            size={16}
+                            style={{ opacity: 0.5 }}
+                        />
                     )}
                 </View>
 
@@ -370,9 +397,13 @@ const styles = StyleSheet.create({
     },
     checkBoxContainer: {
         alignSelf: "flex-start",
-        marginTop: 3,
-        marginLeft: 3,
         flexShrink: 0,
+        padding: 8,
+        marginTop: -6,
+        marginBottom: -6,
+        marginLeft: -6,
+        marginRight: -8,
+        borderRadius: 999,
     },
     taskTextContainer: {
         width: "100%",
@@ -381,14 +412,21 @@ const styles = StyleSheet.create({
     },
     taskText: {
         fontSize: 15,
-        lineHeight: 22,
+        lineHeight: 20,
     },
     topRight: {
         alignSelf: "flex-start",
         flexDirection: "row",
         alignItems: "center",
         flexShrink: 0,
-        gap: 12,
+        gap: 8,
+    },
+    actionButton: {
+        width: 26,
+        height: 26,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 4,
     },
 
     bottom: {
