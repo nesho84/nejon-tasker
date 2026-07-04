@@ -3,28 +3,41 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 // ------------------------------------------------------------
-// Debug-only store backing the Debug Panel. debugModeEnabled is persisted
-// (needs to survive a reload) — toggled by tapping the version number on the
-// About screen, it unlocks the Debug Tools card in production builds.
+// Debug-only store backing the Debug Panel. debugModeEnabled and
+// forceUpdateOnLaunch are persisted (need to survive a reload); the rest
+// reset on restart. debugModeEnabled is toggled by tapping the version
+// number on the About screen — it unlocks the Debug Tools card in
+// production builds.
 // ------------------------------------------------------------
+
+export type UpdatePreview = "idle" | "upToDate" | "error";
 
 interface DebugState {
     debugModeEnabled: boolean;
+    forceUpdateOnLaunch: boolean;
+    updatePreview: UpdatePreview;
     toggleDebugMode: () => void;
+    toggleUpdateOnLaunch: () => void;
+    setUpdatePreview: (value: UpdatePreview) => void;
 }
 
 export const useDebugStore = create<DebugState>()(
     persist(
         (set) => ({
             debugModeEnabled: false,
+            forceUpdateOnLaunch: false,
+            updatePreview: "idle",
 
             toggleDebugMode: () => set((state) => ({ debugModeEnabled: !state.debugModeEnabled })),
+            toggleUpdateOnLaunch: () => set((state) => ({ forceUpdateOnLaunch: !state.forceUpdateOnLaunch })),
+            setUpdatePreview: (value) => set({ updatePreview: value }),
         }),
         {
             name: "debug-store",
             storage: createJSONStorage(() => AsyncStorage),
             partialize: (state) => ({
                 debugModeEnabled: state.debugModeEnabled,
+                forceUpdateOnLaunch: state.forceUpdateOnLaunch,
             }),
         }
     )

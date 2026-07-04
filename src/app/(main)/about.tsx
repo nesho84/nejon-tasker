@@ -1,3 +1,4 @@
+import { GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
 import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -10,9 +11,6 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 const CONTACT_EMAIL = 'mailto:support@nejon.net';
 const HELP_EMAIL = 'mailto:help@nejon.net';
-
-const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.nejon.nejontasker';
-const MORE_APPS_GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/developer?id=Neshat%20Ademi';
 
 const DEBUG_MODE_TAP_THRESHOLD = 5;
 const DEBUG_MODE_TAP_HINT_START = 3;

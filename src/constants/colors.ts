@@ -9,6 +9,14 @@ export const LIGHT = {
   danger: "#d93025",
   warning: "#f9ab00",
   info: "#1967d2",
+  pink: "#db2777",
+  violet: "#7c3aed",
+  brown: "#92400e",
+  gray: "#808080",
+  green: "#50C878",
+  teal: "#0d9488",
+  indigo: "#4f46e5",
+  orange: "#ea580c",
 
   // Background layers
   bg: "#fafafa",
@@ -64,6 +72,14 @@ export const DARK = {
   danger: "#f28b82",
   warning: "#fdd663",
   info: "#8ab4f8",
+  pink: "#f472b6",
+  violet: "#a78bfa",
+  brown: "#d97706",
+  gray: "#808080",
+  green: "#009000",
+  teal: "#2dd4bf",
+  indigo: "#818cf8",
+  orange: "#fb923c",
 
   // Background layers
   bg: "#121212",

@@ -49,6 +49,8 @@ export const TRANSLATIONS = {
             no: "No",
             ok: "OK",
             openSettings: "Open Settings",
+            later: "Later",
+            openStore: "Open Store",
         },
         // Form inputs
         forms: {
@@ -67,6 +69,7 @@ export const TRANSLATIONS = {
             loading: "Loading...",
             updateSuccess: "Update was successful",
             updateAvailable: "Update available",
+            updateAvailableMessage: "A new version is available on the store. Update now to get the latest features and fixes.",
             nothingToDelete: "Nothing to delete",
         },
         // Error messages
@@ -169,6 +172,11 @@ export const TRANSLATIONS = {
             batteryOptBody: "Battery optimization may delay or block notifications. Tap to verify.",
             alarmAccessTitle: "Alarms & Reminders",
             alarmAccessBody: "Alarms & reminders may be disabled. Tap to verify.",
+            appUpdates: "App Updates",
+            checkUpdateButton: "Check for updates",
+            checkUpdateInfo: "Download the latest features and fixes.",
+            upToDateMessage: "You're already on the latest version.",
+            updateCheckError: "Couldn't check for updates. Please try again.",
         },
         // About screen specific
         about: {
@@ -249,6 +257,8 @@ export const TRANSLATIONS = {
             no: "Nein",
             ok: "OK",
             openSettings: "Einstellungen öffnen",
+            later: "Später",
+            openStore: "Store öffnen",
         },
         // Form inputs
         forms: {
@@ -267,6 +277,7 @@ export const TRANSLATIONS = {
             loading: "Wird geladen...",
             updateSuccess: "Update war erfolgreich",
             updateAvailable: "Update verfügbar",
+            updateAvailableMessage: "Eine neue Version ist im Store verfügbar. Aktualisiere jetzt für die neuesten Funktionen und Fehlerbehebungen.",
             nothingToDelete: "Nichts zu löschen",
         },
         // Error messages
@@ -369,6 +380,11 @@ export const TRANSLATIONS = {
             batteryOptBody: "Die Akkuoptimierung kann Benachrichtigungen verzögern oder verhindern. Tippe zum Überprüfen.",
             alarmAccessTitle: "Alarme & Erinnerungen",
             alarmAccessBody: "Alarme und Erinnerungen sind möglicherweise deaktiviert. Tippe, um dies zu bestätigen.",
+            appUpdates: "App-Updates",
+            checkUpdateButton: "Nach Updates suchen",
+            checkUpdateInfo: "Lade die neuesten Funktionen und Fehlerbehebungen herunter.",
+            upToDateMessage: "Du bist bereits auf der neuesten Version.",
+            updateCheckError: "Updates konnten nicht geprüft werden. Bitte versuche es erneut.",
         },
         // About screen specific
         about: {
@@ -449,6 +465,8 @@ export const TRANSLATIONS = {
             no: "Jo",
             ok: "OK",
             openSettings: "Hap Cilësimet",
+            later: "Më vonë",
+            openStore: "Hap Store",
         },
         // Form inputs
         forms: {
@@ -467,6 +485,7 @@ export const TRANSLATIONS = {
             loading: "Ngarkohet...",
             updateSuccess: "Aktualizimi ishte i suksesshëm",
             updateAvailable: "Përditësim i disponueshëm",
+            updateAvailableMessage: "Një version i ri është i disponueshëm në dyqan. Përditëso tani për veçoritë dhe rregullimet më të fundit.",
             nothingToDelete: "Asgjë për të fshirë",
         },
         // Error messages
@@ -569,6 +588,11 @@ export const TRANSLATIONS = {
             batteryOptBody: "Optimizimi i baterisë mund të vonojë ose bllokojë njoftimet. Shtyp për të verifikuar.",
             alarmAccessTitle: "Alarme dhe Kujtesa",
             alarmAccessBody: "Alarmet dhe përkujtuesit mund të jenë të çaktivizuar. Shtyp për të verifikuar.",
+            appUpdates: "Përditësimet e aplikacionit",
+            checkUpdateButton: "Kontrollo për përditësime",
+            checkUpdateInfo: "Shkarko veçoritë dhe rregullimet më të fundit.",
+            upToDateMessage: "Je tashmë në versionin më të fundit.",
+            updateCheckError: "Nuk mund të kontrollohej për përditësime. Provo përsëri.",
         },
         // About screen specific
         about: {

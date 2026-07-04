@@ -1,3 +1,4 @@
+import { openUpdateAvailableModal } from "@/components/CheckForUpdate";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
@@ -6,12 +7,20 @@ import { ReactNode, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
 import { clearAllData, seedDummyData } from "./debugSeed";
+import { UpdatePreview, useDebugStore } from "./debugStore";
 
 interface ButtonProps {
     label: string;
     color: string;
     right?: ReactNode;
     disabled?: boolean;
+    onPress: () => void;
+}
+
+interface ToggleProps {
+    label: string;
+    color?: string;
+    value: boolean;
     onPress: () => void;
 }
 
@@ -51,14 +60,42 @@ function DebugButton({ label, color, right, disabled, onPress }: ButtonProps) {
     );
 }
 
+// ------------------------------------------------------------
+// Debug row with an ON / OFF state badge
+// ------------------------------------------------------------
+function DebugToggle({ label, color, value, onPress }: ToggleProps) {
+    const theme = useThemeStore((state) => state.theme);
+    return (
+        <DebugButton
+            label={label}
+            color={color ?? theme.info}
+            onPress={onPress}
+            right={
+                <Badge
+                    label={value ? "ON" : "OFF"}
+                    color={value ? theme.green : theme.placeholder}
+                    bg={value ? theme.green + "20" : theme.divider}
+                />
+            }
+        />
+    );
+}
+
 // Renders the debug controls only — the containing card + "Debug Tools"
 export default function DebugPanel() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
+    const updatePreview = useDebugStore((state) => state.updatePreview);
+    const setUpdatePreview = useDebugStore((state) => state.setUpdatePreview);
+    const forceUpdateOnLaunch = useDebugStore((state) => state.forceUpdateOnLaunch);
+    const toggleUpdateOnLaunch = useDebugStore((state) => state.toggleUpdateOnLaunch);
 
     // Local state
     const [expanded, setExpanded] = useState(false);
     const [busy, setBusy] = useState(false);
+
+    // Toggle a check-for-update status preview on/off (back to "idle")
+    const togglePreview = (value: UpdatePreview) => setUpdatePreview(updatePreview === value ? "idle" : value);
 
     // ------------------------------------------------------------
     // Run an async action with a busy spinner and error handling
@@ -119,7 +156,7 @@ export default function DebugPanel() {
                 <View style={styles.body}>
 
                     {/* Divider */}
-                    <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
                     {/* Onboarding */}
                     <DebugButton
@@ -129,12 +166,40 @@ export default function DebugPanel() {
                     />
 
                     {/* Divider */}
-                    <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+                    {/* Check-for-update previews (modal + the two inline status lines) */}
+                    <DebugButton
+                        label="Show 'Update available' modal"
+                        color={theme.green}
+                        onPress={openUpdateAvailableModal}
+                    />
+                    <DebugToggle
+                        label="Toggle 'Up to date' line"
+                        color={theme.green}
+                        value={updatePreview === "upToDate"}
+                        onPress={() => togglePreview("upToDate")}
+                    />
+                    <DebugToggle
+                        label="Toggle 'Check failed' line"
+                        color={theme.green}
+                        value={updatePreview === "error"}
+                        onPress={() => togglePreview("error")}
+                    />
+                    <DebugToggle
+                        label="Toggle 'Update available' On Launch"
+                        color={theme.green}
+                        value={forceUpdateOnLaunch}
+                        onPress={toggleUpdateOnLaunch}
+                    />
+
+                    {/* Divider */}
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
                     {/* Data tools */}
                     <DebugButton
                         label="Seed dummy data"
-                        color={theme.success}
+                        color={theme.danger}
                         disabled={busy}
                         onPress={() => runAsync(seedDummyData)}
                         right={busy ? <ActivityIndicator size="small" color={theme.text2} /> : undefined}
@@ -147,17 +212,16 @@ export default function DebugPanel() {
                     />
                     <Text style={[styles.hint, { color: theme.placeholder }]}>
                         Seeding wipes existing data first, then generates a large set
-                        (~16 labels, hundreds of tasks — checked, favorites, reminders,
-                        deleted items) for scroll/perf testing. Tune counts in debugSeed.ts.
+                        (~16 labels, hundreds of tasks).
                     </Text>
 
                     {/* Divider */}
-                    <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
                     {/* Test notifications */}
                     <DebugButton
                         label="Test Task Reminder Not."
-                        color={theme.warning}
+                        color={theme.secondary}
                         disabled={busy}
                         onPress={() => runAsync(() => debugTaskReminderN(notifSeconds))}
                         right={notifSecondsBadge}

@@ -8,8 +8,7 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
-import * as Updates from "expo-updates";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,25 +22,6 @@ export default function LabelsScreen() {
     // Safe area insets
     const insets = useSafeAreaInsets();
     const bottomInset = insets.bottom + 28;
-
-    // ------------------------------------------------------------
-    // Check for expo OTA updates on mount
-    // ------------------------------------------------------------
-    useEffect(() => {
-        if (__DEV__) return; // Skip in dev mode
-        const checkForUpdates = async () => {
-            try {
-                const update = await Updates.checkForUpdateAsync();
-                if (update.isAvailable) {
-                    await Updates.fetchUpdateAsync();
-                    Updates.reloadAsync();
-                }
-            } catch {
-                // Network unavailable or EAS unreachable — silently ignore
-            }
-        };
-        checkForUpdates();
-    }, []);
 
     // ------------------------------------------------------------
     // Refresh Labels manually

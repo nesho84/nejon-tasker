@@ -1,3 +1,4 @@
+import { APPLE_STORE_NATIVE_URL, APPLE_STORE_URL, GOOGLE_PLAY_NATIVE_URL, GOOGLE_PLAY_URL } from "@/constants/links";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { Translations } from "@/types/language.types";
 import { ReminderStatus } from "@/types/notification.types";
@@ -5,6 +6,31 @@ import * as Application from "expo-application";
 import * as IntentLauncher from "expo-intent-launcher";
 import * as Notifications from "expo-notifications";
 import { Alert, Linking, Platform, Share } from "react-native";
+
+// ------------------------------------------------------------
+// Open an external URL — fail silently when no app can handle it
+// ------------------------------------------------------------
+export const openExternalUrl = async (url: string): Promise<void> => {
+    try {
+        await Linking.openURL(url);
+    } catch {
+        // No app can handle this URL — fail silently
+    }
+};
+
+// ------------------------------------------------------------
+// Open the app's store listing (native store app, web fallback)
+// ------------------------------------------------------------
+export const openStoreListing = async (): Promise<void> => {
+    const nativeUrl = Platform.OS === "ios" ? APPLE_STORE_NATIVE_URL : GOOGLE_PLAY_NATIVE_URL;
+    const webUrl = Platform.OS === "ios" ? APPLE_STORE_URL : GOOGLE_PLAY_URL;
+
+    try {
+        await Linking.openURL(nativeUrl);
+    } catch {
+        await openExternalUrl(webUrl);
+    }
+};
 
 // ------------------------------------------------------------
 // Share text using the system share dialog

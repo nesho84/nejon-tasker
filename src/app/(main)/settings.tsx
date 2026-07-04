@@ -1,4 +1,5 @@
 import { BackupSection } from "@/components/BackupSection";
+import CheckForUpdate from "@/components/CheckForUpdate";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
 import DebugPanel from "@/debug/DebugPanel";
@@ -191,6 +192,13 @@ export default function SettingsScreen() {
                     <BackupSection />
                 </View>
 
+                {/* App Updates */}
+                <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
+                        {tr.settings.appUpdates}
+                    </Text>
+                    <CheckForUpdate />
+                </View>
 
             </ScrollView>
         </SafeAreaView>

@@ -1,0 +1,200 @@
+import { DARK, LIGHT } from "@/constants/colors";
+import { UpdatePreview, useDebugStore } from "@/debug/debugStore";
+import { useLanguageStore } from "@/store/languageStore";
+import { useModalStore } from "@/store/modalStore";
+import { useThemeStore } from "@/store/themeStore";
+import { Translations } from "@/types/language.types";
+import { openStoreListing } from "@/utils/system";
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import * as ExpoInAppUpdates from "expo-in-app-updates";
+import { useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+type CheckStatus = "idle" | "checking" | "upToDate" | "error";
+
+// ------------------------------------------------------------
+// Color + message to show for the current status
+// ------------------------------------------------------------
+function getStatusDisplay(shown: UpdatePreview | CheckStatus, theme: typeof LIGHT | typeof DARK, tr: Translations) {
+    if (shown === "upToDate") {
+        return { color: theme.success, message: tr.settings.upToDateMessage };
+    }
+    if (shown === "error") {
+        return { color: theme.danger, message: tr.settings.updateCheckError };
+    }
+    return { color: theme.placeholder, message: tr.settings.checkUpdateInfo };
+}
+
+// ------------------------------------------------------------
+// Open "Update available" modal
+// ------------------------------------------------------------
+export function openUpdateAvailableModal() {
+    const tr = useLanguageStore.getState().tr;
+    const theme = useThemeStore.getState().theme;
+
+    useModalStore.getState().show({
+        type: "alert",
+        component: (
+            <View style={styles.bannerContainer}>
+                <View style={[styles.modalIconCircle, { backgroundColor: theme.primary + "20" }]}>
+                    <MaterialDesignIcons name="information-variant-circle" size={32} color={theme.primary} />
+                </View>
+                <Text style={[styles.bannerTitle, { color: theme.text2 }]}>{tr.messages.updateAvailable}</Text>
+                <Text style={[styles.bannerMessage, { color: theme.muted }]}>{tr.messages.updateAvailableMessage}</Text>
+            </View>
+        ),
+        buttons: [
+            {
+                label: tr.buttons.later,
+                action: "later",
+                buttonStyle: { backgroundColor: theme.overlayLight },
+                labelStyle: { color: theme.text2 },
+            },
+            {
+                label: tr.buttons.openStore,
+                action: "openStore",
+                onPress: openStoreListing,
+                buttonStyle: { backgroundColor: theme.primary + "20", borderWidth: 1, borderColor: theme.primary + "40" },
+                labelStyle: { color: theme.primary },
+            },
+        ],
+    });
+}
+
+// Main component — the manual check button + status text (Settings screen)
+export default function CheckForUpdate() {
+    // Stores
+    const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
+    const preview = useDebugStore((state) => state.updatePreview);
+
+    // Local state
+    const [status, setStatus] = useState<CheckStatus>("idle");
+    const [errorDetail, setErrorDetail] = useState<string | null>(null);
+
+    // ------------------------------------------------------------
+    // Run the store check
+    // ------------------------------------------------------------
+    const runCheck = async () => {
+        if (status === "checking") return;
+
+        setStatus("checking");
+        setErrorDetail(null);
+        try {
+            const { updateAvailable } = await ExpoInAppUpdates.checkForUpdate();
+            if (updateAvailable) {
+                openUpdateAvailableModal();
+                setStatus("idle");
+            } else {
+                setStatus("upToDate");
+            }
+        } catch (err) {
+            // Most common cause is ERROR_APP_NOT_OWNED, which is expected on sideloaded/dev builds
+            // (the Play In-App Update API only works for apps installed via Play) — not a crash.
+            console.warn("⚠️ [CheckForUpdate] checkForUpdate failed:", err);
+            setErrorDetail(err instanceof Error ? err.message : String(err));
+            setStatus("error");
+        }
+    };
+
+    // ------------------------------------------------------------
+    // A dev preview overrides the real status when set
+    // ------------------------------------------------------------
+    const shown: UpdatePreview | CheckStatus = __DEV__ && preview !== "idle" ? preview : status;
+    const { color: statusColor, message: statusMessage } = getStatusDisplay(shown, theme, tr);
+
+    return (
+        <>
+            <TouchableOpacity
+                style={[styles.wideButton, { backgroundColor: theme.primary + "20" }]}
+                onPress={runCheck}
+                disabled={status === "checking"}
+                activeOpacity={0.8}
+            >
+                {status === "checking" ? (
+                    <ActivityIndicator size="small" color={theme.text2} />
+                ) : (
+                    <>
+                        <MaterialDesignIcons name="update" size={16} color={theme.text2} />
+                        <Text style={[styles.wideButtonText, { color: theme.text2 }]}>
+                            {tr.settings.checkUpdateButton}
+                        </Text>
+                    </>
+                )}
+            </TouchableOpacity>
+
+            <Text style={[styles.infoText, { color: statusColor }]}>
+                {statusMessage}
+            </Text>
+
+            {/* Dev-only: raw error text, so a failed check is debuggable without digging through logs */}
+            {__DEV__ && shown === "error" && errorDetail && (
+                <>
+                    <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+                    <Text style={[styles.devErrorText, { color: theme.placeholder }]}>
+                        {errorDetail}
+                    </Text>
+                </>
+            )}
+        </>
+    );
+}
+
+const styles = StyleSheet.create({
+    // "Update available" modal body
+    bannerContainer: {
+        alignItems: "center",
+        paddingVertical: 8,
+        gap: 6,
+    },
+    bannerTitle: {
+        fontSize: 19,
+        fontWeight: "700",
+        textAlign: "center",
+        marginTop: 10,
+        marginBottom: 4,
+    },
+    bannerMessage: {
+        fontSize: 15,
+        textAlign: "center",
+        lineHeight: 20,
+        marginBottom: 8,
+    },
+    modalIconCircle: {
+        width: 54,
+        height: 54,
+        borderRadius: 32,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    // Manual check button + status text
+    wideButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 10,
+        borderRadius: 8,
+        gap: 6,
+    },
+    wideButtonText: {
+        fontSize: 16,
+        fontWeight: "600",
+        includeFontPadding: false,
+    },
+    infoText: {
+        fontSize: 13,
+        textAlign: "center",
+        marginTop: 8,
+        marginBottom: 1,
+    },
+    divider: {
+        width: "100%",
+        height: StyleSheet.hairlineWidth,
+        marginVertical: 8,
+    },
+    devErrorText: {
+        fontSize: 12,
+        textAlign: "center",
+    },
+});

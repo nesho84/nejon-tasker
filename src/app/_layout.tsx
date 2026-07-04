@@ -1,7 +1,9 @@
 import AppLoading from "@/components/AppLoading";
+import ModalProvider from "@/components/ModalProvider";
 import { setupDatabase } from "@/db/database";
 import { useDeviceSettingsSync } from "@/hooks/useDeviceSettingsSync";
 import useNotifications from "@/hooks/useNotifications";
+import { useUpdatesSync } from "@/hooks/useUpdatesSync";
 import { useLabelStore } from "@/store/labelStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -59,11 +61,10 @@ export default function RootLayout() {
     initDB();
   }, []);
 
-  // Initialize notifications
-  useNotifications();
-
-  // Keep OS permission state in sync (mount + foreground)
+  // Initialization and global sync hooks
   useDeviceSettingsSync();
+  useNotifications();
+  useUpdatesSync();
 
   // Show error if initialization failed
   if (initError) {
@@ -82,6 +83,7 @@ export default function RootLayout() {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <RootStack />
+        <ModalProvider />
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );
