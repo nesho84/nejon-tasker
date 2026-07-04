@@ -9,7 +9,7 @@ import { MaterialIcons } from "@react-native-vector-icons/material-icons/static"
 import Constants from "expo-constants";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function LabelsScreen() {
@@ -56,20 +56,30 @@ export default function LabelsScreen() {
                     headerRight: () => (
                         <>
                             {/* Refresh Labels Icon */}
-                            <TouchableOpacity
-                                style={{ top: 1.4, paddingRight: 24 }}
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.headerIconButton,
+                                    { top: 1.4, marginRight: 8 },
+                                    pressed && { backgroundColor: theme.pressed },
+                                ]}
                                 onPress={handleRefresh}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             >
                                 <MaterialIcons name="refresh" size={26} color={theme.inverse} />
-                            </TouchableOpacity>
+                            </Pressable>
 
                             {/* Settings Icon */}
-                            <TouchableOpacity
-                                style={{ top: 1, marginRight: -3 }}
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.headerIconButton,
+                                    { top: 1, marginRight: -11 },
+                                    pressed && { backgroundColor: theme.pressed },
+                                ]}
                                 onPress={() => router.navigate("/(main)/settings")}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             >
                                 <MaterialDesignIcons name="cog-outline" size={25} color={theme.inverse} />
-                            </TouchableOpacity>
+                            </Pressable>
                         </>
                     ),
                 }}
@@ -105,6 +115,10 @@ export default function LabelsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    headerIconButton: {
+        padding: 8,
+        borderRadius: 999,
     },
     fab: {
         position: "absolute",

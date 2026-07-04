@@ -7,7 +7,7 @@ import { MaterialIcons } from "@react-native-vector-icons/material-icons/static"
 import Constants from 'expo-constants';
 import { router, Stack } from "expo-router";
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -210,14 +210,20 @@ export default function StackLayout() {
                 <Stack.Screen
                     name="index"
                     options={{
-                        // title: tr.labels.labels,
                         headerShadowVisible: true,
+                        // Drawer menu icon
                         headerLeft: () => (
-                            <TouchableOpacity
-                                style={{ top: 1, paddingRight: 15 }}
-                                onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.headerIconButton,
+                                    { top: 1, marginLeft: -8, marginRight: 7 },
+                                    pressed && { backgroundColor: theme.pressed },
+                                ]}
+                                onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            >
                                 <MaterialDesignIcons name="menu" size={30} color={theme.text} />
-                            </TouchableOpacity>
+                            </Pressable>
                         ),
                     }}
                 />
@@ -278,6 +284,10 @@ export default function StackLayout() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    headerIconButton: {
+        padding: 8,
+        borderRadius: 999,
     },
 
     header: {

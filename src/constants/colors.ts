@@ -49,6 +49,7 @@ export const LIGHT = {
   // Interactive states
   active: "#e8eaed",
   disabled: "#f1f3f4",
+  pressed: "rgba(0,0,0,0.12)",
 
   // Light/Dark variants
   neutral: "#e9ecef",
@@ -112,6 +113,7 @@ export const DARK = {
   // Interactive states
   active: "#5f6368",
   disabled: "#3c4043",
+  pressed: "rgba(255,255,255,0.12)",
 
   // Light/Dark variants
   neutral: "#e9ecef",
