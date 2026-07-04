@@ -15,7 +15,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppLoading from "./AppLoading";
 
 // ------------------------------------------------------------
-// Single label card — top-level component so its hooks/memoization are stable
+// Single label card — calls hooks, so it must stay a capitalized
+// component mounted as JSX (never passed directly to renderItem)
 // ------------------------------------------------------------
 function LabelCard({ item, isActive, drag }: RenderItemParams<Label>) {
   // Stores
@@ -138,7 +139,7 @@ export default function LabelList() {
     labels && labels.length > 0 ? (
       <DraggableFlatList
         data={labels}
-        renderItem={LabelCard}
+        renderItem={(params) => <LabelCard {...params} />}
         keyExtractor={(item) => item.id}
         onDragEnd={({ data }) => handleOrderLabels(data)}
         activationDistance={24}

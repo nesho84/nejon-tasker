@@ -12,14 +12,15 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Keyboard, ListRenderItemInfo, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // ------------------------------------------------------------
-// Single task row — top-level component so its hooks/memoization are stable
+// Single unchecked task row (drag) — no hooks, lowercase so the
+// React Compiler skips it; safe to pass directly to renderItem
 // ------------------------------------------------------------
-function TaskRow({ item, getIndex, isActive, drag }: RenderItemParams<Task>) {
+function taskCard({ item, getIndex, isActive, drag }: RenderItemParams<Task>) {
   const handleEdit = () => {
     router.navigate({
       pathname: '/editTask',
@@ -42,6 +43,36 @@ function TaskRow({ item, getIndex, isActive, drag }: RenderItemParams<Task>) {
         task={item}
         index={getIndex()}
         isActive={isActive}
+        checkAction={true}
+        favoriteAction={true}
+        softDeleteAction={true}
+      />
+    </TouchableOpacity>
+  );
+}
+
+// ------------------------------------------------------------
+// Single checked task row (no drag) — lowercase name so the React Compiler
+// doesn't instrument it; FlatList calls renderItem as a plain function
+// ------------------------------------------------------------
+function checkedTaskCard({ item }: ListRenderItemInfo<Task>) {
+  const handleEdit = () => {
+    router.navigate({
+      pathname: '/editTask',
+      params: { labelId: item.labelId, taskId: item.id },
+    });
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={handleEdit}
+      delayPressIn={0}
+      delayPressOut={0}
+      activeOpacity={0.7}
+      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+    >
+      <TaskItem
+        task={item}
         checkAction={true}
         favoriteAction={true}
         softDeleteAction={true}
@@ -233,7 +264,7 @@ export default function TasksScreen() {
                 contentContainerStyle={styles.taskListContent}
                 showsVerticalScrollIndicator={false}
                 data={uncheckedTasks}
-                renderItem={TaskRow}
+                renderItem={taskCard}
                 keyExtractor={(item) => item.id}
                 onDragEnd={({ data }) => handleOrderTasks(data)}
               />
@@ -241,9 +272,10 @@ export default function TasksScreen() {
               <AppEmpty type="task" />
             )}
 
-            {/* ----- Checked tasks ----- */}
+            {/* ----- Checked tasks Section ----- */}
             {(checkedTasks.length > 0 && !isKeyboardVisible) && (
               <>
+                {/* Tasks Divider */}
                 <View style={[styles.checkedSectionBorder, { borderTopColor: label.color }]} />
                 <TouchableOpacity
                   style={[styles.tasksDivider, { backgroundColor: theme.section }]}
@@ -260,17 +292,18 @@ export default function TasksScreen() {
                     style={{ marginRight: -4, opacity: 0.8 }}
                   />
                 </TouchableOpacity>
+
+                {/* ----- Checked tasks ----- */}
                 {isCheckedOpen && (
                   <>
                     <View style={[styles.checkedSectionBorder, { borderTopColor: theme.bg2 }]} />
-                    <DraggableFlatList
-                      containerStyle={{ flexGrow: 0, maxHeight: "40%" }}
+                    <FlatList
+                      style={{ flexGrow: 0, maxHeight: "40%" }}
                       contentContainerStyle={styles.taskListContent}
                       showsVerticalScrollIndicator={false}
                       data={checkedTasks}
-                      renderItem={TaskRow}
+                      renderItem={checkedTaskCard}
                       keyExtractor={(item) => item.id}
-                      onDragEnd={({ data }) => handleOrderTasks(data)}
                     />
                   </>
                 )}
