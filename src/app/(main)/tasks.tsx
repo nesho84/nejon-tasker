@@ -45,7 +45,6 @@ function TaskRow({ item, getIndex, isActive, drag }: RenderItemParams<Task>) {
         checkAction={true}
         favoriteAction={true}
         softDeleteAction={true}
-        shareAction={true}
       />
     </TouchableOpacity>
   );

@@ -57,10 +57,9 @@ export default function TaskItem({
 
     // Reminder display state: 'active' (will fire), 'muted' (set but notifications off), 'past', 'none'
     const reminderStatus = getReminderStatus(task.reminderDateTime, task.reminderId, notificationsEnabled);
-    const reminderColor =
-        reminderStatus === 'active' ? theme.success
-            : reminderStatus === 'muted' ? theme.danger
-                : theme.muted;
+    const reminderColor = reminderStatus === 'active' ? theme.success
+        : reminderStatus === 'muted'
+            ? theme.danger : theme.muted;
 
     // ------------------------------------------------------------
     // Toggle task checked/unchecked
@@ -343,6 +342,16 @@ export default function TaskItem({
                         >
                             {dates.format(task.reminderDateTime)}
                         </Text>
+                    )}
+
+                    {/* No reminder at all — quiet placeholder */}
+                    {reminderStatus === 'none' && !task.checked && !task.isDeleted && (
+                        <MaterialDesignIcons
+                            name="bell-cancel-outline"
+                            color={theme.muted}
+                            size={16}
+                            style={{ opacity: 0.5 }}
+                        />
                     )}
                 </View>
 
