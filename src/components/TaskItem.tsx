@@ -9,7 +9,8 @@ import { getReminderStatus, shareText } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { Checkbox } from "expo-checkbox";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import * as Haptics from "expo-haptics";
+import { Alert, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Hyperlink from 'react-native-hyperlink';
 
 interface Props {
@@ -65,6 +66,8 @@ export default function TaskItem({
     // Toggle task checked/unchecked
     // ------------------------------------------------------------
     const handleToggleCheck = async (value: boolean, task: Task) => {
+        // Fire-and-forget so the toggle isn't delayed
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         // If checking a task with active reminder, cancel notification
         if (value === true && task?.reminderId) {
             await cancelScheduledNotification(task.reminderId);
@@ -192,13 +195,9 @@ export default function TaskItem({
             <View style={styles.top}>
                 {/* Task checkbox — wrapper owns the tap (bigger target + press feedback) */}
                 {checkAction && (
-                    <TouchableOpacity
-                        style={styles.checkBoxContainer}
+                    <Pressable style={({ pressed }) => [styles.checkBoxContainer, pressed && { backgroundColor: theme.border }]}
                         onPress={() => handleToggleCheck(!task.checked, task)}
-                        delayPressIn={0}
-                        delayPressOut={0}
-                        activeOpacity={0.5}
-                        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         accessibilityRole="checkbox"
                         accessibilityState={{ checked: task.checked }}
                     >
@@ -207,7 +206,7 @@ export default function TaskItem({
                             value={task.checked}
                             pointerEvents="none"
                         />
-                    </TouchableOpacity>
+                    </Pressable>
                 )}
 
                 {/* Task Text */}
@@ -399,11 +398,12 @@ const styles = StyleSheet.create({
     checkBoxContainer: {
         alignSelf: "flex-start",
         flexShrink: 0,
-        padding: 10,
-        marginTop: -8,
-        marginLeft: -7,
-        marginRight: -10,
-        marginBottom: -10,
+        padding: 8,
+        marginTop: -6,
+        marginBottom: -6,
+        marginLeft: -6,
+        marginRight: -8,
+        borderRadius: 999,
     },
     taskTextContainer: {
         width: "100%",
