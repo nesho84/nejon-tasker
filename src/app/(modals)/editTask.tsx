@@ -11,7 +11,7 @@ import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 // Map the app language to a date-picker locale
@@ -260,18 +260,20 @@ export default function EditTask() {
 
         {/* Title row */}
         <View style={styles.titleRow}>
+          {/* Left: Title */}
           <Text style={[styles.title, { color: label?.color }]}>
             {tr.forms.editTask}
           </Text>
-          {/* Share task button */}
-          <TouchableOpacity
-            style={[styles.shareButton, { backgroundColor: 'transparent' }]}
+          {/* Right: Share task icon — wrapper owns the tap (bigger target + press feedback) */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.shareIcon, pressed && { backgroundColor: theme.pressed },
+            ]}
             onPress={() => task && shareText(tr.forms.task, task.text)}
-            activeOpacity={0.7}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Ionicons name="share-social" color={label?.color} size={18} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Divider below title */}
@@ -398,12 +400,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  shareButton: {
-    width: 26,
-    height: 26,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
+  shareIcon: {
+    padding: 8,
+    margin: -4,
+    borderRadius: 999,
   },
 
   divider: {

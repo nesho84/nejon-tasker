@@ -195,7 +195,10 @@ export default function TaskItem({
             <View style={styles.top}>
                 {/* Task checkbox — wrapper owns the tap (bigger target + press feedback) */}
                 {checkAction && (
-                    <Pressable style={({ pressed }) => [styles.checkBoxContainer, pressed && { backgroundColor: theme.border }]}
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.checkBoxContainer, pressed && { backgroundColor: theme.border }
+                        ]}
                         onPress={() => handleToggleCheck(!task.checked, task)}
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         accessibilityRole="checkbox"
