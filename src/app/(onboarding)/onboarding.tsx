@@ -1,4 +1,5 @@
 import AppScreen from '@/components/AppScreen';
+import { globalStyles } from '@/constants/styles';
 import { useDeviceSettingsStore } from '@/store/deviceSettingsStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
@@ -226,15 +227,15 @@ export default function OnboardingScreen() {
                         {/* Permission Rows */}
                         <View style={[styles.permissionsCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
                             {/* Notifications */}
-                            <TouchableOpacity style={styles.permissionRow} onPress={handleAllowNotifications} activeOpacity={0.7}>
-                                <View style={[styles.permissionIcon, { backgroundColor: (notificationPermission ? theme.action1 : theme.warning) + '15' }]}>
+                            <TouchableOpacity style={globalStyles.row} onPress={handleAllowNotifications} activeOpacity={0.7}>
+                                <View style={[globalStyles.rowIcon, { backgroundColor: (notificationPermission ? theme.action1 : theme.warning) + '15' }]}>
                                     <MaterialDesignIcons
                                         name={notificationPermission ? "bell-check-outline" : "bell-alert-outline"}
                                         size={22}
                                         color={notificationPermission ? theme.action1 : theme.warning}
                                     />
                                 </View>
-                                <View style={styles.permissionText}>
+                                <View style={globalStyles.rowText}>
                                     <Text style={[styles.permissionTitle, { color: theme.text }]}>
                                         {tr.onboarding.notificationsTitle}
                                     </Text>
@@ -251,18 +252,18 @@ export default function OnboardingScreen() {
 
                             {Platform.OS === 'android' && (
                                 <>
-                                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+                                    <View style={[globalStyles.hairlineDivider, { backgroundColor: theme.border }]} />
 
                                     {/* Battery optimization */}
-                                    <TouchableOpacity style={styles.permissionRow} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
-                                        <View style={[styles.permissionIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.action1) + '15' }]}>
+                                    <TouchableOpacity style={globalStyles.row} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
+                                        <View style={[globalStyles.rowIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.action1) + '15' }]}>
                                             <MaterialDesignIcons
                                                 name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
                                                 size={22}
                                                 color={batteryOptimization ? theme.warning : theme.success}
                                             />
                                         </View>
-                                        <View style={styles.permissionText}>
+                                        <View style={globalStyles.rowText}>
                                             <Text style={[styles.permissionTitle, { color: theme.text }]}>
                                                 {tr.settings.batteryOptTitle}
                                             </Text>
@@ -277,14 +278,14 @@ export default function OnboardingScreen() {
                                         )}
                                     </TouchableOpacity>
 
-                                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+                                    <View style={[globalStyles.hairlineDivider, { backgroundColor: theme.border }]} />
 
                                     {/* Alarms & reminders */}
-                                    <TouchableOpacity style={styles.permissionRow} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
-                                        <View style={[styles.permissionIcon, { backgroundColor: theme.action1 + '15' }]}>
+                                    <TouchableOpacity style={globalStyles.row} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
+                                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.action1 + '15' }]}>
                                             <MaterialDesignIcons name="alarm" size={22} color={theme.action1} />
                                         </View>
-                                        <View style={styles.permissionText}>
+                                        <View style={globalStyles.rowText}>
                                             <Text style={[styles.permissionTitle, { color: theme.text }]}>
                                                 {tr.settings.alarmAccessTitle}
                                             </Text>
@@ -478,23 +479,6 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 16,
     },
-    permissionRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        paddingVertical: 6,
-    },
-    permissionIcon: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    permissionText: {
-        flex: 1,
-        gap: 3,
-    },
     permissionTitle: {
         fontSize: 15,
         fontWeight: '600',
@@ -504,10 +488,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 16,
         opacity: 0.8,
-    },
-    divider: {
-        height: StyleSheet.hairlineWidth,
-        marginVertical: 10,
     },
 
     // Features Onboarding Styles

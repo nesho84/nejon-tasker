@@ -2,6 +2,7 @@ import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
 import TaskItem from "@/components/TaskItem";
+import { globalStyles, HIT_SLOP_5 } from "@/constants/styles";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
@@ -37,7 +38,7 @@ function taskCard({ item, getIndex, isActive, drag }: RenderItemParams<Task>) {
       delayPressIn={0}
       delayPressOut={0}
       activeOpacity={0.7}
-      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+      hitSlop={HIT_SLOP_5}
     >
       <TaskItem
         task={item}
@@ -69,7 +70,7 @@ function checkedTaskCard({ item }: ListRenderItemInfo<Task>) {
       delayPressIn={0}
       delayPressOut={0}
       activeOpacity={0.7}
-      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+      hitSlop={HIT_SLOP_5}
     >
       <TaskItem
         task={item}
@@ -247,7 +248,7 @@ export default function TasksScreen() {
       />
 
       {label && (
-        <View style={[styles.container, { backgroundColor: theme.bg }]}>
+        <View style={[globalStyles.container, { backgroundColor: theme.bg }]}>
           {/* Header container */}
           <View style={[styles.headerContainer, { borderBottomColor: label.color }]}>
             {/* Header text */}
@@ -256,7 +257,7 @@ export default function TasksScreen() {
             </Text>
           </View>
 
-          <View style={styles.tasksContainer}>
+          <View style={globalStyles.container}>
             {/* ----- Unchecked tasks ----- */}
             {uncheckedTasks.length > 0 ? (
               <DraggableFlatList
@@ -354,10 +355,6 @@ export default function TasksScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
   headerContainer: {
     alignSelf: "stretch",
     paddingVertical: 4,
@@ -368,9 +365,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 
-  tasksContainer: {
-    flex: 1,
-  },
   tasksContent: {
     paddingBottom: 8,
   },

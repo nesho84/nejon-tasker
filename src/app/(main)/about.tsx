@@ -1,4 +1,5 @@
 import { GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
+import { globalStyles } from '@/constants/styles';
 import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -84,11 +85,11 @@ export default function AboutScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.bgAlt }]}
+            style={[globalStyles.container, { backgroundColor: theme.bgAlt }]}
             edges={['left', 'right']}
         >
             <ScrollView
-                style={[styles.scrollContainer, { backgroundColor: theme.bgAlt }]}
+                style={[globalStyles.container, { backgroundColor: theme.bgAlt }]}
                 contentContainerStyle={[
                     styles.scrollContent,
                     { paddingTop: topInset, paddingBottom: bottomInset }
@@ -154,11 +155,11 @@ export default function AboutScreen() {
                         onPress={() => Linking.openURL('https://paypal.me/NeshatAdemi?locale.x=de_DE&country.x=AT')}
                         activeOpacity={0.8}
                     >
-                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                             <MaterialDesignIcons name="heart-outline" size={22} color={theme.danger} />
                         </View>
-                        <View style={styles.actionTextContainer}>
-                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
+                        <View style={globalStyles.rowText}>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>via PayPal</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
@@ -173,11 +174,11 @@ export default function AboutScreen() {
                         onPress={() => openLink(GOOGLE_PLAY_URL)}
                         activeOpacity={0.8}
                     >
-                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                             <MaterialDesignIcons name="star-outline" size={22} color={theme.primary} />
                         </View>
-                        <View style={styles.actionTextContainer}>
-                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.rateApp}</Text>
+                        <View style={globalStyles.rowText}>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.rateApp}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.labels.rateAppDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
@@ -192,11 +193,11 @@ export default function AboutScreen() {
                         onPress={handleShare}
                         activeOpacity={0.8}
                     >
-                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                             <MaterialDesignIcons name="share-outline" size={22} color={theme.primary} />
                         </View>
-                        <View style={styles.actionTextContainer}>
-                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.shareApp}</Text>
+                        <View style={globalStyles.rowText}>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.shareApp}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.shareAppDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
@@ -211,11 +212,11 @@ export default function AboutScreen() {
                         onPress={() => Linking.openURL(CONTACT_EMAIL)}
                         activeOpacity={0.8}
                     >
-                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                             <MaterialDesignIcons name="email-outline" size={22} color={theme.primary} />
                         </View>
-                        <View style={styles.actionTextContainer}>
-                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.contactUs}</Text>
+                        <View style={globalStyles.rowText}>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.contactUs}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.contactUsDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
@@ -230,11 +231,11 @@ export default function AboutScreen() {
                         onPress={() => openLink(MORE_APPS_GOOGLE_PLAY_URL)}
                         activeOpacity={0.8}
                     >
-                        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                             <MaterialDesignIcons name="view-grid-outline" size={22} color={theme.primary} />
                         </View>
-                        <View style={styles.actionTextContainer}>
-                            <Text style={[styles.actiontTitle, { color: theme.muted }]}>{tr.labels.moreApps}</Text>
+                        <View style={globalStyles.rowText}>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.moreApps}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.moreAppsDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
@@ -266,14 +267,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
     },
 
-    container: {
-        flex: 1,
-    },
-
     // ScrollView content
-    scrollContainer: {
-        flex: 1,
-    },
     scrollContent: {
         flexGrow: 1,
         justifyContent: "center",
@@ -344,22 +338,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 16,
         gap: 12,
-    },
-    iconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    actionTextContainer: {
-        flex: 1,
-        gap: 3,
-    },
-    actiontTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        letterSpacing: -0.3,
     },
     actionSubtitle: {
         fontSize: 14,

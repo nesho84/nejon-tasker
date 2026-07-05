@@ -1,3 +1,4 @@
+import { HIT_SLOP_6_4, HIT_SLOP_8 } from "@/constants/styles";
 import { cancelScheduledNotification } from "@/services/notificationsService";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
@@ -198,7 +199,7 @@ export default function TaskItem({
                             styles.checkBoxContainer, pressed && { backgroundColor: theme.border }
                         ]}
                         onPress={() => handleToggleCheck(!task.checked, task)}
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        hitSlop={HIT_SLOP_8}
                         accessibilityRole="checkbox"
                         accessibilityState={{ checked: task.checked }}
                     >
@@ -230,7 +231,7 @@ export default function TaskItem({
                     {favoriteAction && (
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
-                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                            hitSlop={HIT_SLOP_6_4}
                             onPress={() => handleToggleFavorite(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -248,7 +249,7 @@ export default function TaskItem({
                     {restoreAction && (
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
-                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                            hitSlop={HIT_SLOP_6_4}
                             onPress={() => handleRestore(task.id)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -266,7 +267,7 @@ export default function TaskItem({
                     {cancelReminderAction && (
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
-                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                            hitSlop={HIT_SLOP_6_4}
                             onPress={() => handleCancelReminder(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -284,7 +285,7 @@ export default function TaskItem({
                     {softDeleteAction && (
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
-                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                            hitSlop={HIT_SLOP_6_4}
                             onPress={() => handleSoftDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -302,7 +303,7 @@ export default function TaskItem({
                     {hardDeleteAction && (
                         <TouchableOpacity
                             style={[styles.actionButton, { backgroundColor: theme.iconBg }]}
-                            hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                            hitSlop={HIT_SLOP_6_4}
                             onPress={() => handleHardDelete(task)}
                             delayPressIn={0}
                             delayPressOut={0}
@@ -362,7 +363,7 @@ export default function TaskItem({
                             styles.shareButton, pressed && { backgroundColor: theme.pressed },
                         ]}
                         onPress={() => shareText(tr.forms.task, task.text)}
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        hitSlop={HIT_SLOP_8}
                     >
                         <Ionicons
                             name="share-social"

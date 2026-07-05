@@ -1,3 +1,4 @@
+import { globalStyles, HIT_SLOP_8 } from '@/constants/styles';
 import { useLabelStore } from '@/store/labelStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -31,7 +32,7 @@ function DrawerContent({ closeDrawer }: DrawerContentProps) {
     const leftInset = insets.left - 10;
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.bg }]}>
+        <View style={[globalStyles.container, { backgroundColor: theme.bg }]}>
             <ScrollView
                 showsVerticalScrollIndicator={true}
                 contentContainerStyle={{
@@ -215,12 +216,12 @@ export default function StackLayout() {
                         headerLeft: () => (
                             <Pressable
                                 style={({ pressed }) => [
-                                    styles.headerIconButton,
+                                    globalStyles.iconButton,
                                     { top: 1, marginLeft: -8, marginRight: 7 },
                                     pressed && { backgroundColor: theme.pressed },
                                 ]}
                                 onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}
-                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                hitSlop={HIT_SLOP_8}
                             >
                                 <MaterialDesignIcons name="menu" size={30} color={theme.text} />
                             </Pressable>
@@ -282,14 +283,6 @@ export default function StackLayout() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    headerIconButton: {
-        padding: 8,
-        borderRadius: 999,
-    },
-
     header: {
         marginTop: 6,
         marginBottom: 22,

@@ -1,4 +1,5 @@
 import AppEmpty from "@/components/AppEmpty";
+import { globalStyles, HIT_SLOP_5 } from "@/constants/styles";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
@@ -46,7 +47,7 @@ function LabelCard({ item, isActive, drag }: RenderItemParams<Label>) {
       delayPressIn={0}
       delayPressOut={0}
       activeOpacity={0.7}
-      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+      hitSlop={HIT_SLOP_5}
     >
       <View
         style={[
@@ -143,7 +144,7 @@ export default function LabelList() {
         keyExtractor={(item) => item.id}
         onDragEnd={({ data }) => handleOrderLabels(data)}
         activationDistance={24}
-        contentContainerStyle={[styles.scrollContent, { paddingTop: topInset, paddingBottom: bottomInset }]}
+        contentContainerStyle={[globalStyles.scrollContent, { paddingTop: topInset, paddingBottom: bottomInset }]}
         showsVerticalScrollIndicator={false}
       />
     ) : (
@@ -153,11 +154,6 @@ export default function LabelList() {
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 6,
-    gap: 8,
-  },
   cardContainer: {
     flex: 1,
     paddingHorizontal: 10,

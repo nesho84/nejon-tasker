@@ -1,4 +1,5 @@
 import ModalSheet, { ModalSheetRef } from "@/components/ModalSheet";
+import { globalStyles, HIT_SLOP_8 } from "@/constants/styles";
 import { cancelScheduledNotification, scheduleNotification } from "@/services/notificationsService";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
@@ -225,24 +226,24 @@ export default function EditTask() {
   const fixedFooter = (
     <>
       {/* Divider above footer */}
-      <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+      <View style={[globalStyles.modalDivider, { backgroundColor: theme.divider }]} />
 
-      <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
+      <View style={[globalStyles.btnRow, { borderTopColor: theme.divider }]}>
         {/* Cancel button */}
         <TouchableOpacity
-          style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
+          style={[globalStyles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
           onPress={() => modalSheetRef.current?.close()}
           activeOpacity={0.7}
         >
-          <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
+          <Text style={[globalStyles.btnText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
         </TouchableOpacity>
         {/* Save Button */}
         <TouchableOpacity
-          style={[styles.btnSave, { backgroundColor: label?.color }]}
+          style={[globalStyles.btnSave, { backgroundColor: label?.color }]}
           onPress={handleUpdate}
           activeOpacity={0.8}
         >
-          <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
+          <Text style={[globalStyles.btnText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -256,12 +257,12 @@ export default function EditTask() {
       colors={{ sheetBackgroundColor: theme.bg2, handleColor: theme.handle, headerBarBorderColor: 'transparent' }}
       footer={fixedFooter}
     >
-      <View style={styles.container}>
+      <View style={globalStyles.modalContainer}>
 
         {/* Title row */}
-        <View style={styles.titleRow}>
+        <View style={globalStyles.modalTitleRow}>
           {/* Left: Title */}
-          <Text style={[styles.title, { color: label?.color }]}>
+          <Text style={[globalStyles.modalTitle, { color: label?.color }]}>
             {tr.forms.editTask}
           </Text>
           {/* Right: Share task icon — wrapper owns the tap (bigger target + press feedback) */}
@@ -270,17 +271,17 @@ export default function EditTask() {
               styles.shareIcon, pressed && { backgroundColor: theme.pressed },
             ]}
             onPress={() => task && shareText(tr.forms.task, task.text)}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            hitSlop={HIT_SLOP_8}
           >
             <Ionicons name="share-social" color={label?.color} size={18} />
           </Pressable>
         </View>
 
         {/* Divider below title */}
-        <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+        <View style={[globalStyles.modalDivider, { backgroundColor: theme.divider }]} />
 
         {/* Text input */}
-        <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.task}</Text>
+        <Text style={[globalStyles.inputLabel, { color: theme.label }]}>{tr.forms.task}</Text>
         <TextInput
           style={[styles.textInput, {
             backgroundColor: theme.shadow,
@@ -304,7 +305,7 @@ export default function EditTask() {
         />
 
         {/* DateTimeInput Container */}
-        <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.reminder}</Text>
+        <Text style={[globalStyles.inputLabel, { color: theme.label }]}>{tr.forms.reminder}</Text>
         <View style={styles.reminderGroup}>
           <View style={styles.dateTimeInputRow}>
             {/* TextInput with bell Icon */}
@@ -381,40 +382,12 @@ export default function EditTask() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 14,
-    paddingTop: 8,
-    paddingBottom: 14,
-    gap: 10,
-  },
-
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
   shareIcon: {
     padding: 8,
     margin: -4,
     borderRadius: 999,
   },
 
-  divider: {
-    height: 1.8,
-  },
-
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.9,
-  },
   textInput: {
     flex: 1,
     height: 136,
@@ -455,35 +428,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 2,
     paddingHorizontal: 6,
-  },
-
-  btnRow: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    gap: 14,
-  },
-  btnCancel: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  btnCancelText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  btnSave: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-  },
-  btnSaveText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
 });

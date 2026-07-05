@@ -2,6 +2,7 @@ import { BackupSection } from "@/components/BackupSection";
 import CheckForUpdate from "@/components/CheckForUpdate";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
+import { globalStyles } from "@/constants/styles";
 import DebugPanel from "@/debug/DebugPanel";
 import { useDebugStore } from "@/debug/debugStore";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
@@ -55,12 +56,12 @@ export default function SettingsScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.bgAlt }]}
+            style={[globalStyles.container, { backgroundColor: theme.bgAlt }]}
             edges={['left', 'right']}
         >
             <ScrollView
-                style={[styles.scrollContainer, { backgroundColor: theme.bgAlt }]}
-                contentContainerStyle={[styles.scrollContent, { paddingTop: topInset, paddingBottom: bottomInset }]}
+                style={[globalStyles.container, { backgroundColor: theme.bgAlt }]}
+                contentContainerStyle={[globalStyles.scrollContent, { paddingTop: topInset, paddingBottom: bottomInset }]}
                 showsVerticalScrollIndicator={false}
             >
 
@@ -79,16 +80,16 @@ export default function SettingsScreen() {
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
                         {tr.settings.displayOptions}
                     </Text>
-                    <TouchableOpacity style={styles.row} onPress={handleTheme} activeOpacity={0.7}>
-                        <View style={[styles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
+                    <TouchableOpacity style={globalStyles.row} onPress={handleTheme} activeOpacity={0.7}>
+                        <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                             <MaterialDesignIcons
                                 name={mode === "light" ? "white-balance-sunny" : "weather-night"}
                                 size={22}
                                 color={theme.primary}
                             />
                         </View>
-                        <View style={styles.rowText}>
-                            <Text style={[styles.rowTitle, { color: theme.muted }]}>Theme</Text>
+                        <View style={globalStyles.rowText}>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>Theme</Text>
                             <Text style={[styles.rowSubtitle, { color: theme.primary }]}>
                                 {mode === "light" ? "Light" : "Dark"}
                             </Text>
@@ -140,16 +141,16 @@ export default function SettingsScreen() {
                             )}
 
                             {/* Battery optimization */}
-                            <TouchableOpacity style={styles.row} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
-                                <View style={[styles.rowIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.primary) + '15' }]}>
+                            <TouchableOpacity style={globalStyles.row} onPress={openBatteryOptimizationSettings} activeOpacity={0.7}>
+                                <View style={[globalStyles.rowIcon, { backgroundColor: (batteryOptimization ? theme.warning : theme.primary) + '15' }]}>
                                     <MaterialDesignIcons
                                         name={batteryOptimization ? "battery-alert-variant-outline" : "battery-check-outline"}
                                         size={22}
                                         color={batteryOptimization ? theme.warning : theme.success}
                                     />
                                 </View>
-                                <View style={styles.rowText}>
-                                    <Text style={[styles.rowTitle, { color: theme.muted }]}>
+                                <View style={globalStyles.rowText}>
+                                    <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>
                                         {tr.settings.batteryOptTitle}
                                     </Text>
                                     <Text style={[styles.rowSubtitle, { color: theme.muted }]}>
@@ -163,15 +164,15 @@ export default function SettingsScreen() {
                                 )}
                             </TouchableOpacity>
 
-                            <View style={[styles.divider, { backgroundColor: theme.border }]} />
+                            <View style={[globalStyles.hairlineDivider, { backgroundColor: theme.border }]} />
 
                             {/* Alarms & reminders */}
-                            <TouchableOpacity style={styles.row} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
-                                <View style={[styles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
+                            <TouchableOpacity style={globalStyles.row} onPress={openAlarmPermissionSettings} activeOpacity={0.7}>
+                                <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
                                     <MaterialDesignIcons name="alarm" size={22} color={theme.primary} />
                                 </View>
-                                <View style={styles.rowText}>
-                                    <Text style={[styles.rowTitle, { color: theme.muted }]}>
+                                <View style={globalStyles.rowText}>
+                                    <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>
                                         {tr.settings.alarmAccessTitle}
                                     </Text>
                                     <Text style={[styles.rowSubtitle, { color: theme.muted }]}>
@@ -206,19 +207,6 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-
-    scrollContainer: {
-        flex: 1,
-    },
-    scrollContent: {
-        flexGrow: 1,
-        paddingHorizontal: 6,
-        gap: 8,
-    },
-
     sectionCard: {
         borderWidth: 1,
         borderRadius: 16,
@@ -250,35 +238,9 @@ const styles = StyleSheet.create({
         zIndex: 10,
         borderRadius: 12,
     },
-    row: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-        paddingVertical: 6,
-    },
-    rowIcon: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    rowText: {
-        flex: 1,
-        gap: 3,
-    },
-    rowTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        letterSpacing: -0.3,
-    },
     rowSubtitle: {
         fontSize: 13,
         lineHeight: 18,
         opacity: 0.7,
-    },
-    divider: {
-        height: StyleSheet.hairlineWidth,
-        marginVertical: 10,
     },
 });

@@ -2,6 +2,7 @@ import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
 import NotificationsBanner from "@/components/NotificationsBanner";
 import TaskItem from "@/components/TaskItem";
+import { globalStyles } from "@/constants/styles";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { useEffect, useMemo, useState } from "react";
@@ -42,7 +43,7 @@ export default function RemindersScreen() {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.bgAlt }]}
+            style={[globalStyles.listContainer, { backgroundColor: theme.bgAlt }]}
             edges={['left', 'right']}
         >
             {/* Warning banner when notifications are disabled */}
@@ -66,9 +67,4 @@ export default function RemindersScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: -8,
-    },
-});
+const styles = StyleSheet.create({})

@@ -2,7 +2,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { NavigationBar } from 'expo-navigation-bar';
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Props {
@@ -41,3 +41,5 @@ export default function AppScreen({ children }: Props) {
     </>
   );
 }
+
+const styles = StyleSheet.create({})

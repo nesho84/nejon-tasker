@@ -1,6 +1,7 @@
 import AppLoading from "@/components/AppLoading";
 import AppScreen from "@/components/AppScreen";
 import LabelList from "@/components/LabelList";
+import { globalStyles, HIT_SLOP_8 } from "@/constants/styles";
 import { useLabelStore } from "@/store/labelStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
@@ -58,12 +59,12 @@ export default function LabelsScreen() {
                             {/* Refresh Labels Icon */}
                             <Pressable
                                 style={({ pressed }) => [
-                                    styles.headerIconButton,
+                                    globalStyles.iconButton,
                                     { top: 1.4, marginRight: 8 },
                                     pressed && { backgroundColor: theme.pressed },
                                 ]}
                                 onPress={handleRefresh}
-                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                hitSlop={HIT_SLOP_8}
                             >
                                 <MaterialIcons name="refresh" size={26} color={theme.inverse} />
                             </Pressable>
@@ -71,12 +72,12 @@ export default function LabelsScreen() {
                             {/* Settings Icon */}
                             <Pressable
                                 style={({ pressed }) => [
-                                    styles.headerIconButton,
+                                    globalStyles.iconButton,
                                     { top: 1, marginRight: -11 },
                                     pressed && { backgroundColor: theme.pressed },
                                 ]}
                                 onPress={() => router.navigate("/(main)/settings")}
-                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                hitSlop={HIT_SLOP_8}
                             >
                                 <MaterialDesignIcons name="cog-outline" size={25} color={theme.inverse} />
                             </Pressable>
@@ -86,7 +87,7 @@ export default function LabelsScreen() {
             />
 
             {/* Main Content */}
-            <View style={styles.container}>
+            <View style={globalStyles.container}>
 
                 {/* Labels List */}
                 <LabelList />
@@ -113,13 +114,6 @@ export default function LabelsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    headerIconButton: {
-        padding: 8,
-        borderRadius: 999,
-    },
     fab: {
         position: "absolute",
         right: 12,

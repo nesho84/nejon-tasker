@@ -1,3 +1,4 @@
+import { globalStyles } from "@/constants/styles";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { useRouter } from 'expo-router';
 import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react';
@@ -211,7 +212,7 @@ const ModalSheet = forwardRef<ModalSheetRef, Props>(({
   }));
 
   return (
-    <View style={styles.root}>
+    <View style={globalStyles.container}>
 
       {/* Dimmed backdrop — pointer events disabled, tap handled by Pressable below */}
       <Animated.View
@@ -260,7 +261,7 @@ const ModalSheet = forwardRef<ModalSheetRef, Props>(({
             {header && <View>{header}</View>}
 
             {/* Content area — scrollable or static */}
-            <View style={[styles.content, style]}>
+            <View style={[globalStyles.container, style]}>
               {scrolling ? (
                 <ScrollView
                   contentContainerStyle={{ flexGrow: 1 }}
@@ -292,9 +293,6 @@ ModalSheet.displayName = 'ModalSheet';
 export default ModalSheet;
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -326,8 +324,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 2,
     right: 16,
-  },
-  content: {
-    flex: 1,
   },
 });

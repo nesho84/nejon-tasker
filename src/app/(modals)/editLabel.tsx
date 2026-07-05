@@ -1,5 +1,6 @@
 import ColorPicker from "@/components/ColorPicker";
 import ModalSheet, { ModalSheetRef } from "@/components/ModalSheet";
+import { globalStyles } from "@/constants/styles";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -79,24 +80,24 @@ export default function EditLabel() {
   const fixedFooter = (
     <>
       {/* Divider above footer */}
-      <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+      <View style={[globalStyles.modalDivider, { backgroundColor: theme.divider }]} />
 
-      <View style={[styles.btnRow, { borderTopColor: theme.divider }]}>
+      <View style={[globalStyles.btnRow, { borderTopColor: theme.divider }]}>
         {/* Cancel button */}
         <TouchableOpacity
-          style={[styles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
+          style={[globalStyles.btnCancel, { backgroundColor: theme.disabled, borderColor: theme.border }]}
           onPress={() => modalSheetRef.current?.close()}
           activeOpacity={0.7}
         >
-          <Text style={[styles.btnCancelText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
+          <Text style={[globalStyles.btnText, { color: theme.text2 }]}>{tr.buttons.cancel}</Text>
         </TouchableOpacity>
         {/* Save Button */}
         <TouchableOpacity
-          style={[styles.btnSave, { backgroundColor: labelColor }]}
+          style={[globalStyles.btnSave, { backgroundColor: labelColor }]}
           onPress={handleUpdate}
           activeOpacity={0.8}
         >
-          <Text style={[styles.btnSaveText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
+          <Text style={[globalStyles.btnText, { color: theme.neutral }]}>{tr.buttons.save}</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -110,29 +111,29 @@ export default function EditLabel() {
       colors={{ sheetBackgroundColor: theme.bg2, handleColor: theme.handle, headerBarBorderColor: 'transparent' }}
       footer={fixedFooter}
     >
-      <View style={styles.container}>
+      <View style={globalStyles.modalContainer}>
 
         {/* Bail out on a missing/stale label (e.g. it was deleted while this modal was
             open) — keep the sheet itself mounted so Cancel/drag-to-dismiss still work. */}
         {label && (
           <>
             {/* Title row */}
-            <View style={styles.titleRow}>
-              <Text style={[styles.title, { color: labelColor }]}>
+            <View style={globalStyles.modalTitleRow}>
+              <Text style={[globalStyles.modalTitle, { color: labelColor }]}>
                 {tr.forms.editLabel}
               </Text>
-              <View style={[styles.accentDot, { backgroundColor: labelColor, shadowColor: labelColor }]} />
+              <View style={[globalStyles.accentDot, { backgroundColor: labelColor, shadowColor: labelColor }]} />
             </View>
 
             {/* Divider below title */}
-            <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+            <View style={[globalStyles.modalDivider, { backgroundColor: theme.divider }]} />
 
             {/* Text input */}
-            <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.label}</Text>
+            <Text style={[globalStyles.inputLabel, { color: theme.label }]}>{tr.forms.label}</Text>
             <View style={{ position: 'relative' }}>
               <TextInput
                 ref={inputRef}
-                style={[styles.textInput, {
+                style={[globalStyles.labelTextInput, {
                   backgroundColor: theme.shadow,
                   color: theme.text2,
                   borderColor: `${labelColor}30`,
@@ -150,7 +151,7 @@ export default function EditLabel() {
               {/* Clear Icon */}
               {hasText && (
                 <Pressable
-                  style={styles.clearIcon}
+                  style={globalStyles.clearIcon}
                   hitSlop={8}
                   onPress={() => {
                     inputRef.current?.clear();
@@ -164,7 +165,7 @@ export default function EditLabel() {
             </View>
 
             {/* Color Picker */}
-            <Text style={[styles.inputLabel, { color: theme.label }]}>{tr.forms.color}</Text>
+            <Text style={[globalStyles.inputLabel, { color: theme.label }]}>{tr.forms.color}</Text>
             <ColorPicker labelColor={labelColor} onValueChange={setLabelColor} />
           </>
         )}
@@ -174,89 +175,4 @@ export default function EditLabel() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 14,
-    paddingTop: 8,
-    paddingBottom: 14,
-    gap: 10,
-  },
-
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  accentDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-
-  divider: {
-    height: 1.8,
-  },
-
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.9,
-  },
-  textInput: {
-    height: 48,
-    maxHeight: 48,
-    fontSize: 15,
-    borderWidth: 1.5,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-  },
-  clearIcon: {
-    position: 'absolute',
-    right: 14,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-  },
-
-  btnRow: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    gap: 14,
-  },
-  btnCancel: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  btnCancelText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  btnSave: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-  },
-  btnSaveText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
+const styles = StyleSheet.create({})
