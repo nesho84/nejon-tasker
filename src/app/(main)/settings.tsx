@@ -215,8 +215,8 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        paddingHorizontal: 10,
-        gap: 10,
+        paddingHorizontal: 6,
+        gap: 8,
     },
 
     sectionCard: {

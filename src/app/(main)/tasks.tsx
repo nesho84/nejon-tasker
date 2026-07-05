@@ -261,7 +261,7 @@ export default function TasksScreen() {
             {uncheckedTasks.length > 0 ? (
               <DraggableFlatList
                 containerStyle={{ flex: 1 }}
-                contentContainerStyle={styles.taskListContent}
+                contentContainerStyle={styles.tasksContent}
                 showsVerticalScrollIndicator={false}
                 data={uncheckedTasks}
                 renderItem={taskCard}
@@ -275,7 +275,7 @@ export default function TasksScreen() {
             {/* ----- Checked tasks Section ----- */}
             {(checkedTasks.length > 0 && !isKeyboardVisible) && (
               <>
-                {/* Tasks Divider */}
+                {/* Tasks Divider/Header */}
                 <View style={[styles.checkedSectionBorder, { borderTopColor: label.color }]} />
                 <TouchableOpacity
                   style={[styles.tasksDivider, { backgroundColor: theme.section }]}
@@ -296,10 +296,10 @@ export default function TasksScreen() {
                 {/* ----- Checked tasks ----- */}
                 {isCheckedOpen && (
                   <>
-                    <View style={[styles.checkedSectionBorder, { borderTopColor: theme.bg2 }]} />
+                    <View style={[styles.checkedSectionBorder, { borderTopColor: theme.border, opacity: 0.3 }]} />
                     <FlatList
                       style={{ flexGrow: 0, maxHeight: "40%" }}
-                      contentContainerStyle={styles.taskListContent}
+                      contentContainerStyle={styles.tasksContent}
                       showsVerticalScrollIndicator={false}
                       data={checkedTasks}
                       renderItem={checkedTaskCard}
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   tasksContainer: {
     flex: 1,
   },
-  taskListContent: {
+  tasksContent: {
     paddingBottom: 8,
   },
   checkedSectionBorder: {
@@ -381,10 +381,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    minHeight: 28,
-    // borderRadius: 4,
+    minHeight: 30,
+    marginTop: 1,
+    marginBottom: 2,
     marginHorizontal: 6,
-    marginVertical: 4,
     paddingHorizontal: 8,
   },
   tasksDividerText: {

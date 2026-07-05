@@ -262,7 +262,7 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
     // Native Header
     infoIcon: {
-        paddingHorizontal: 8,
+        paddingHorizontal: 4,
         paddingVertical: 4,
     },
 
@@ -277,9 +277,9 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         justifyContent: "center",
-        paddingHorizontal: 16,
         paddingTop: 12,
         paddingBottom: 24,
+        paddingHorizontal: 6,
         gap: 12,
     },
 

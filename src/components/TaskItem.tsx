@@ -179,20 +179,18 @@ export default function TaskItem({
     };
 
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    backgroundColor: task.checked ? theme.disabled : theme.bgAlt,
-                    borderColor: theme.border,
-                    opacity: (isActive || task.checked) ? 0.5 : 1,
-                    borderWidth: isActive ? 3 : 1,
-                },
-            ]}
-        >
+        <View style={[
+            styles.container,
+            {
+                backgroundColor: task.checked ? theme.disabled : theme.surface2,
+                borderWidth: isActive ? 3 : 1,
+                borderColor: theme.border,
+                opacity: (isActive || task.checked) ? 0.5 : 1,
+            },
+        ]}>
 
             {/* ----- Top Section ----- */}
-            <View style={styles.top}>
+            <View style={styles.topRow}>
                 {/* Task checkbox — wrapper owns the tap (bigger target + press feedback) */}
                 {checkAction && (
                     <Pressable
@@ -321,7 +319,7 @@ export default function TaskItem({
             </View>
 
             {/* ----- Bottom Section ----- */}
-            <View style={[styles.bottom, { backgroundColor: theme.shadow }]}>
+            <View style={[styles.bottomRow, { backgroundColor: theme.tint }]}>
                 {/* Reminder */}
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                     {/* Reminder icon — bell when it will fire, bell-off when muted (notifications off) or past */}
@@ -385,13 +383,13 @@ export default function TaskItem({
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 6,
+        marginTop: 8,
         marginHorizontal: 6,
         borderRadius: 4,
         borderWidth: 1,
     },
 
-    top: {
+    topRow: {
         flexDirection: "row",
         alignItems: "center",
         paddingVertical: 6,
@@ -432,14 +430,14 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
 
-    bottom: {
+    bottomRow: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         borderBottomLeftRadius: 5,
         borderBottomRightRadius: 5,
         paddingHorizontal: 10,
-        paddingVertical: 6,
+        paddingVertical: 4,
         borderTopWidth: 0.5,
         borderTopColor: 'rgba(0, 0, 0, 0.05)',
     },
