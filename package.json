@@ -12,7 +12,6 @@
     "prebuild": "expo prebuild --clean"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.1.0",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-vector-icons/ionicons": "^13.1.2",

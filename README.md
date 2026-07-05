@@ -82,15 +82,17 @@ Domain data is stored in **SQLite** (`expo-sqlite`, database file `tasks.db`):
 
 Components read from the stores; stores call the repos. **Never query SQLite directly from a component.**
 
-Settings stores are persisted separately with Zustand's `persist` middleware + **AsyncStorage**:
+Settings stores are persisted separately with Zustand's `persist` middleware + **expo-sqlite's
+built-in kv-store** (`expo-sqlite/kv-store`, its own `ExpoSQLiteStorage` db file — not `tasks.db`),
+via the `kvStorage` adapter in `src/store/storage.ts`:
 
 | Store | Purpose | Persistence |
 |---|---|---|
 | `taskStore` | Tasks cache + CRUD / reorder / favorite / trash actions | SQLite |
 | `labelStore` | Labels cache + CRUD / reorder actions | SQLite |
-| `themeStore` | Light / dark theme | AsyncStorage |
-| `languageStore` | Active language + translation strings | AsyncStorage |
-| `onboardingStore` | First-launch gate (`onboardingComplete`) | AsyncStorage |
+| `themeStore` | Light / dark theme | SQLite kv-store |
+| `languageStore` | Active language + translation strings | SQLite kv-store |
+| `onboardingStore` | First-launch gate (`onboardingComplete`) | SQLite kv-store |
 
 ### Notifications & Reminders
 

@@ -47,7 +47,8 @@ under "Architecture" — read it before making cross-cutting changes. Key points
   every mutation**. Components read stores; stores call repos — never query SQLite from a component.
 
 - **Settings stores** (`themeStore`, `languageStore`, `onboardingStore`) are persisted with Zustand's
-  `persist` middleware + **AsyncStorage** (not SQLite, not the same path as the SQLite data).
+  `persist` middleware + **expo-sqlite's kv-store** via the `kvStorage` adapter in
+  `src/store/storage.ts` (its own `ExpoSQLiteStorage` db file, separate from `tasks.db`).
 
 - **Notifications** use **expo-notifications** (not notifee). `useNotifications` (`src/hooks`) owns
   permission requests, the task-reminder scheduler (a `DATE` trigger so Android fires at the exact

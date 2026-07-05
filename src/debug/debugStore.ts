@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { kvStorage } from '@/store/storage';
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -33,8 +33,8 @@ export const useDebugStore = create<DebugState>()(
             setUpdatePreview: (value) => set({ updatePreview: value }),
         }),
         {
-            name: "debug-store",
-            storage: createJSONStorage(() => AsyncStorage),
+            name: "debug-storage",
+            storage: createJSONStorage(() => kvStorage),
             partialize: (state) => ({
                 debugModeEnabled: state.debugModeEnabled,
                 forceUpdateOnLaunch: state.forceUpdateOnLaunch,

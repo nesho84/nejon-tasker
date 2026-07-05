@@ -1,6 +1,6 @@
 import { TRANSLATIONS } from "@/constants/translations";
 import { Language, Translations } from "@/types/language.types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { kvStorage } from "@/store/storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -22,8 +22,8 @@ export const useLanguageStore = create<LanguageState>()(
                 set({ language: language, tr: TRANSLATIONS[language] }),
         }),
         {
-            name: "language-store",
-            storage: createJSONStorage(() => AsyncStorage),
+            name: "language-storage",
+            storage: createJSONStorage(() => kvStorage),
             partialize: (state) => ({ language: state.language }),
             onRehydrateStorage: () => (state) => {
                 if (state) {
