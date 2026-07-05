@@ -355,20 +355,21 @@ export default function TaskItem({
                     )}
                 </View>
 
-                {/* Share icon */}
+                {/* Share icon — wrapper owns the tap (bigger target + press feedback) */}
                 {shareAction && (
-                    <TouchableOpacity
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.shareButton, pressed && { backgroundColor: theme.pressed },
+                        ]}
                         onPress={() => shareText(tr.forms.task, task.text)}
-                        delayPressIn={0}
-                        delayPressOut={0}
-                        activeOpacity={0.7}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
                         <Ionicons
                             name="share-social"
                             color={theme.muted}
                             size={16}
                         />
-                    </TouchableOpacity>
+                    </Pressable>
                 )}
 
                 {/* Task dateTime */}
@@ -440,5 +441,10 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderTopWidth: 0.5,
         borderTopColor: 'rgba(0, 0, 0, 0.05)',
+    },
+    shareButton: {
+        padding: 8,
+        margin: -8,
+        borderRadius: 999,
     },
 });
