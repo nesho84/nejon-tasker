@@ -14,7 +14,10 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
 
 const RootStack = () => {
-  const { onboardingComplete } = useOnboardingStore();
+  const isReady = useOnboardingStore((state) => state.isReady);
+  const onboardingComplete = useOnboardingStore((state) => state.onboardingComplete);
+
+  if (!isReady) return <AppLoading />;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

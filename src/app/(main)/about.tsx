@@ -55,7 +55,7 @@ export default function AboutScreen() {
     // Share the App
     // ------------------------------------------------------------
     const handleShare = async () => {
-        const appName = Constants?.expoConfig?.name ?? 'Nejon Prayer';
+        const appName = Constants?.expoConfig?.name ?? 'Nejon Tasker';
         try {
             await Share.share(
                 {
@@ -63,7 +63,7 @@ export default function AboutScreen() {
                     message: `${appName}\n\n${GOOGLE_PLAY_URL}`,
                 },
                 {
-                    dialogTitle: tr.labels.shareApp,
+                    dialogTitle: tr.about.shareApp,
                     subject: appName,
                 }
             );
@@ -159,7 +159,7 @@ export default function AboutScreen() {
                             <MaterialDesignIcons name="heart-outline" size={22} color={theme.danger} />
                         </View>
                         <View style={globalStyles.rowText}>
-                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.supportDev}</Text>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.about.supportDev}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]}>via PayPal</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
@@ -178,8 +178,8 @@ export default function AboutScreen() {
                             <MaterialDesignIcons name="star-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={globalStyles.rowText}>
-                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.rateApp}</Text>
-                            <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.labels.rateAppDesc}</Text>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.about.rateApp}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.about.rateAppDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
@@ -197,8 +197,8 @@ export default function AboutScreen() {
                             <MaterialDesignIcons name="share-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={globalStyles.rowText}>
-                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.shareApp}</Text>
-                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.shareAppDesc}</Text>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.about.shareApp}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.about.shareAppDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
@@ -216,8 +216,8 @@ export default function AboutScreen() {
                             <MaterialDesignIcons name="email-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={globalStyles.rowText}>
-                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.contactUs}</Text>
-                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.contactUsDesc}</Text>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.about.contactUs}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.about.contactUsDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
@@ -235,8 +235,8 @@ export default function AboutScreen() {
                             <MaterialDesignIcons name="view-grid-outline" size={22} color={theme.primary} />
                         </View>
                         <View style={globalStyles.rowText}>
-                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.labels.moreApps}</Text>
-                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.labels.moreAppsDesc}</Text>
+                            <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.about.moreApps}</Text>
+                            <Text style={[styles.actionSubtitle, { color: theme.primary }]}>{tr.about.moreAppsDesc}</Text>
                         </View>
                         <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>

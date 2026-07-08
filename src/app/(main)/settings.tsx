@@ -196,7 +196,7 @@ export default function SettingsScreen() {
                 {/* App Updates */}
                 <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
-                        {tr.settings.appUpdates}
+                        {tr.updates.rowLabel}
                     </Text>
                     <CheckForUpdate />
                 </View>

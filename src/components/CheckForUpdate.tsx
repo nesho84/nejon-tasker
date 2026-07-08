@@ -18,12 +18,12 @@ type CheckStatus = "idle" | "checking" | "upToDate" | "error";
 // ------------------------------------------------------------
 function getStatusDisplay(shown: UpdatePreview | CheckStatus, theme: typeof LIGHT | typeof DARK, tr: Translations) {
     if (shown === "upToDate") {
-        return { color: theme.success, message: tr.settings.upToDateMessage };
+        return { color: theme.success, message: tr.updates.upToDate };
     }
     if (shown === "error") {
-        return { color: theme.danger, message: tr.settings.updateCheckError };
+        return { color: theme.danger, message: tr.updates.checkError };
     }
-    return { color: theme.placeholder, message: tr.settings.checkUpdateInfo };
+    return { color: theme.placeholder, message: tr.updates.checkingInfo };
 }
 
 // ------------------------------------------------------------
@@ -40,8 +40,8 @@ export function openUpdateAvailableModal() {
                 <View style={[styles.modalIconCircle, { backgroundColor: theme.primary + "20" }]}>
                     <MaterialDesignIcons name="information-variant-circle" size={32} color={theme.primary} />
                 </View>
-                <Text style={[styles.bannerTitle, { color: theme.text2 }]}>{tr.messages.updateAvailable}</Text>
-                <Text style={[styles.bannerMessage, { color: theme.muted }]}>{tr.messages.updateAvailableMessage}</Text>
+                <Text style={[styles.bannerTitle, { color: theme.text2 }]}>{tr.updates.title}</Text>
+                <Text style={[styles.bannerMessage, { color: theme.muted }]}>{tr.updates.message}</Text>
             </View>
         ),
         buttons: [
@@ -119,7 +119,7 @@ export default function CheckForUpdate() {
                     <>
                         <MaterialDesignIcons name="update" size={16} color={theme.text2} />
                         <Text style={[styles.wideButtonText, { color: theme.muted }]}>
-                            {tr.settings.checkUpdateButton}
+                            {tr.updates.checkButton}
                         </Text>
                     </>
                 )}

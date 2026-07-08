@@ -16,6 +16,7 @@ interface DebugState {
     debugModeEnabled: boolean;
     forceUpdateOnLaunch: boolean;
     updatePreview: UpdatePreview;
+    isReady: boolean;
     toggleDebugMode: () => void;
     toggleUpdateOnLaunch: () => void;
     setUpdatePreview: (value: UpdatePreview) => void;
@@ -27,6 +28,7 @@ export const useDebugStore = create<DebugState>()(
             debugModeEnabled: false,
             forceUpdateOnLaunch: false,
             updatePreview: "idle",
+            isReady: false,
 
             toggleDebugMode: () => set((state) => ({ debugModeEnabled: !state.debugModeEnabled })),
             toggleUpdateOnLaunch: () => set((state) => ({ forceUpdateOnLaunch: !state.forceUpdateOnLaunch })),
@@ -39,6 +41,11 @@ export const useDebugStore = create<DebugState>()(
                 debugModeEnabled: state.debugModeEnabled,
                 forceUpdateOnLaunch: state.forceUpdateOnLaunch,
             }),
+            onRehydrateStorage: () => (state) => {
+                if (state) {
+                    state.isReady = true;
+                }
+            },
         }
     )
 );

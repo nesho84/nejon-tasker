@@ -22,16 +22,6 @@ export const TRANSLATIONS = {
             success: "Success",
             backupHelp: "Create some labels and tasks first",
             noBackup: "No backup yet",
-            // About screen specific
-            supportDev: "Support the development",
-            rateApp: "Rate the App",
-            rateAppDesc: "Leave a review on Google Play",
-            shareApp: "Share with a Friend",
-            shareAppDesc: "Recommend Nejon Prayer",
-            contactUs: "Contact Us",
-            contactUsDesc: "Feedback & bug reports",
-            moreApps: "More Apps",
-            moreAppsDesc: "More apps by Nejon",
             of: "of",
             displayOptions: "Display Options",
             checkedItems: "Checked Items",
@@ -49,8 +39,8 @@ export const TRANSLATIONS = {
             no: "No",
             ok: "OK",
             openSettings: "Open Settings",
-            later: "Later",
             openStore: "Open Store",
+            later: "Later",
         },
         // Form inputs
         forms: {
@@ -68,8 +58,6 @@ export const TRANSLATIONS = {
         messages: {
             loading: "Loading...",
             updateSuccess: "Update was successful",
-            updateAvailable: "Update available",
-            updateAvailableMessage: "A new version is available on the store. Update now to get the latest features and fixes.",
             nothingToDelete: "Nothing to delete",
         },
         // Error messages
@@ -163,6 +151,16 @@ export const TRANSLATIONS = {
             noFavorites: "No Favorites to show. \n\n You can favorite tasks to see them here.",
             noTrash: "No Deleted Tasks to show. \n\n Deleted tasks will appear here.",
         },
+        // Check-for-update feature (modal + settings row + status text)
+        updates: {
+            rowLabel: "App Updates",
+            checkButton: "Check for updates",
+            checkingInfo: "Download the latest features and fixes.",
+            upToDate: "You're already on the latest version.",
+            checkError: "Couldn't check for updates. Please try again.",
+            title: "Update available",
+            message: "A new version is available on the store. Update now to get the latest features and fixes.",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Clear Storage",
@@ -172,15 +170,19 @@ export const TRANSLATIONS = {
             batteryOptBody: "Battery optimization may delay or block notifications. Tap to verify.",
             alarmAccessTitle: "Alarms & Reminders",
             alarmAccessBody: "Alarms & reminders may be disabled. Tap to verify.",
-            appUpdates: "App Updates",
-            checkUpdateButton: "Check for updates",
-            checkUpdateInfo: "Download the latest features and fixes.",
-            upToDateMessage: "You're already on the latest version.",
-            updateCheckError: "Couldn't check for updates. Please try again.",
         },
         // About screen specific
         about: {
             desc: "Nejon Tasker is a simple and efficient task management app designed to help you organize your daily activities with ease.",
+            supportDev: "Support the development",
+            rateApp: "Rate the App",
+            rateAppDesc: "Leave a review on Google Play",
+            shareApp: "Share with a Friend",
+            shareAppDesc: "Recommend Nejon Tasker",
+            contactUs: "Contact Us",
+            contactUsDesc: "Feedback & bug reports",
+            moreApps: "More Apps",
+            moreAppsDesc: "More apps by Nejon",
         },
         // Obboarding screen specific
         onboarding: {
@@ -230,16 +232,6 @@ export const TRANSLATIONS = {
             success: "Erfolg",
             backupHelp: "Erstellen Sie zuerst einige Etiketten und Aufgaben",
             noBackup: "Noch kein Backup",
-            // About screen specific
-            supportDev: "Unterstützen Sie die Entwicklung",
-            rateApp: "Bewerten Sie die App",
-            rateAppDesc: "Hinterlassen Sie eine Bewertung im Google Play Store",
-            shareApp: "Teilen Sie mit einem Freund",
-            shareAppDesc: "Empfehlen Sie Nejon Prayer",
-            contactUs: "Kontaktieren Sie uns",
-            contactUsDesc: "Feedback & Fehlerberichte",
-            moreApps: "Mehr Apps",
-            moreAppsDesc: "Mehr Apps von Nejon",
             of: "von",
             displayOptions: "Anzeigeoptionen",
             checkedItems: "Abgeschlossene Aufgaben",
@@ -257,8 +249,8 @@ export const TRANSLATIONS = {
             no: "Nein",
             ok: "OK",
             openSettings: "Einstellungen öffnen",
-            later: "Später",
             openStore: "Store öffnen",
+            later: "Später",
         },
         // Form inputs
         forms: {
@@ -276,8 +268,6 @@ export const TRANSLATIONS = {
         messages: {
             loading: "Wird geladen...",
             updateSuccess: "Update war erfolgreich",
-            updateAvailable: "Update verfügbar",
-            updateAvailableMessage: "Eine neue Version ist im Store verfügbar. Aktualisiere jetzt für die neuesten Funktionen und Fehlerbehebungen.",
             nothingToDelete: "Nichts zu löschen",
         },
         // Error messages
@@ -371,6 +361,16 @@ export const TRANSLATIONS = {
             noFavorites: "Keine Favoriten zu zeigen. \n\n Sie können Aufgaben favorisieren, um sie hier zu sehen.",
             noTrash: "Keine gelöschten Aufgaben zu zeigen. \n\n Gelöschte Aufgaben werden hier angezeigt.",
         },
+        // Check-for-update feature (modal + settings row + status text)
+        updates: {
+            rowLabel: "App-Updates",
+            checkButton: "Nach Updates suchen",
+            checkingInfo: "Lade die neuesten Funktionen und Fehlerbehebungen herunter.",
+            upToDate: "Du bist bereits auf der neuesten Version.",
+            checkError: "Updates konnten nicht geprüft werden. Bitte versuche es erneut.",
+            title: "Update verfügbar",
+            message: "Eine neue Version ist im Store verfügbar. Aktualisiere jetzt für die neuesten Funktionen und Fehlerbehebungen.",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Datenbank löschen",
@@ -380,15 +380,19 @@ export const TRANSLATIONS = {
             batteryOptBody: "Die Akkuoptimierung kann Benachrichtigungen verzögern oder verhindern. Tippe zum Überprüfen.",
             alarmAccessTitle: "Alarme & Erinnerungen",
             alarmAccessBody: "Alarme und Erinnerungen sind möglicherweise deaktiviert. Tippe, um dies zu bestätigen.",
-            appUpdates: "App-Updates",
-            checkUpdateButton: "Nach Updates suchen",
-            checkUpdateInfo: "Lade die neuesten Funktionen und Fehlerbehebungen herunter.",
-            upToDateMessage: "Du bist bereits auf der neuesten Version.",
-            updateCheckError: "Updates konnten nicht geprüft werden. Bitte versuche es erneut.",
         },
         // About screen specific
         about: {
             desc: "Nejon Tasker ist eine einfache und effiziente Aufgabenverwaltungs-App, die Ihnen hilft, Ihre täglichen Aktivitäten mühelos zu organisieren.",
+            supportDev: "Unterstützen Sie die Entwicklung",
+            rateApp: "Bewerten Sie die App",
+            rateAppDesc: "Hinterlassen Sie eine Bewertung im Google Play Store",
+            shareApp: "Teilen Sie mit einem Freund",
+            shareAppDesc: "Empfehlen Sie Nejon Tasker",
+            contactUs: "Kontaktieren Sie uns",
+            contactUsDesc: "Feedback & Fehlerberichte",
+            moreApps: "Mehr Apps",
+            moreAppsDesc: "Mehr Apps von Nejon",
         },
         // Obboarding screen specific
         onboarding: {
@@ -438,16 +442,6 @@ export const TRANSLATIONS = {
             success: "Sukses",
             backupHelp: "Së pari Krijo disa etiketa dhe detyra",
             noBackup: "Nuk ka ende një backup",
-            // About screen specific
-            supportDev: "Ndihmo zhvillimin e aplikacionit",
-            rateApp: "Vlerëso Aplikacionin",
-            rateAppDesc: "Lër një vlerësim në Google Play",
-            shareApp: "Ndaj me miqtë",
-            shareAppDesc: "Rekomando Nejon Prayer",
-            contactUs: "Na Kontakto",
-            contactUsDesc: "Reagime & raporte gabimesh",
-            moreApps: "Më shumë Apps",
-            moreAppsDesc: "Aplikacione tjera nga Nejon",
             of: "prej",
             displayOptions: "Opsionet e shfaqjes",
             checkedItems: "Detyra të kryera",
@@ -465,8 +459,8 @@ export const TRANSLATIONS = {
             no: "Jo",
             ok: "OK",
             openSettings: "Hap Cilësimet",
-            later: "Më vonë",
             openStore: "Hap Store",
+            later: "Më vonë",
         },
         // Form inputs
         forms: {
@@ -484,8 +478,6 @@ export const TRANSLATIONS = {
         messages: {
             loading: "Ngarkohet...",
             updateSuccess: "Aktualizimi ishte i suksesshëm",
-            updateAvailable: "Përditësim i disponueshëm",
-            updateAvailableMessage: "Një version i ri është i disponueshëm në dyqan. Përditëso tani për veçoritë dhe rregullimet më të fundit.",
             nothingToDelete: "Asgjë për të fshirë",
         },
         // Error messages
@@ -579,6 +571,16 @@ export const TRANSLATIONS = {
             noFavorites: "Asnjë e detyrë preferuar për të shfaqur. \n\n Mund të favorizoni detyra për t'i parë këtu.",
             noTrash: "Asnjë detyrë e fshirë për të shfaqur. \n\n Detyrat e fshira do të shfaqen këtu.",
         },
+        // Check-for-update feature (modal + settings row + status text)
+        updates: {
+            rowLabel: "Përditësimi i aplikacionit",
+            checkButton: "Kontrollo për Update",
+            checkingInfo: "Shkarko veçoritë dhe risitë më të fundit.",
+            upToDate: "Je në versionin më të fundit.",
+            checkError: "Update nuk u kontrollua. Provo përsëri.",
+            title: "Update është në disponim",
+            message: "Një version i ri është i mundshëm. Bëje Update tani për të marrë veçoritë dhe risitë më të fundit.",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Pastro bazën e të dhënave",
@@ -588,15 +590,19 @@ export const TRANSLATIONS = {
             batteryOptBody: "Optimizimi i baterisë mund të vonojë ose bllokojë njoftimet. Shtyp për të verifikuar.",
             alarmAccessTitle: "Alarme dhe Kujtesa",
             alarmAccessBody: "Alarmet dhe përkujtuesit mund të jenë të çaktivizuar. Shtyp për të verifikuar.",
-            appUpdates: "Përditësimet e aplikacionit",
-            checkUpdateButton: "Kontrollo për përditësime",
-            checkUpdateInfo: "Shkarko veçoritë dhe rregullimet më të fundit.",
-            upToDateMessage: "Je tashmë në versionin më të fundit.",
-            updateCheckError: "Nuk mund të kontrollohej për përditësime. Provo përsëri.",
         },
         // About screen specific
         about: {
             desc: "Nejon Tasker është një aplikacion i thjeshtë dhe efikas për menaxhimin e detyrave, i dizajnuar për t'ju ndihmuar të organizoni aktivitetet tuaja ditore me lehtësi.",
+            supportDev: "Ndihmo zhvillimin e aplikacionit",
+            rateApp: "Vlerëso Aplikacionin",
+            rateAppDesc: "Lër një vlerësim në Google Play",
+            shareApp: "Ndaj me miqtë",
+            shareAppDesc: "Rekomando Nejon Tasker",
+            contactUs: "Na Kontakto",
+            contactUsDesc: "Reagime & raporte gabimesh",
+            moreApps: "Më shumë Apps",
+            moreAppsDesc: "Aplikacione tjera nga Nejon",
         },
         // Obboarding screen specific
         onboarding: {
