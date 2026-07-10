@@ -1,12 +1,13 @@
 import { HIT_SLOP_6_4, HIT_SLOP_8 } from "@/constants/styles";
 import { cancelScheduledNotification } from "@/services/notificationsService";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
+import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
-import { getReminderStatus, shareText } from "@/utils/system";
+import { getReminderStatus, shareTask } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { Checkbox } from "expo-checkbox";
@@ -45,6 +46,10 @@ export default function TaskItem({
     // Stores
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);
+
+    // labelStore — task's label (for the share title)
+    const labels = useLabelStore((state) => state.labels);
+    const label = labels.find((l) => l.id === task.labelId);
 
     // taskStore
     const updateTask = useTaskStore((state) => state.updateTask);
@@ -362,7 +367,7 @@ export default function TaskItem({
                         style={({ pressed }) => [
                             styles.shareButton, pressed && { backgroundColor: theme.pressed },
                         ]}
-                        onPress={() => shareText(tr.forms.task, task.text)}
+                        onPress={() => shareTask(label?.title, task, tr)}
                         hitSlop={HIT_SLOP_8}
                     >
                         <Ionicons

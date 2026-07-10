@@ -2,6 +2,8 @@ import { APPLE_STORE_NATIVE_URL, APPLE_STORE_URL, GOOGLE_PLAY_NATIVE_URL, GOOGLE
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { Translations } from "@/types/language.types";
 import { ReminderStatus } from "@/types/notification.types";
+import { Task } from "@/types/task.types";
+import { dates } from "@/utils/dates";
 import * as Application from "expo-application";
 import * as IntentLauncher from "expo-intent-launcher";
 import * as Notifications from "expo-notifications";
@@ -50,6 +52,23 @@ export const shareText = async (title: string, message: string) => {
     } catch (error) {
         console.error("Share failed:", error);
     }
+};
+
+// ------------------------------------------------------------
+// Share a task via the system share dialog — includes the reminder
+// (upcoming or missed) when one is set
+// ------------------------------------------------------------
+export const shareTask = async (labelTitle: string | undefined, task: Task, tr: Translations) => {
+    let title = tr.forms.task;
+    if (labelTitle) {
+        title += `: ${labelTitle}`;
+    }
+
+    let message = task.text;
+    if (task.reminderDateTime && task.reminderId) {
+        message += `\n\n${tr.forms.reminder}: ${dates.format(task.reminderDateTime)}`;
+    }
+    await shareText(title, message);
 };
 
 // ------------------------------------------------------------

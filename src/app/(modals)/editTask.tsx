@@ -7,7 +7,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { dates } from "@/utils/dates";
-import { getReminderStatus, requestNotificationPermission, shareText } from "@/utils/system";
+import { getReminderStatus, requestNotificationPermission, shareTask } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useLocalSearchParams } from "expo-router";
@@ -270,7 +270,7 @@ export default function EditTask() {
             style={({ pressed }) => [
               styles.shareIcon, pressed && { backgroundColor: theme.pressed },
             ]}
-            onPress={() => task && shareText(tr.forms.task, task.text)}
+            onPress={() => task && shareTask(label?.title, task, tr)}
             hitSlop={HIT_SLOP_8}
           >
             <Ionicons name="share-social" color={label?.color} size={18} />
