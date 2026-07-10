@@ -16,6 +16,9 @@ interface DrawerContentProps {
     closeDrawer: () => void;
 }
 
+// Max labels shown in the drawer so Trash/Settings/About stay reachable
+const DRAWER_LABEL_LIMIT = 7;
+
 // ------------------------------------------------------------
 // Drawer content — top-level component so its identity is stable
 // ------------------------------------------------------------
@@ -24,12 +27,18 @@ function DrawerContent({ closeDrawer }: DrawerContentProps) {
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);
     const labels = useLabelStore((state) => state.labels);
+    const recentLabelIds = useLabelStore((state) => state.recentLabelIds);
 
     // Safe area insets
     const insets = useSafeAreaInsets();
     const topInset = insets.top + 10;
     const bottomInset = insets.bottom + 12;
     const leftInset = insets.left - 10;
+
+    // Recently used first (MRU order), then the rest in existing order, capped
+    const recentLabels = recentLabelIds.map((id) => labels.find((l) => l.id === id)).filter((l): l is Label => l !== undefined);
+    const otherLabels = labels.filter((l) => !recentLabelIds.includes(l.id));
+    const drawerLabels = [...recentLabels, ...otherLabels].filter((_, index) => index < DRAWER_LABEL_LIMIT);
 
     return (
         <View style={[globalStyles.container, { backgroundColor: theme.bg }]}>
@@ -91,8 +100,8 @@ function DrawerContent({ closeDrawer }: DrawerContentProps) {
                     <Text style={[styles.labelsTitle, { color: theme.muted }]}>{tr.labels.labels}</Text>
                 </View>
                 {/* Labels */}
-                {labels && labels.length > 0 && (
-                    labels.map((item: Label) => {
+                {drawerLabels.length > 0 && (
+                    drawerLabels.map((item: Label) => {
                         return (
                             <TouchableOpacity
                                 key={item.id}
@@ -173,7 +182,7 @@ function DrawerContent({ closeDrawer }: DrawerContentProps) {
     );
 }
 
-export default function StackLayout() {
+export default function MainLayout() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);

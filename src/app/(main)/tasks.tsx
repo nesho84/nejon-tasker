@@ -118,6 +118,15 @@ export default function TasksScreen() {
   const [isCheckedOpen, setIsCheckedOpen] = useState(false);
 
   // ------------------------------------------------------------
+  // Record label usage for the drawer's recent-labels list
+  // ------------------------------------------------------------
+  useEffect(() => {
+    if (typeof labelId === "string") {
+      useLabelStore.getState().markLabelUsed(labelId);
+    }
+  }, [labelId]);
+
+  // ------------------------------------------------------------
   // Hard delete label
   // ------------------------------------------------------------
   const handleDeleteLabel = async (labelId: string) => {

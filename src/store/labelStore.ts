@@ -1,24 +1,31 @@
 import * as LabelsRepo from '@/db/label.repo';
+import { kvStorage } from '@/store/storage';
 import { useTaskStore } from '@/store/taskStore';
 import { Label } from '@/types/label.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface LabelState {
     labels: Label[];
     isLoading: boolean;
+    recentLabelIds: string[];
+    isReady: boolean;
 
     loadLabels: () => Promise<void>;
     createLabel: (data: Partial<Label>) => Promise<string>;
     updateLabel: (id: string, data: Partial<Label>) => Promise<void>;
     deleteLabel: (id: string) => Promise<void>;
     reorderLabels: (labelIds: string[]) => Promise<void>;
+    markLabelUsed: (labelId: string) => void;
 }
 
-export const useLabelStore = create<LabelState>((set, get) => ({
+export const useLabelStore = create<LabelState>()(persist((set, get) => ({
     // Initial state
     labels: [],
     isLoading: false,
+    recentLabelIds: [],
+    isReady: false,
 
     // ------------------------------------------------------------
     // LOAD - Called once at app startup
@@ -68,6 +75,9 @@ export const useLabelStore = create<LabelState>((set, get) => ({
 
             // Update state
             set(state => ({ labels: [newLabel, ...state.labels] }));
+
+            // A just-created label counts as used, so it shows in the drawer immediately
+            get().markLabelUsed(id);
 
             // Persist to database
             await LabelsRepo.insertLabel(newLabel);
@@ -124,6 +134,9 @@ export const useLabelStore = create<LabelState>((set, get) => ({
             await useTaskStore.getState().removeTasksByLabelId(id);
 
             await LabelsRepo.deleteLabel(id);
+
+            // Drop the deleted id from the recent-labels list
+            set(state => ({ recentLabelIds: state.recentLabelIds.filter(recentId => recentId !== id) }));
         } catch (error) {
             set(state => ({ labels: [...state.labels, previousLabel] }));
             useTaskStore.setState({ allTasks: previousTasks });
@@ -163,6 +176,22 @@ export const useLabelStore = create<LabelState>((set, get) => ({
             set({ labels: previousLabels });
             console.error('Failed to reorder labels:', error);
             throw error;
+        }
+    },
+
+    // RECENT LABELS - Move id to front, dedupe (drawer shows these first)
+    markLabelUsed: (labelId) => {
+        const recentIds = get().recentLabelIds;
+        set({ recentLabelIds: [labelId, ...recentIds.filter(id => id !== labelId)] });
+    },
+
+}), {
+    name: 'label-storage',
+    storage: createJSONStorage(() => kvStorage),
+    partialize: (state) => ({ recentLabelIds: state.recentLabelIds }),
+    onRehydrateStorage: () => (state) => {
+        if (state) {
+            state.isReady = true;
         }
     },
 }));
