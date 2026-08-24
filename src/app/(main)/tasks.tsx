@@ -288,19 +288,19 @@ export default function TasksScreen() {
                 {/* Tasks Divider/Header */}
                 <View style={[styles.checkedSectionBorder, { borderTopColor: label.color }]} />
                 <TouchableOpacity
-                  style={[styles.tasksDivider, { backgroundColor: theme.section }]}
+                  style={[styles.tasksDivider]}
                   onPress={() => setIsCheckedOpen(!isCheckedOpen)}
                   activeOpacity={0.7}
                 >
-                  <Text style={[styles.tasksDividerText, { color: theme.muted, opacity: 0.8 }]}>
-                    {`${checkedTasks.length} ${tr.labels.checkedItems}`}
-                  </Text>
                   <MaterialDesignIcons
                     name={isCheckedOpen ? "chevron-down" : "chevron-up"}
-                    size={26}
+                    size={28}
                     color={theme.muted}
-                    style={{ marginRight: -4, opacity: 0.8 }}
+                    style={{ opacity: 0.7 }}
                   />
+                  <Text style={[styles.tasksDividerText, { color: theme.muted, opacity: 0.7 }]}>
+                    {`${checkedTasks.length} ${tr.labels.checkedItems}`}
+                  </Text>
                 </TouchableOpacity>
 
                 {/* ----- Checked tasks ----- */}
@@ -383,12 +383,12 @@ const styles = StyleSheet.create({
   tasksDivider: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     minHeight: 30,
     marginTop: 1,
     marginBottom: 2,
-    marginHorizontal: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
+    gap: 6,
   },
   tasksDividerText: {
     flex: 1,
