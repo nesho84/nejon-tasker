@@ -1,6 +1,8 @@
+import AdBanner from "@/components/AdBanner";
 import AppLoading from "@/components/AppLoading";
 import ModalProvider from "@/components/ModalProvider";
 import { setupDatabase } from "@/db/database";
+import { useAdsSync } from "@/hooks/useAdsSync";
 import { useDeviceSettingsSync } from "@/hooks/useDeviceSettingsSync";
 import useNotifications from "@/hooks/useNotifications";
 import { useUpdatesSync } from "@/hooks/useUpdatesSync";
@@ -68,6 +70,7 @@ export default function RootLayout() {
   useDeviceSettingsSync();
   useNotifications();
   useUpdatesSync();
+  useAdsSync();
 
   // Show error if initialization failed
   if (initError) {
@@ -86,6 +89,7 @@ export default function RootLayout() {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <RootStack />
+        <AdBanner />
         <ModalProvider />
       </GestureHandlerRootView>
     </SafeAreaProvider>
