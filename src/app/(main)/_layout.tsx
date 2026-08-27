@@ -1,4 +1,7 @@
+import AdBanner from '@/components/AdBanner';
 import { globalStyles, HIT_SLOP_8 } from '@/constants/styles';
+import { useKeyboard } from '@/hooks/useKeyboard';
+import { selectBannerVisible, useAdsStore } from '@/store/adsStore';
 import { useLabelStore } from '@/store/labelStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -7,10 +10,10 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import Constants from 'expo-constants';
 import { router, Stack } from "expo-router";
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface DrawerContentProps {
     closeDrawer: () => void;
@@ -197,6 +200,18 @@ export default function MainLayout() {
     // Close the drawer
     const closeDrawer = () => setDrawerOpen(false);
 
+    // Every screen adds its own insets.bottom, so while the banner is docked over the
+    // gesture-nav strip they must not reserve it a second time — that gap is the banner's.
+    // With the keyboard open the banner leaves the layout flow, so the inset comes back.
+    const insets = useSafeAreaInsets();
+    const { isKeyboardVisible } = useKeyboard();
+    const bannerVisible = useAdsStore(selectBannerVisible);
+    const bannerDocked = bannerVisible && !isKeyboardVisible;
+    const contentInsets = useMemo(
+        () => (bannerDocked ? { ...insets, bottom: 0 } : insets),
+        [bannerDocked, insets]
+    );
+
     // Main Content
     return (
         <Drawer
@@ -210,83 +225,86 @@ export default function MainLayout() {
                 return <DrawerContent closeDrawer={closeDrawer} />
             }}
         >
-            <Stack
-                screenOptions={{
-                    headerStyle: { backgroundColor: theme.bg },
-                    headerTintColor: theme.text,
-                }}
-            >
-
-                <Stack.Screen
-                    name="index"
-                    options={{
-                        headerShadowVisible: true,
-                        // Drawer menu icon
-                        headerLeft: () => (
-                            <Pressable
-                                style={({ pressed }) => [
-                                    globalStyles.iconButton,
-                                    { top: 1, marginLeft: -8, marginRight: 7 },
-                                    pressed && { backgroundColor: theme.pressed },
-                                ]}
-                                onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}
-                                hitSlop={HIT_SLOP_8}
-                            >
-                                <MaterialDesignIcons name="menu" size={30} color={theme.text} />
-                            </Pressable>
-                        ),
+            <SafeAreaInsetsContext.Provider value={contentInsets}>
+                <Stack
+                    screenOptions={{
+                        headerStyle: { backgroundColor: theme.bg },
+                        headerTintColor: theme.text,
                     }}
-                />
+                >
 
-                <Stack.Screen
-                    name="reminders"
-                    options={{
-                        title: tr.labels.reminders,
-                        animation: "none"
-                    }}
-                />
+                    <Stack.Screen
+                        name="index"
+                        options={{
+                            headerShadowVisible: true,
+                            // Drawer menu icon
+                            headerLeft: () => (
+                                <Pressable
+                                    style={({ pressed }) => [
+                                        globalStyles.iconButton,
+                                        { top: 1, marginLeft: -8, marginRight: 7 },
+                                        pressed && { backgroundColor: theme.pressed },
+                                    ]}
+                                    onPress={() => setDrawerOpen((prevOpen) => !prevOpen)}
+                                    hitSlop={HIT_SLOP_8}
+                                >
+                                    <MaterialDesignIcons name="menu" size={30} color={theme.text} />
+                                </Pressable>
+                            ),
+                        }}
+                    />
 
-                <Stack.Screen
-                    name="favorites"
-                    options={{
-                        title: tr.labels.favorites,
-                        animation: "none"
-                    }}
-                />
+                    <Stack.Screen
+                        name="reminders"
+                        options={{
+                            title: tr.labels.reminders,
+                            animation: "none"
+                        }}
+                    />
 
-                <Stack.Screen
-                    name="trash"
-                    options={{
-                        title: tr.labels.trash,
-                        animation: "none"
-                    }}
-                />
+                    <Stack.Screen
+                        name="favorites"
+                        options={{
+                            title: tr.labels.favorites,
+                            animation: "none"
+                        }}
+                    />
 
-                <Stack.Screen
-                    name="settings"
-                    options={{
-                        title: tr.labels.settings,
-                        animation: "none"
-                    }}
-                />
+                    <Stack.Screen
+                        name="trash"
+                        options={{
+                            title: tr.labels.trash,
+                            animation: "none"
+                        }}
+                    />
 
-                <Stack.Screen
-                    name="about"
-                    options={{
-                        title: tr.labels.about,
-                        animation: "none"
-                    }}
-                />
+                    <Stack.Screen
+                        name="settings"
+                        options={{
+                            title: tr.labels.settings,
+                            animation: "none"
+                        }}
+                    />
 
-                <Stack.Screen
-                    name="tasks"
-                    options={{
-                        title: tr.labels.tasks,
-                        animation: "ios_from_right"
-                    }}
-                />
+                    <Stack.Screen
+                        name="about"
+                        options={{
+                            title: tr.labels.about,
+                            animation: "none"
+                        }}
+                    />
 
-            </Stack>
+                    <Stack.Screen
+                        name="tasks"
+                        options={{
+                            title: tr.labels.tasks,
+                            animation: "ios_from_right"
+                        }}
+                    />
+
+                </Stack>
+            </SafeAreaInsetsContext.Provider>
+            <AdBanner />
         </Drawer>
     );
 }

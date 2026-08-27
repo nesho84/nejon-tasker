@@ -1,4 +1,3 @@
-import AdBanner from "@/components/AdBanner";
 import AppLoading from "@/components/AppLoading";
 import ModalProvider from "@/components/ModalProvider";
 import { setupDatabase } from "@/db/database";
@@ -89,7 +88,6 @@ export default function RootLayout() {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <RootStack />
-        <AdBanner />
         <ModalProvider />
       </GestureHandlerRootView>
     </SafeAreaProvider>
