@@ -1,3 +1,4 @@
+import { BANNER_UNIT_ID, CONNECTIVITY_DEBOUNCE_MS } from "@/constants/ads";
 import { HIT_SLOP_8 } from "@/constants/styles";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAdsStore } from "@/store/adsStore";
@@ -5,23 +6,9 @@ import { useThemeStore } from "@/store/themeStore";
 import NetInfo from "@react-native-community/netinfo";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { useEffect, useRef, useState } from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
-import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
+import { Pressable, StyleSheet, View } from "react-native";
+import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-// Live ad units — no iOS app is registered in AdMob yet, so iOS holds the test unit until one is.
-const ANDROID_BANNER_UNIT_ID = "ca-app-pub-8752479739166396/6694401827";
-const IOS_BANNER_UNIT_ID = TestIds.BANNER;
-
-const PLATFORM_BANNER_UNIT_ID = Platform.OS === "android" ? ANDROID_BANNER_UNIT_ID : IOS_BANNER_UNIT_ID;
-
-// TestIds in dev — clicking a live ad from your own device risks the AdMob account.
-const BANNER_UNIT_ID = __DEV__ ? TestIds.BANNER : PLATFORM_BANNER_UNIT_ID;
-
-// Connectivity changes settle for this long before acting on them, so a flapping signal
-// doesn't repeatedly retry the ad. The first reading skips it — a cold start that is
-// already online shouldn't wait.
-const CONNECTIVITY_DEBOUNCE_MS = 2500;
 
 export default function AdBanner() {
     // Stores
@@ -31,8 +18,8 @@ export default function AdBanner() {
     // Mounted outside any SafeAreaView, so the gesture-nav inset must be applied here directly
     const insets = useSafeAreaInsets();
 
-    // Load/dismiss state lives in the store — (main)/_layout reads it to drop the bottom inset.
-    // bannerLoaded is a one-way latch, so a failed refresh never collapses a visible ad.
+    // Load/dismiss state lives in the store. bannerLoaded is a one-way latch, so a failed
+    // refresh never collapses a visible ad.
     const loaded = useAdsStore((state) => state.bannerLoaded);
     const dismissed = useAdsStore((state) => state.bannerDismissed);
     const markBannerLoaded = useAdsStore((state) => state.markBannerLoaded);

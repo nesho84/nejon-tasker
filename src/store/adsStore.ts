@@ -29,10 +29,9 @@ export const useAdsStore = create<AdsState>((set) => ({
     }
   },
 
-  // Lives in the store, not in AdBanner, so (main)/_layout can drop the bottom
-  // inset from the screens while the banner is docked over the gesture-nav strip.
+  // Lives here, not in AdBanner, so layout code can react to the banner taking space.
   // One-way on purpose: banners auto-refresh, and a failed refresh must not hide an ad
-  // the native view is still showing — nor hand every screen its bottom inset back mid-session.
+  // the native view is still showing.
   markBannerLoaded: () => set({ bannerLoaded: true }),
 
   // Per-session only — the store is never persisted, so this resets on relaunch.
