@@ -58,6 +58,7 @@ export const LIGHT = {
   inverse: "#292a2d",
 
   // Special use
+  black: "#000000",
   shadow: "rgba(0, 0, 0, 0.1)",
   overlay: "rgba(0, 0, 0, 0.5)",
   overlayLight: "#00000012",
@@ -124,6 +125,7 @@ export const DARK = {
   inverse: "#f8f9fa",
 
   // Special use
+  black: "#000000",
   shadow: "rgba(0, 0, 0, 0.3)",
   overlay: "rgba(0, 0, 0, 0.7)",
   overlayLight: "#00000033",

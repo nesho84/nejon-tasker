@@ -1,7 +1,7 @@
 import { useModalStore } from "@/store/modalStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
-import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // ------------------------------------------------------------
@@ -14,7 +14,7 @@ export default function ModalProvider() {
     // Modal store
     const { visible, options, hide } = useModalStore();
 
-    // Safe area insets (fullscreen layout only)
+    // Safe area insets (base content padding baked in)
     const insets = useSafeAreaInsets();
     const topInset = insets.top + 4;
     const bottomInset = insets.bottom + 10;
@@ -42,6 +42,7 @@ export default function ModalProvider() {
         return (
             <View style={[styles.closeIconContainer, { backgroundColor: theme.card }]}>
                 <TouchableOpacity
+                    style={styles.closeIconBtn}
                     onPress={handleDismiss}
                     hitSlop={8}
                     activeOpacity={0.7}
@@ -67,6 +68,7 @@ export default function ModalProvider() {
                     }}
                     activeOpacity={0.8}
                 >
+                    {btn.icon}
                     <Text style={[styles.btnText, btn.labelStyle]}>
                         {btn.label}
                     </Text>
@@ -74,6 +76,28 @@ export default function ModalProvider() {
             ))}
         </View>
     );
+
+    // ------------------------------------------------------------
+    // Render scrollable body (content + component) — title and buttons stay fixed
+    // ------------------------------------------------------------
+    const renderBody = () => {
+        if (!options?.content && !options?.component) return null;
+
+        return (
+            <ScrollView
+                contentContainerStyle={styles.bodyContent}
+                bounces={false}
+                showsVerticalScrollIndicator={false}
+            >
+                {options.content && (
+                    <Text style={[styles.content, { color: theme.text2 }, options.contentStyle]}>
+                        {options.content}
+                    </Text>
+                )}
+                {options.component}
+            </ScrollView>
+        );
+    };
 
     // ------------------------------------------------------------
     // ---- Alert ----
@@ -87,21 +111,16 @@ export default function ModalProvider() {
                 statusBarTranslucent
                 onRequestClose={handleDismiss}
             >
-                <View style={styles.overlay}>
+                <View style={[styles.overlay, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24, paddingLeft: insets.left + 24, paddingRight: insets.right + 24 }]}>
                     <Pressable style={StyleSheet.absoluteFill} onPress={handleDismiss} />
-                    <View style={[styles.alertContainer, { backgroundColor: theme.bg2, shadowColor: theme.shadow }, options.containerStyle]}>
+                    <View style={[styles.alertContainer, { backgroundColor: theme.bg2, shadowColor: theme.black }, options.containerStyle]}>
                         {renderCloseIcon()}
                         {options.title && (
                             <Text style={[styles.title, { color: theme.text }, options.titleStyle]}>
                                 {options.title}
                             </Text>
                         )}
-                        {options.content && (
-                            <Text style={[styles.content, { color: theme.text2 }, options.contentStyle]}>
-                                {options.content}
-                            </Text>
-                        )}
-                        {options.component}
+                        {renderBody()}
                         {options.buttons && renderButtons()}
                     </View>
                 </View>
@@ -121,21 +140,16 @@ export default function ModalProvider() {
                 statusBarTranslucent
                 onRequestClose={() => hide("cancel")}
             >
-                <View style={styles.overlay}>
+                <View style={[styles.overlay, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24, paddingLeft: insets.left + 24, paddingRight: insets.right + 24 }]}>
                     <Pressable style={StyleSheet.absoluteFill} onPress={() => hide("cancel")} />
-                    <View style={[styles.alertContainer, { backgroundColor: theme.bg2, shadowColor: theme.shadow }, options.containerStyle]}>
+                    <View style={[styles.alertContainer, { backgroundColor: theme.bg2, shadowColor: theme.black }, options.containerStyle]}>
                         {renderCloseIcon()}
                         {options.title && (
                             <Text style={[styles.title, { color: theme.text }, options.titleStyle]}>
                                 {options.title}
                             </Text>
                         )}
-                        {options.content && (
-                            <Text style={[styles.content, { color: theme.text2 }, options.contentStyle]}>
-                                {options.content}
-                            </Text>
-                        )}
-                        {options.component}
+                        {renderBody()}
                         {options.buttons && renderButtons()}
                     </View>
                 </View>
@@ -201,10 +215,10 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)",
         justifyContent: "center",
         alignItems: "center",
-        padding: 24,
     },
     alertContainer: {
         width: "100%",
+        flexShrink: 1,
         borderRadius: 16,
         padding: 20,
         gap: 12,
@@ -244,6 +258,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 16,
     },
+    closeIconBtn: {
+    },
+    bodyContent: {
+        gap: 12,
+    },
     title: {
         fontSize: 17,
         fontWeight: "700",
@@ -260,6 +279,8 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 44,
         borderRadius: 14,
+        flexDirection: "row",
+        gap: 6,
         justifyContent: "center",
         alignItems: "center",
     },
