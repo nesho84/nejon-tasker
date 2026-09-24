@@ -18,10 +18,10 @@
     "@react-native-vector-icons/ionicons": "^13.1.2",
     "@react-native-vector-icons/material-design-icons": "^13.1.2",
     "@react-native-vector-icons/material-icons": "^13.1.2",
-    "expo": "~57.0.23",
+    "expo": "~57.0.24",
     "expo-application": "~57.0.3",
     "expo-battery": "~57.0.3",
-    "expo-build-properties": "~57.0.20",
+    "expo-build-properties": "~57.0.21",
     "expo-checkbox": "~57.0.0",
     "expo-constants": "~57.0.2",
     "expo-dev-client": "~57.0.19",
@@ -33,14 +33,14 @@
     "expo-intent-launcher": "~57.0.1",
     "expo-linking": "~57.0.10",
     "expo-navigation-bar": "~57.0.2",
-    "expo-notifications": "~57.0.19",
-    "expo-router": "~57.0.21",
-    "expo-sharing": "~57.0.20",
+    "expo-notifications": "~57.0.20",
+    "expo-router": "~57.0.22",
+    "expo-sharing": "~57.0.21",
     "expo-splash-screen": "~57.0.9",
     "expo-sqlite": "~57.0.3",
     "expo-status-bar": "~57.0.1",
     "expo-system-ui": "~57.0.4",
-    "expo-updates": "~57.0.22",
+    "expo-updates": "~57.0.23",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
@@ -70,5 +70,8 @@
     "install": {
       "exclude": []
     }
+  },
+  "allowScripts": {
+    "unrs-resolver@1.12.2": true
   }
 }
