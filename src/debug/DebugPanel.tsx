@@ -1,13 +1,17 @@
 import { openUpdateAvailableModal } from "@/components/CheckForUpdate";
+import { useModalStore } from "@/store/modalStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
+import { selectStoreReviewEligible, useStoreReviewStore } from "@/store/storeReviewStore";
 import { useThemeStore } from "@/store/themeStore";
+import { shareText } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { ReactNode, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
 import { clearAllData, seedDummyData } from "./debugSeed";
 import { UpdatePreview, useDebugStore } from "./debugStore";
+import { debugStoreReviewPrompt, getStoreReviewDiagnostics } from "./debugStoreReview";
 
 interface ButtonProps {
     label: string;
@@ -28,6 +32,11 @@ interface BadgeProps {
     label: string;
     color: string;
     bg: string;
+}
+
+interface JsonViewerProps {
+    title: string;
+    json: string;
 }
 
 // ------------------------------------------------------------
@@ -81,6 +90,49 @@ function DebugToggle({ label, color, value, onPress }: ToggleProps) {
     );
 }
 
+// ------------------------------------------------------------
+// JSON viewer for debugging: scrollable, selectable, share via the system sheet
+// ------------------------------------------------------------
+function JsonViewer({ title, json }: JsonViewerProps) {
+    const theme = useThemeStore((state) => state.theme);
+
+    return (
+        <View style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1, backgroundColor: theme.bg2 }} contentContainerStyle={{ padding: 6 }}>
+                <Text
+                    selectable
+                    style={{
+                        fontFamily: Platform.OS === "ios" ? "Courier New" : "monospace",
+                        fontSize: 11,
+                        color: theme.muted,
+                        lineHeight: 17,
+                    }}
+                >
+                    {json}
+                </Text>
+            </ScrollView>
+            <TouchableOpacity
+                style={[styles.shareBtn, { backgroundColor: theme.green + "20" }]}
+                activeOpacity={0.7}
+                onPress={() => shareText(title, json)}
+            >
+                <Text style={[styles.shareBtnText, { color: theme.green }]}>Share JSON</Text>
+            </TouchableOpacity>
+        </View>
+    );
+}
+
+// ------------------------------------------------------------
+// Open a fullscreen JSON viewer modal via ModalProvider
+// ------------------------------------------------------------
+const showJsonViewerModal = (title: string, data: object) =>
+    useModalStore.getState().show({
+        type: "fullscreen",
+        showCloseIcon: true,
+        title,
+        component: <JsonViewer title={title} json={JSON.stringify(data, null, 2)} />,
+    });
+
 // Renders the debug controls only — the containing card + "Debug Tools"
 export default function DebugPanel() {
     // Stores
@@ -130,6 +182,21 @@ export default function DebugPanel() {
     // Shared params and handlers
     const notifSeconds = 10; // seconds until the test reminder fires
     const notifSecondsBadge = <Badge label={`${notifSeconds}s`} color={theme.placeholder} bg={theme.divider} />;
+
+    const showStoreReviewModal = async () => {
+        const state = useStoreReviewStore.getState();
+        const { openDays, lastOpenDate, promptCount, lastPromptAt, lastPromptVersion } = state;
+        showJsonViewerModal("Store Review", {
+            eligible: selectStoreReviewEligible(state),
+            eligibleNote: "Our gates only — StoreReview.hasAction() is not checked, so this can be true while no dialog appears",
+            ...(await getStoreReviewDiagnostics()),
+            openDays,
+            lastOpenDate,
+            promptCount,
+            lastPromptAt: lastPromptAt ? new Date(lastPromptAt).toLocaleString("en-GB") : null,
+            lastPromptVersion,
+        });
+    };
 
     // Main component
     return (
@@ -233,6 +300,36 @@ export default function DebugPanel() {
                         onPress={() => runAsync(logScheduledN)}
                     />
 
+                    {/* Divider */}
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+                    {/* Store Review — the native dialog only shows on a Play-installed build */}
+                    <Text style={[styles.hint, { color: theme.placeholder }]}>
+                        Gates, counters and triggers work on any build. The dialog only appears on a build
+                        installed from Play (internal testing track).
+                    </Text>
+                    <DebugButton
+                        label="Store Review: Prompt Now (skips gates)"
+                        color={theme.violet}
+                        disabled={busy}
+                        onPress={() => runAsync(debugStoreReviewPrompt)}
+                    />
+                    <DebugButton
+                        label="Store Review: Allow Next Trigger"
+                        color={theme.violet}
+                        onPress={() => useStoreReviewStore.getState().makeEligible()}
+                    />
+
+                    {/* Divider */}
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+                    {/* JSON data in full screen modals */}
+                    <DebugButton
+                        label="Show 'Store Review - JSON' Modal"
+                        color={theme.gray}
+                        onPress={showStoreReviewModal}
+                    />
+
                 </View>
             )}
         </>
@@ -300,5 +397,16 @@ const styles = StyleSheet.create({
         lineHeight: 16,
         marginTop: 2,
         marginHorizontal: 4,
+    },
+
+    // Share button for JSON viewer
+    shareBtn: {
+        paddingVertical: 10,
+        alignItems: "center",
+        marginTop: 8,
+    },
+    shareBtnText: {
+        fontSize: 13,
+        fontWeight: "600",
     },
 });

@@ -3,6 +3,7 @@ import { cancelScheduledNotification } from "@/services/notificationsService";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useStoreReviewStore } from "@/store/storeReviewStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
@@ -85,6 +86,17 @@ export default function TaskItem({
             });
         } else {
             await toggleTask(task.id);
+        }
+
+        // 3rd task checked today — ask for a store review
+        if (value === true) {
+            const today = dates.toDateKey();
+            const checkedToday = useTaskStore.getState().allTasks.filter(
+                (t) => t.checked && !t.isDeleted && dates.toDateKey(new Date(t.updatedAt)) === today
+            ).length;
+            if (checkedToday === 3) {
+                useStoreReviewStore.getState().maybeRequestStoreReview();
+            }
         }
     };
 

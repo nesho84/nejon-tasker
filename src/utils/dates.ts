@@ -33,5 +33,11 @@ export const dates = {
             hour: '2-digit',
             minute: '2-digit'
         });
+    },
+
+    // Local calendar day as YYYY-MM-DD (defaults to today)
+    toDateKey(date?: Date): string {
+        const d = date ?? new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 };

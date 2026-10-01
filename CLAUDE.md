@@ -20,7 +20,8 @@ npx expo prebuild --clean    # regenerate android/ after native config changes
 ```
 
 Native modules (`expo-sqlite`, `expo-notifications`, `expo-battery`, `expo-intent-launcher`,
-`react-native-reanimated`, `react-native-gesture-handler`, `react-native-draggable-flatlist`)
+`expo-store-review`, `react-native-reanimated`, `react-native-gesture-handler`,
+`react-native-draggable-flatlist`)
 **do not work in Expo Go** — use the dev client. There is no Jest suite; verify with
 `npx tsc --noEmit` and `npm run lint`. See `README.md` for the full build/EAS/OTA workflow.
 
