@@ -106,7 +106,7 @@ export default function AdBanner() {
             testID="ad-banner-container"
             style={[
                 styles.container,
-                { backgroundColor: theme.bg, borderTopColor: theme.border, paddingBottom: insets.bottom },
+                { backgroundColor: theme.bg, borderTopColor: theme.border, paddingBottom: insets.bottom + 3 },
                 !loaded && styles.collapsed,
                 // Out of flow so the screens above keep their full height and their original
                 // keyboard offsets — those measure against the bottom of the screen.
@@ -145,10 +145,12 @@ export default function AdBanner() {
 const styles = StyleSheet.create({
     container: {
         alignItems: "center",
+        paddingVertical: 3,
         borderTopWidth: StyleSheet.hairlineWidth,
     },
     collapsed: {
         height: 0,
+        paddingVertical: 0,
         paddingBottom: 0,
         borderTopWidth: 0,
         overflow: "hidden",
