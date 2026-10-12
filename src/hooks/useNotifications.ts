@@ -1,5 +1,8 @@
+import { useOnboardingStore } from "@/store/onboardingStore";
+import { kvStorage } from "@/store/storage";
 import { useTaskStore } from "@/store/taskStore";
 import * as Notifications from 'expo-notifications';
+import { router } from "expo-router";
 import { useEffect } from 'react';
 
 Notifications.setNotificationHandler({
@@ -11,51 +14,45 @@ Notifications.setNotificationHandler({
     }),
 });
 
+// A cold-start tap is replayed after every JS reload — remember the one we opened
+const OPENED_NOTIFICATION_KEY = "opened-notification-id";
+
 // ------------------------------------------------------------
 // Initializes notification handling. Mounted once at the app root.
-// Listens for incoming notifications/responses and clears the reminder data on
-// the matching task once it has fired.
+// Tapping a reminder opens its task — held until the DB is loaded and onboarding
+// is done, so cold-start taps work too. Fired reminders are kept (shown as Past).
 // ------------------------------------------------------------
-export default function useNotifications() {
-    const updateTask = useTaskStore((state) => state.updateTask);
+export default function useNotifications(isDbReady: boolean) {
+    // A tap can only open a task once the main app is reachable (onboarding done)
+    const onboardingReady = useOnboardingStore((state) => state.isReady);
+    const onboardingComplete = useOnboardingStore((state) => state.onboardingComplete);
+    const lastResponse = Notifications.useLastNotificationResponse();
 
     useEffect(() => {
-        // Handle received notifications
-        const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
-            console.log('🔔 [Foreground] Received notification');
+        if (!isDbReady || !onboardingReady || !onboardingComplete || !lastResponse) return;
+        if (lastResponse.actionIdentifier !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
 
-            const taskId = notification.request.content.data?.taskId;
-            if (typeof taskId === 'string' && taskId.length > 0) {
-                updateTask(taskId, {
-                    reminderDateTime: null,
-                    reminderId: null,
+        const openTask = async () => {
+            // Skip a tap we already opened (replayed after a reload)
+            const notificationId = lastResponse.notification.request.identifier;
+            if (await kvStorage.getItem(OPENED_NOTIFICATION_KEY) === notificationId) return;
+            await kvStorage.setItem(OPENED_NOTIFICATION_KEY, notificationId);
+
+            const taskId = lastResponse.notification.request.content.data?.taskId;
+            const task = typeof taskId === 'string' ? useTaskStore.getState().getTaskById(taskId) : undefined;
+
+            // Open the task's label, then its edit sheet on top
+            if (task && !task.isDeleted) {
+                router.navigate(`/tasks?labelId=${task.labelId}`);
+                router.navigate({
+                    pathname: '/editTask',
+                    params: { labelId: task.labelId, taskId: task.id },
                 });
-                console.log('[Foreground] Updated task ID:', taskId);
-            } else {
-                console.log('[Foreground] taskId invalid or missing');
             }
-        });
-
-        // Handle received responses
-        const responseReceivedListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            console.log('[Foreground] User responded to received notification');
-
-            const taskId = response.notification.request.content.data?.taskId;
-            if (typeof taskId === 'string' && taskId.length > 0) {
-                updateTask(taskId, {
-                    reminderDateTime: null,
-                    reminderId: null,
-                });
-                console.log('[Foreground] Updated task ID:', taskId);
-            } else {
-                console.log('[Foreground] taskId invalid or missing');
-            }
-        });
-
-        return () => {
-            // Cleanup listeners when unmounting
-            receivedListener.remove();
-            responseReceivedListener.remove();
         };
-    }, [updateTask]);
+        openTask();
+
+        // Handled — don't route again
+        Notifications.clearLastNotificationResponse();
+    }, [isDbReady, onboardingReady, onboardingComplete, lastResponse]);
 }

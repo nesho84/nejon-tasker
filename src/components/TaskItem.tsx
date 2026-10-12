@@ -8,8 +8,7 @@ import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
 import { dates } from "@/utils/dates";
-import { getReminderStatus, shareTask } from "@/utils/system";
-import { Ionicons } from "@react-native-vector-icons/ionicons/static";
+import { getReminderStatus } from "@/utils/system";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { Checkbox } from "expo-checkbox";
 import * as Haptics from "expo-haptics";
@@ -28,8 +27,8 @@ interface Props {
     hardDeleteAction?: boolean;
     restoreAction?: boolean;
     cancelReminderAction?: boolean;
-    // Bottom actions
-    shareAction?: boolean;
+    // Show the task's label (cross-label lists)
+    labelTag?: boolean;
 }
 
 export default function TaskItem({
@@ -42,13 +41,13 @@ export default function TaskItem({
     hardDeleteAction,
     restoreAction,
     cancelReminderAction,
-    shareAction
+    labelTag
 }: Props) {
     // Stores
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);
 
-    // labelStore — task's label (for the share title)
+    // labelStore — task's label (for the label tag)
     const labels = useLabelStore((state) => state.labels);
     const label = labels.find((l) => l.id === task.labelId);
 
@@ -339,7 +338,17 @@ export default function TaskItem({
             {/* ----- Bottom Section ----- */}
             <View style={[styles.bottomRow, { backgroundColor: theme.tint }]}>
                 {/* Reminder */}
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <View style={{ flexShrink: 1, flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    {/* Label tag — which label this task lives in */}
+                    {labelTag && label && (
+                        <View style={styles.labelTag}>
+                            <View style={[styles.labelDot, { backgroundColor: label.color }]} />
+                            <Text style={[styles.labelTagText, { color: theme.text2 }]} numberOfLines={1}>
+                                {label.title}
+                            </Text>
+                        </View>
+                    )}
+
                     {/* Reminder icon — bell when it will fire, bell-off when muted (notifications off) or past */}
                     {task.reminderId && task.reminderDateTime && (
                         <MaterialDesignIcons
@@ -372,23 +381,6 @@ export default function TaskItem({
                         />
                     )}
                 </View>
-
-                {/* Share icon — wrapper owns the tap (bigger target + press feedback) */}
-                {shareAction && (
-                    <Pressable
-                        style={({ pressed }) => [
-                            styles.shareButton, pressed && { backgroundColor: theme.pressed },
-                        ]}
-                        onPress={() => shareTask(label?.title, task, tr)}
-                        hitSlop={HIT_SLOP_8}
-                    >
-                        <Ionicons
-                            name="share-social"
-                            color={theme.muted}
-                            size={16}
-                        />
-                    </Pressable>
-                )}
 
                 {/* Task dateTime */}
                 <Text style={[{ color: theme.muted, fontSize: 11 }]}>
@@ -460,9 +452,21 @@ const styles = StyleSheet.create({
         borderTopWidth: 0.5,
         borderTopColor: 'rgba(0, 0, 0, 0.05)',
     },
-    shareButton: {
-        padding: 8,
-        margin: -8,
-        borderRadius: 999,
+    labelTag: {
+        flexShrink: 0,
+        flexDirection: "row",
+        alignItems: "center",
+        width: 84,
+        gap: 5,
+    },
+    labelDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    labelTagText: {
+        flexShrink: 1,
+        fontSize: 11,
+        fontWeight: "600",
     },
 });

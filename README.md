@@ -6,8 +6,9 @@ Nejon Tasker is a React Native / Expo task manager. Its main features:
 
 - **Tasks** — create, edit, check off, and drag-to-reorder tasks. Each task belongs to a **label** and can carry a reminder.
 - **Labels** — colored categories that group tasks; reorderable, with their own favorite/trash state.
-- **Reminders** — schedule a per-task notification at an exact date/time via `expo-notifications` (a `DATE` trigger so it fires at the exact clock time). A Reminders screen lists all upcoming ones.
+- **Reminders** — schedule a per-task notification at an exact date/time via `expo-notifications` (a `DATE` trigger so it fires at the exact clock time). The notification is titled with the task's label, in the label color, with the task text (long labels and texts are shortened); tapping it opens the task. The Reminders screen splits them into **Upcoming** and **Past** (already fired).
 - **Favorites & Trash** — mark tasks as favorite; soft-delete to Trash with restore or permanent delete.
+- **Search & label filters** — Reminders, Favorites and Trash share a toolbar (`TaskFilterBar` + `useTaskFilter`) with a text search and label chips; rows show a colored label tag.
 - **Backup & Restore** — export all labels and tasks to a JSON file and import them back (`expo-file-system` / `expo-sharing` / `expo-document-picker`).
 - **Settings** — language, light/dark theme, and Android shortcuts for notification, battery-optimization, and exact-alarm permissions.
 - **Onboarding** — first-launch language selection followed by a feature-slides walkthrough.
@@ -49,7 +50,7 @@ src/
 ├── components/            # Shared UI (AppScreen, TaskItem, CustomPicker, ColorPicker, BackupSection, …)
 ├── constants/             # Colors, translations.ts (i18n strings)
 ├── db/                    # SQLite: database.ts (schema/setup), task.repo.ts, label.repo.ts
-├── hooks/                 # useNotifications (reminders + permissions), useKeyboard
+├── hooks/                 # useNotifications (handler + tap → task), useTaskFilter, useKeyboard, …
 ├── services/              # backupService (JSON export/import)
 ├── store/                 # Zustand stores
 ├── types/                 # TypeScript interfaces (task, label)
@@ -97,13 +98,21 @@ via the `kvStorage` adapter in `src/store/storage.ts`:
 
 ### Notifications & Reminders
 
-Powered by **`expo-notifications`** (local notifications only — no push, no notifee). `useNotifications`
-(`src/hooks/useNotifications.ts`) owns:
+Powered by **`expo-notifications`** (local notifications only — no push, no notifee). The pieces:
 
-- **Permission** requests and the Android **default** notification channel.
-- **Scheduling** a task reminder with a `DATE` trigger (absolute time) so Android fires it at the exact
-  clock time rather than a drifting countdown.
-- **Settings deep-links** (via `expo-intent-launcher`): the battery-optimization flow (status read with
+- **`services/notificationsService.ts`** — the Android **default** channel, and
+  `scheduleNotification(task, label, tr)` with a `DATE` trigger (absolute time) so Android fires it at
+  the exact clock time rather than a drifting countdown. Content: label title (over 25 chars → first 20
+  + "...", like the drawer), "Task Reminder" subtext, label color, task text (trimmed, cut at 200 chars —
+  the tap opens the full task), `data: { taskId }`.
+- **`hooks/useNotifications.ts`** (root layout's global hooks, `useNotifications(isDbReady)`) — the foreground handler, and
+  notification **taps**: `useLastNotificationResponse()` opens the task (label screen + edit sheet), held
+  until the DB is loaded and onboarding is done so cold-start taps work. Fired reminders are **kept** on
+  the task — the Reminders screen shows them under **Past** until cleared or the task is checked.
+- **Label rename/recolor** — `labelStore.updateLabel` calls `taskStore.rescheduleLabelReminders` so
+  scheduled notifications pick up the new title/color.
+- **Permission + settings deep-links** (`utils/system.ts`, via `expo-intent-launcher`): permission
+  request, the battery-optimization flow (status read with
   `expo-battery.isBatteryOptimizationEnabledAsync()` → one-tap "Allow" dialog when still optimized, or
   the battery list when already exempt), the exact-alarm "Alarms & reminders" screen, and the app's
   notification settings.
@@ -362,3 +371,14 @@ To pin a package Expo keeps flagging, add it to `package.json`:
 | Pure JS packages | Update freely |
 | Native/community packages | Minor/patch only — test builds |
 | Expo SDK & core | `npx expo install --check` / SDK upgrade only — never bump manually |
+
+### Temporary workarounds — remove when fixed upstream
+
+- **react-native-screens: taps die after rotation** ([#4551](https://github.com/software-mansion/react-native-screens/issues/4551)).
+  On 4.26.x, rotating while a screen with a native header (e.g. Home) is covered, then going back to it,
+  leaves it measured ~one header height off — presses show feedback but `onPress` never fires.
+  Worked around in `src/app/_layout.tsx` with
+  `featureFlags.experiment.androidResetScreenShadowStateOnOrientationChangeEnabled = false`.
+  **When updating `react-native-screens`, check whether the release includes
+  [PR #4760](https://github.com/software-mansion/react-native-screens/pull/4760); if yes, delete those lines**,
+  rebuild, and re-test: open Reminders from Home, rotate, go back, tap a label card.

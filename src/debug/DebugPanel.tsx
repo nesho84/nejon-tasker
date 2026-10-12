@@ -181,8 +181,10 @@ export default function DebugPanel() {
     };
 
     // Shared params and handlers
-    const notifSeconds = 10; // seconds until the test reminder fires
+    const notifSeconds = 10;       // seconds until the test reminder fires (app open)
+    const notifSecondsKilled = 30; // enough time to swipe the app away (cold-start tap)
     const notifSecondsBadge = <Badge label={`${notifSeconds}s`} color={theme.placeholder} bg={theme.divider} />;
+    const notifSecondsKilledBadge = <Badge label={`${notifSecondsKilled}s`} color={theme.placeholder} bg={theme.divider} />;
 
     const showRateAppModal = () => {
         const { rateAppDone, rateAppVersion, rateAppRemindAt } = useRateAppStore.getState();
@@ -292,7 +294,8 @@ export default function DebugPanel() {
                     />
                     <Text style={[styles.hint, { color: theme.placeholder }]}>
                         Seeding wipes existing data first, then generates a large set
-                        (~16 labels, hundreds of tasks).
+                        (~16 labels, hundreds of tasks), including one label with a long
+                        name and some tasks with very long text.
                     </Text>
 
                     {/* Divider */}
@@ -300,11 +303,18 @@ export default function DebugPanel() {
 
                     {/* Test notifications */}
                     <DebugButton
-                        label="Test Task Reminder Not."
+                        label="Test Reminder on a Task"
                         color={theme.secondary}
                         disabled={busy}
                         onPress={() => runAsync(() => debugTaskReminderN(notifSeconds))}
                         right={notifSecondsBadge}
+                    />
+                    <DebugButton
+                        label="Test Reminder (kill app)"
+                        color={theme.secondary}
+                        disabled={busy}
+                        onPress={() => runAsync(() => debugTaskReminderN(notifSecondsKilled))}
+                        right={notifSecondsKilledBadge}
                     />
                     <DebugButton
                         label="Log Channels & Scheduled"
@@ -312,6 +322,13 @@ export default function DebugPanel() {
                         disabled={busy}
                         onPress={() => runAsync(logScheduledN)}
                     />
+                    <Text style={[styles.hint, { color: theme.placeholder }]}>
+                        Sets a real reminder on the open task with the longest text. Check: label
+                        as title (over 25 chars → first 20 + ...), label color, text cut at 200
+                        chars; it shows in Reminders › Upcoming, then moves to Past; tapping it
+                        opens that task. For the kill-app test, swipe the app away before it
+                        fires, then tap the notification (cold start).
+                    </Text>
 
                     {/* Divider */}
                     <View style={[styles.divider, { backgroundColor: theme.border }]} />

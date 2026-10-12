@@ -96,11 +96,9 @@ export const useLabelStore = create<LabelState>()(persist((set, get) => ({
         const label = get().labels.find(l => l.id === id);
         if (!label) throw new Error(`Label not found: ${id}`);
         const previousLabel = { ...label };
+        const updatedLabel = { ...label, ...data, updatedAt: new Date().toISOString() };
 
         try {
-            const now = new Date().toISOString();
-            const updatedLabel = { ...label, ...data, updatedAt: now };
-
             // Update state
             set(state => ({
                 labels: state.labels.map(l => l.id === id ? updatedLabel : l)
@@ -113,6 +111,11 @@ export const useLabelStore = create<LabelState>()(persist((set, get) => ({
             set(state => ({ labels: state.labels.map(l => l.id === id ? previousLabel : l) }));
             console.error('Failed to update label:', error);
             throw error;
+        }
+
+        // Scheduled notifications carry the label's title/color — refresh them
+        if (updatedLabel.title !== previousLabel.title || updatedLabel.color !== previousLabel.color) {
+            await useTaskStore.getState().rescheduleLabelReminders(updatedLabel);
         }
     },
 

@@ -1,5 +1,7 @@
 import * as TasksRepo from '@/db/task.repo';
-import { cancelScheduledNotification } from '@/services/notificationsService';
+import { cancelScheduledNotification, scheduleNotification } from '@/services/notificationsService';
+import { useLanguageStore } from '@/store/languageStore';
+import { Label } from '@/types/label.types';
 import { Task } from '@/types/task.types';
 import uuid from "react-native-uuid";
 import { create } from 'zustand';
@@ -19,6 +21,7 @@ interface TaskState {
     toggleFavoriteTask: (id: string) => Promise<void>;
     reorderTasks: (taskIds: string[]) => Promise<void>;
     removeTasksByLabelId: (labelId: string) => Promise<void>;
+    rescheduleLabelReminders: (label: Label) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -320,5 +323,37 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }
 
         set((state) => ({ allTasks: state.allTasks.filter(t => t.labelId !== labelId) }));
+    },
+
+    // ------------------------------------------------------------
+    // Reschedule a label's future reminders so their notifications show the
+    // label's current title/color. Called by labelStore after a rename/recolor.
+    // Not a user edit, so updatedAt is left untouched.
+    // ------------------------------------------------------------
+    rescheduleLabelReminders: async (label) => {
+        const tr = useLanguageStore.getState().tr;
+        const now = Date.now();
+        const futureTasks = get().allTasks.filter(t =>
+            t.labelId === label.id && !t.isDeleted && t.reminderId && t.reminderDateTime
+            && new Date(t.reminderDateTime).getTime() > now
+        );
+
+        for (const task of futureTasks) {
+            try {
+                if (task.reminderId) {
+                    await cancelScheduledNotification(task.reminderId);
+                }
+                const reminderId = await scheduleNotification(task, label, tr);
+                const updatedTask = { ...task, reminderId };
+
+                // Update state
+                set((state) => ({ allTasks: state.allTasks.map(t => t.id === task.id ? updatedTask : t) }));
+
+                // Persist to database
+                await TasksRepo.updateTask(updatedTask);
+            } catch (error) {
+                console.error('Failed to reschedule reminder:', error);
+            }
+        }
     },
 }));

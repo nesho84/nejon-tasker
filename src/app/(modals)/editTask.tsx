@@ -54,6 +54,8 @@ export default function EditTask() {
   // A reminder is scheduled in the future when its status is 'active' or 'muted'
   const reminderStatus = getReminderStatus(task?.reminderDateTime ?? null, task?.reminderId ?? null, notificationsEnabled);
   const hasFutureReminder = reminderStatus === 'active' || reminderStatus === 'muted';
+  // Any saved reminder (future or fired) can be cleared
+  const hasSavedReminder = reminderStatus !== 'none';
 
   // A reminder is set for display when there's a saved future one, or a freshly picked
   // (not yet saved) one. When set but notifications are off it is "muted" — the field stays
@@ -146,9 +148,11 @@ export default function EditTask() {
 
     const textChanged = task.text !== taskText;
     const reminderChanged = task?.reminderDateTime !== selectedDateTime;
+    // A fired (past) reminder stays as-is — rescheduling it would drop it
+    const isFutureReminder = !!selectedDateTime && new Date(selectedDateTime).getTime() > Date.now();
 
     // Check for existing reminders - reschedule if text or reminder changed
-    if ((textChanged || reminderChanged) && selectedDateTime) {
+    if ((textChanged || reminderChanged) && isFutureReminder) {
       // Cancel old/existing notification
       if (task.reminderId) {
         await cancelScheduledNotification(task.reminderId);
@@ -159,7 +163,7 @@ export default function EditTask() {
         ...task,
         text: taskText,
         reminderDateTime: selectedDateTime,
-      }, tr);
+      }, label, tr);
 
       // Update Task
       await useTaskStore.getState().updateTask(task.id, {
@@ -347,9 +351,9 @@ export default function EditTask() {
               onCancel={() => setDatePickerVisible(false)}
             />
 
-            {/* Reminder Cancel/Delete Icon */}
+            {/* Reminder Cancel/Delete Icon — also clears a fired (Past) reminder */}
             <TouchableOpacity
-              disabled={!hasFutureReminder}
+              disabled={!hasSavedReminder}
               style={[
                 styles.btnCancelReminder,
                 {
@@ -362,8 +366,8 @@ export default function EditTask() {
               <MaterialDesignIcons
                 name="bell-remove-outline"
                 size={20}
-                color={hasFutureReminder ? theme.danger : theme.muted}
-                style={{ opacity: hasFutureReminder ? 1 : 0.4 }}
+                color={hasSavedReminder ? theme.danger : theme.muted}
+                style={{ opacity: hasSavedReminder ? 1 : 0.4 }}
               />
             </TouchableOpacity>
           </View>

@@ -1,7 +1,9 @@
 import AppEmpty from "@/components/AppEmpty";
 import AppLoading from "@/components/AppLoading";
+import TaskFilterBar from "@/components/TaskFilterBar";
 import TaskItem from "@/components/TaskItem";
 import { globalStyles } from "@/constants/styles";
+import { useTaskFilter } from "@/hooks/useTaskFilter";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from '@/store/themeStore';
 import { useEffect, useMemo, useState } from "react";
@@ -14,16 +16,21 @@ export default function TrashScreen() {
 
     // Safe area insets
     const insets = useSafeAreaInsets();
-    const topInset = 8;
     const bottomInset = insets.bottom + 8;
 
     // taskStore
     const allTasks = useTaskStore((state) => state.allTasks);
     const isLoading = useTaskStore((state) => state.isLoading);
-    // Filter tasks
+    // Filter tasks — most recently deleted first
     const deletedTasks = useMemo(() => {
-        return allTasks.filter(t => t.isDeleted);
+        return allTasks
+            .filter(t => t.isDeleted)
+            .sort((a, b) => (b.deletedAt ?? "").localeCompare(a.deletedAt ?? ""));
     }, [allTasks]);
+
+    // Search + label filter
+    const filter = useTaskFilter(deletedTasks);
+    const hasTasks = deletedTasks.length > 0;
 
     // Local State
     const [isReady, setIsReady] = useState(false);
@@ -45,18 +52,31 @@ export default function TrashScreen() {
             style={[globalStyles.listContainer, { backgroundColor: theme.bgAlt }]}
             edges={['left', 'right']}
         >
+            {/* Search + label chips */}
+            {hasTasks && (
+                <TaskFilterBar
+                    query={filter.query}
+                    onQueryChange={filter.setQuery}
+                    chipLabels={filter.chipLabels}
+                    selectedLabelId={filter.selectedLabelId}
+                    onSelectLabel={filter.setSelectedLabelId}
+                />
+            )}
+
             <FlatList
-                data={deletedTasks}
+                data={filter.filteredTasks}
                 renderItem={({ item }) => (
                     <TaskItem
                         task={item}
                         restoreAction={true}
                         hardDeleteAction={true}
+                        labelTag={true}
                     />
                 )}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ flexGrow: 1, paddingTop: topInset, paddingBottom: bottomInset }}
-                ListEmptyComponent={<AppEmpty type="trash" />}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{ flexGrow: 1, paddingTop: hasTasks ? 0 : 8, paddingBottom: bottomInset }}
+                ListEmptyComponent={<AppEmpty type={hasTasks ? "search" : "trash"} />}
             />
         </SafeAreaView>
     );

@@ -25,6 +25,9 @@ export const TRANSLATIONS = {
             of: "of",
             displayOptions: "Display Options",
             checkedItems: "Checked Items",
+            upcoming: "Upcoming",
+            past: "Past",
+            all: "All",
         },
         // Button text
         buttons: {
@@ -46,6 +49,7 @@ export const TRANSLATIONS = {
         // Form inputs
         forms: {
             inputPlaceholder: "Enter text...",
+            searchPlaceholder: "Search tasks...",
             setReminder: "Set Reminder...",
             label: "Label",
             task: "Task",
@@ -151,6 +155,7 @@ export const TRANSLATIONS = {
             noReminders: "No Reminders to show. \n\n Reminders you set will appear here.",
             noFavorites: "No Favorites to show. \n\n You can favorite tasks to see them here.",
             noTrash: "No Deleted Tasks to show. \n\n Deleted tasks will appear here.",
+            noResults: "No matching tasks. \n\n Try another search or label.",
         },
         // Check-for-update feature (modal + settings row + status text)
         updates: {
@@ -238,6 +243,9 @@ export const TRANSLATIONS = {
             of: "von",
             displayOptions: "Anzeigeoptionen",
             checkedItems: "Abgeschlossene Aufgaben",
+            upcoming: "Anstehend",
+            past: "Vergangen",
+            all: "Alle",
         },
         // Button text
         buttons: {
@@ -259,6 +267,7 @@ export const TRANSLATIONS = {
         // Form inputs
         forms: {
             inputPlaceholder: "Text eingeben...",
+            searchPlaceholder: "Aufgaben suchen...",
             setReminder: "Erinnerung einstellen...",
             label: "Etikett",
             task: "Aufgabe",
@@ -364,6 +373,7 @@ export const TRANSLATIONS = {
             noReminders: "Keine Erinnerungen zu zeigen. \n\n Reminder, die Sie einstellen, werden hier angezeigt.",
             noFavorites: "Keine Favoriten zu zeigen. \n\n Sie können Aufgaben favorisieren, um sie hier zu sehen.",
             noTrash: "Keine gelöschten Aufgaben zu zeigen. \n\n Gelöschte Aufgaben werden hier angezeigt.",
+            noResults: "Keine passenden Aufgaben. \n\n Versuchen Sie eine andere Suche oder ein anderes Etikett.",
         },
         // Check-for-update feature (modal + settings row + status text)
         updates: {
@@ -451,6 +461,9 @@ export const TRANSLATIONS = {
             of: "prej",
             displayOptions: "Opsionet e shfaqjes",
             checkedItems: "Detyra të kryera",
+            upcoming: "Të ardhshme",
+            past: "Të kaluara",
+            all: "Të gjitha",
         },
         // Button text
         buttons: {
@@ -472,6 +485,7 @@ export const TRANSLATIONS = {
         // Form inputs
         forms: {
             inputPlaceholder: "Shkruaj tekst...",
+            searchPlaceholder: "Kërko detyra...",
             setReminder: "Cakto kujtesën...",
             label: "Etiketa",
             task: "Detyra",
@@ -577,6 +591,7 @@ export const TRANSLATIONS = {
             noReminders: "Asnjë kujtesë për të shfaqur. \n\n Kujtesat që krijoni do të shfaqen këtu.",
             noFavorites: "Asnjë e detyrë preferuar për të shfaqur. \n\n Mund të favorizoni detyra për t'i parë këtu.",
             noTrash: "Asnjë detyrë e fshirë për të shfaqur. \n\n Detyrat e fshira do të shfaqen këtu.",
+            noResults: "Asnjë detyrë që përputhet. \n\n Provoni një kërkim ose etiketë tjetër.",
         },
         // Check-for-update feature (modal + settings row + status text)
         updates: {

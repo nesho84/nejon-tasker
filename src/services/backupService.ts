@@ -215,7 +215,8 @@ export async function restoreBackup(): Promise<{ labelsCount: number; tasksCount
         const reminderIds = new Map<string, string | null>();
         for (const task of backup.tasks) {
             const isFuture = task.reminderDateTime && new Date(task.reminderDateTime).getTime() > Date.now();
-            reminderIds.set(task.id, isFuture ? await scheduleNotification(task, tr) : null);
+            const label = backup.labels.find((l: any) => l.id === task.labelId);
+            reminderIds.set(task.id, isFuture ? await scheduleNotification(task, label, tr) : null);
         }
 
         // Import data with transaction

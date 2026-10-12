@@ -4,7 +4,7 @@ import { MaterialDesignIcons, MaterialDesignIconsIconName } from "@react-native-
 import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
-  type?: "label" | "task" | "reminder" | "favorite" | "trash";
+  type?: "label" | "task" | "reminder" | "favorite" | "trash" | "search";
 }
 
 export default function AppEmpty({ type = "task" }: Props) {
@@ -19,6 +19,7 @@ export default function AppEmpty({ type = "task" }: Props) {
     reminder: tr.empty.noReminders,
     favorite: tr.empty.noFavorites,
     trash: tr.empty.noTrash,
+    search: tr.empty.noResults,
   };
 
   // Empty-state icon per type
@@ -28,6 +29,7 @@ export default function AppEmpty({ type = "task" }: Props) {
     reminder: "bell-outline",
     favorite: "star-outline",
     trash: "trash-can-outline",
+    search: "magnify",
   };
 
   return (

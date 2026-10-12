@@ -13,6 +13,10 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
+import { featureFlags } from "react-native-screens";
+
+// TEMP workaround: taps die after rotation (react-native-screens#4551) — remove once a release includes PR #4760
+featureFlags.experiment.androidResetScreenShadowStateOnOrientationChangeEnabled = false;
 
 const RootStack = () => {
   const isReady = useOnboardingStore((state) => state.isReady);
@@ -67,7 +71,7 @@ export default function RootLayout() {
 
   // Initialization and global sync hooks
   useDeviceSettingsSync();
-  useNotifications();
+  useNotifications(isDbReady);
   useUpdatesSync();
   useAdsSync();
 

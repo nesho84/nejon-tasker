@@ -113,7 +113,7 @@ export const requestNotificationPermission = async (tr: Translations): Promise<'
 
 // ------------------------------------------------------------
 // Open the app's notification settings screen (shared by the settings toggle
-// and the NotificationsBanner). Falls back to the app's settings page.
+// and the PermissionWarning). Falls back to the app's settings page.
 // ------------------------------------------------------------
 export const openNotificationSettings = async () => {
     if (Platform.OS !== "android") {

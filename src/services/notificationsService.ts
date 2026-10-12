@@ -1,3 +1,4 @@
+import { Label } from '@/types/label.types';
 import { Translations } from '@/types/language.types';
 import { Task } from '@/types/task.types';
 import * as Notifications from 'expo-notifications';
@@ -29,9 +30,9 @@ export async function cancelScheduledNotification(notificationId: string) {
 }
 
 // ------------------------------------------------------------
-// Schedule a notification for a task's reminder
+// Schedule a notification for a task's reminder (titled with its label)
 // ------------------------------------------------------------
-export async function scheduleNotification(task: Task, tr: Translations): Promise<string | null> {
+export async function scheduleNotification(task: Task, label: Label | undefined, tr: Translations): Promise<string | null> {
     // Android channel configuration
     await setNotificationChannel();
 
@@ -50,10 +51,22 @@ export async function scheduleNotification(task: Task, tr: Translations): Promis
         // (absolute time) rather than TIME_INTERVAL so Android fires it at the
         // exact clock time instead of a drifting countdown.
         if (reminderDateTime.getTime() > new Date().getTime()) {
+            // Title: the label, shortened like in the drawer and home cards
+            let title = tr.notifications.taskReminder;
+            if (label) {
+                title = label.title.length > 25 ? `${label.title.substring(0, 20)}...` : label.title;
+            }
+
+            // Body: trimmed and capped — tapping the notification opens the full task
+            const text = task.text.trim();
+            const body = text.length > 200 ? `${text.substring(0, 200).trimEnd()}...` : text;
+
             notificationId = await Notifications.scheduleNotificationAsync({
                 content: {
-                    title: tr.notifications.taskReminder,
-                    body: task.text.length > 40 ? `${task.text.substring(0, 40)}...` : task.text,
+                    title: title,
+                    subtitle: label ? tr.notifications.taskReminder : undefined,
+                    body: body,
+                    color: label?.color,
                     data: {
                         taskId: task.id,
                     },

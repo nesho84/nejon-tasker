@@ -27,6 +27,7 @@ const P_FAVORITE = 0.12;
 const P_DELETED = 0.08;
 const P_REMINDER = 0.18;         // of those, some past / some future (see below)
 const P_REMINDER_PAST = 0.25;    // fraction of reminders that are overdue
+const P_LONG_TEXT = 0.05;        // tasks with very long text (tests text shortening)
 
 // Relative ISO timestamp helper (offset in minutes from now; negative = past)
 function isoOffset(minutes: number): string {
@@ -50,6 +51,25 @@ const LABEL_NAMES = [
 ];
 const CATEGORIES = ["Productivity", "Life", "Wellness", "Finance", "Learning", "Leisure", null];
 
+// Long label title — tests shortening in the drawer, home cards, chips, tags and notifications
+const LONG_LABEL_TITLE = "Home Renovation, Garden Projects and Everything Else This Summer";
+
+// Very long task texts (with line breaks) — test shortening in notifications
+const LONG_TEXTS = [
+    "Pack for the trip:\n- passport and tickets\n- phone charger and power bank\n- rain jacket and umbrella\n" +
+    "- medicine for the whole week\n- snacks for the train\nAlso water the plants, take out the trash, lock " +
+    "the balcony door and leave the spare key with the neighbors before leaving on Friday morning.",
+    "Call the insurance company about the claim from last month. Ask why the payment is still pending, which " +
+    "documents are missing and whether the photos from the repair shop are enough. Write down the name of the " +
+    "person you talk to and the reference number, then send a short summary email to Anna so she knows where " +
+    "things stand. If they need the original invoice, scan it and upload it through the portal tonight, " +
+    "otherwise it will be another week before anyone looks at it again.",
+    // Starts with empty lines (tests trimming)
+    "\n\nClean up the meeting notes before Monday: the decisions on the new pricing, who owns the onboarding " +
+    "emails, the open questions about the mobile release date and the follow-up items from the design review " +
+    "that nobody picked up yet. Turn them into tasks, assign an owner to each one and share the list with the team.",
+];
+
 const VERBS = [
     "Finish", "Review", "Call", "Email", "Buy", "Schedule", "Plan", "Fix",
     "Update", "Read", "Write", "Book", "Renew", "Clean", "Organize", "Pay",
@@ -72,6 +92,9 @@ const SUFFIXES = [
 ];
 
 function makeTaskText(): string {
+    if (chance(P_LONG_TEXT)) {
+        return pick(LONG_TEXTS);
+    }
     return `${pick(VERBS)} ${pick(NOUNS)}${pick(SUFFIXES)}`.trim();
 }
 
@@ -98,8 +121,10 @@ function buildLabels(): Label[] {
     for (let i = 0; i < LABEL_COUNT; i++) {
         labels.push(make({ title: LABEL_NAMES[i % LABEL_NAMES.length] }, i));
     }
+    // One label with a long title (tests title shortening)
+    labels.push(make({ title: LONG_LABEL_TITLE }, LABEL_COUNT));
     // One soft-deleted label (shows in trash / exercises cascade behavior)
-    labels.push(make({ title: "Archived Project", isDeleted: true, deletedAt: isoOffset(-3 * DAY) }, LABEL_COUNT));
+    labels.push(make({ title: "Archived Project", isDeleted: true, deletedAt: isoOffset(-3 * DAY) }, LABEL_COUNT + 1));
     return labels;
 }
 
@@ -151,7 +176,7 @@ async function buildTasks(labels: Label[], tr: Translations): Promise<Task[]> {
             };
 
             if (hasReminder) {
-                task.reminderId = isPast ? `seed-${uuid.v4()}` : await scheduleNotification(task, tr);
+                task.reminderId = isPast ? `seed-${uuid.v4()}` : await scheduleNotification(task, label, tr);
             }
 
             tasks.push(task);
