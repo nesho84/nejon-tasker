@@ -41,6 +41,7 @@ export const TRANSLATIONS = {
             openSettings: "Open Settings",
             openStore: "Open Store",
             later: "Later",
+            alreadyRated: "Already rated",
         },
         // Form inputs
         forms: {
@@ -177,6 +178,8 @@ export const TRANSLATIONS = {
             supportDev: "Support the development",
             rateApp: "Rate the App",
             rateAppDesc: "Leave a review on Google Play",
+            rateAppTitle: "Enjoying Nejon Tasker?",
+            rateAppMessage: "Your review helps others find the app and motivates us to keep improving it.",
             shareApp: "Share with a Friend",
             shareAppDesc: "Recommend Nejon Tasker",
             contactUs: "Contact Us",
@@ -251,6 +254,7 @@ export const TRANSLATIONS = {
             openSettings: "Einstellungen öffnen",
             openStore: "Store öffnen",
             later: "Später",
+            alreadyRated: "Bereits bewertet",
         },
         // Form inputs
         forms: {
@@ -387,6 +391,8 @@ export const TRANSLATIONS = {
             supportDev: "Unterstützen Sie die Entwicklung",
             rateApp: "Bewerten Sie die App",
             rateAppDesc: "Hinterlassen Sie eine Bewertung im Google Play Store",
+            rateAppTitle: "Gefällt Ihnen Nejon Tasker?",
+            rateAppMessage: "Ihre Bewertung hilft anderen, die App zu finden, und motiviert uns, sie stetig zu verbessern.",
             shareApp: "Teilen Sie mit einem Freund",
             shareAppDesc: "Empfehlen Sie Nejon Tasker",
             contactUs: "Kontaktieren Sie uns",
@@ -461,6 +467,7 @@ export const TRANSLATIONS = {
             openSettings: "Hap Cilësimet",
             openStore: "Hap Store",
             later: "Më vonë",
+            alreadyRated: "E kam vlerësuar",
         },
         // Form inputs
         forms: {
@@ -597,6 +604,8 @@ export const TRANSLATIONS = {
             supportDev: "Ndihmo zhvillimin e aplikacionit",
             rateApp: "Vlerëso Aplikacionin",
             rateAppDesc: "Lër një vlerësim në Google Play",
+            rateAppTitle: "Të pëlqen Nejon Tasker?",
+            rateAppMessage: "Vlerësimi yt u ndihmon të tjerëve ta gjejnë aplikacionin dhe na motivon ta përmirësojmë vazhdimisht.",
             shareApp: "Ndaj me miqtë",
             shareAppDesc: "Rekomando Nejon Tasker",
             contactUs: "Na Kontakto",

@@ -1,17 +1,18 @@
 import { openUpdateAvailableModal } from "@/components/CheckForUpdate";
+import { openRateAppModal } from "@/components/RateApp";
 import { useModalStore } from "@/store/modalStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
-import { selectStoreReviewEligible, useStoreReviewStore } from "@/store/storeReviewStore";
+import { useRateAppStore } from "@/store/rateAppStore";
 import { useThemeStore } from "@/store/themeStore";
 import { shareText } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import Constants from "expo-constants";
 import { ReactNode, useState } from "react";
 import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
 import { clearAllData, seedDummyData } from "./debugSeed";
 import { UpdatePreview, useDebugStore } from "./debugStore";
-import { debugStoreReviewPrompt, getStoreReviewDiagnostics } from "./debugStoreReview";
 
 interface ButtonProps {
     label: string;
@@ -183,19 +184,21 @@ export default function DebugPanel() {
     const notifSeconds = 10; // seconds until the test reminder fires
     const notifSecondsBadge = <Badge label={`${notifSeconds}s`} color={theme.placeholder} bg={theme.divider} />;
 
-    const showStoreReviewModal = async () => {
-        const state = useStoreReviewStore.getState();
-        const { openDays, lastOpenDate, promptCount, lastPromptAt, lastPromptVersion } = state;
-        showJsonViewerModal("Store Review", {
-            eligible: selectStoreReviewEligible(state),
-            eligibleNote: "Our gates only — StoreReview.hasAction() is not checked, so this can be true while no dialog appears",
-            ...(await getStoreReviewDiagnostics()),
-            openDays,
-            lastOpenDate,
-            promptCount,
-            lastPromptAt: lastPromptAt ? new Date(lastPromptAt).toLocaleString("en-GB") : null,
-            lastPromptVersion,
+    const showRateAppModal = () => {
+        const { rateAppDone, rateAppVersion, rateAppRemindAt } = useRateAppStore.getState();
+        showJsonViewerModal("Rate App", {
+            version: Constants?.expoConfig?.version,
+            rateAppDone,
+            rateAppVersion,
+            rateAppRemindAt: rateAppRemindAt ? new Date(rateAppRemindAt).toLocaleString("en-GB") : null,
         });
+    };
+    // Clears the stored state first so the modal always shows
+    const previewRateAppModal = () => {
+        useRateAppStore.getState().setRateAppDone(false);
+        useRateAppStore.getState().setRateAppVersion(null);
+        useRateAppStore.getState().setRateAppRemindAt(null);
+        openRateAppModal();
     };
 
     // Main component
@@ -230,6 +233,16 @@ export default function DebugPanel() {
                         label="Show Onboarding Screen"
                         color={theme.info}
                         onPress={() => useOnboardingStore.getState().setOnboarding(false)}
+                    />
+
+                    {/* Divider */}
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+                    {/* Modal previews */}
+                    <DebugButton
+                        label="Show 'Rate the App' Modal"
+                        color={theme.teal}
+                        onPress={previewRateAppModal}
                     />
 
                     {/* Divider */}
@@ -303,31 +316,11 @@ export default function DebugPanel() {
                     {/* Divider */}
                     <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
-                    {/* Store Review — the native dialog only shows on a Play-installed build */}
-                    <Text style={[styles.hint, { color: theme.placeholder }]}>
-                        Gates, counters and triggers work on any build. The dialog only appears on a build
-                        installed from Play (internal testing track).
-                    </Text>
-                    <DebugButton
-                        label="Store Review: Prompt Now (skips gates)"
-                        color={theme.violet}
-                        disabled={busy}
-                        onPress={() => runAsync(debugStoreReviewPrompt)}
-                    />
-                    <DebugButton
-                        label="Store Review: Allow Next Trigger"
-                        color={theme.violet}
-                        onPress={() => useStoreReviewStore.getState().makeEligible()}
-                    />
-
-                    {/* Divider */}
-                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
-
                     {/* JSON data in full screen modals */}
                     <DebugButton
-                        label="Show 'Store Review - JSON' Modal"
+                        label="Show 'Rate App - JSON' Modal"
                         color={theme.gray}
-                        onPress={showStoreReviewModal}
+                        onPress={showRateAppModal}
                     />
 
                 </View>

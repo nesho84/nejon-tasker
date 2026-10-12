@@ -1,9 +1,9 @@
+import { openRateAppModal } from "@/components/RateApp";
 import { HIT_SLOP_6_4, HIT_SLOP_8 } from "@/constants/styles";
 import { cancelScheduledNotification } from "@/services/notificationsService";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
 import { useLanguageStore } from "@/store/languageStore";
-import { useStoreReviewStore } from "@/store/storeReviewStore";
 import { useTaskStore } from "@/store/taskStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Task } from "@/types/task.types";
@@ -88,14 +88,14 @@ export default function TaskItem({
             await toggleTask(task.id);
         }
 
-        // 3rd task checked today — ask for a store review
+        // 3rd task checked today — ask to rate the app
         if (value === true) {
             const today = dates.toDateKey();
             const checkedToday = useTaskStore.getState().allTasks.filter(
                 (t) => t.checked && !t.isDeleted && dates.toDateKey(new Date(t.updatedAt)) === today
             ).length;
             if (checkedToday === 3) {
-                useStoreReviewStore.getState().maybeRequestStoreReview();
+                openRateAppModal();
             }
         }
     };

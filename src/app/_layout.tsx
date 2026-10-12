@@ -4,7 +4,6 @@ import { setupDatabase } from "@/db/database";
 import { useAdsSync } from "@/hooks/useAdsSync";
 import { useDeviceSettingsSync } from "@/hooks/useDeviceSettingsSync";
 import useNotifications from "@/hooks/useNotifications";
-import { useStoreReviewSync } from "@/hooks/useStoreReviewSync";
 import { useUpdatesSync } from "@/hooks/useUpdatesSync";
 import { useLabelStore } from "@/store/labelStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
@@ -71,7 +70,6 @@ export default function RootLayout() {
   useNotifications();
   useUpdatesSync();
   useAdsSync();
-  useStoreReviewSync();
 
   // Show error if initialization failed
   if (initError) {
