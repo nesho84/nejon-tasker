@@ -95,6 +95,7 @@ via the `kvStorage` adapter in `src/store/storage.ts`:
 | `languageStore` | Active language + translation strings | SQLite kv-store |
 | `onboardingStore` | First-launch gate (`onboardingComplete`) | SQLite kv-store |
 | `rateAppStore` | "Rate the App" modal state (version the user went to the store on, remind-after time, already rated) | SQLite kv-store |
+| `notifReminderStore` | Notification-permission reminder modal state (remind-after time, close count) | SQLite kv-store |
 
 ### Notifications & Reminders
 
@@ -134,6 +135,19 @@ exemption** (Doze otherwise batches/delays alarms). `USE_EXACT_ALARM` is intenti
 can close: **Open Store** (opens the Play listing via `openStoreListing()`; not asked again on this
 version, and 7 days after updating to a new one), **Later** (ask again in 7 days) and **Already rated**
 (never again). iOS shows nothing.
+
+### Notification reminder modal
+
+`useNotifReminderSync` calls `openNotifReminderModal()` (`src/components/NotifReminder.tsx`) on launch
+and whenever the permission changes (device settings re-sync on resume). It waits for `notifReminderStore`
+to hydrate first, since the kv-store is async. While notifications are off it shows a "Never miss a
+reminder" alert that only its buttons can close: **Enable notifications** (`requestNotificationPermission()`;
+if no system dialog is possible anymore, offers system settings) and **Not now**.
+Schedule (`notifReminderStore`: remind-at time + close count): first seen off (after onboarding, after
+updating to this feature, or after re-disabling) → shows 3 days later; 1st close → 7 days; 2nd close →
+14 days; 3rd close → never again. Both buttons count as a close. Granting resets the time and count, so a
+later disable starts the cycle again. It never covers another modal — if one is open it yields until the
+next check, and if "Update available" replaces it, it comes back next launch since no close was recorded.
 
 ### i18n
 

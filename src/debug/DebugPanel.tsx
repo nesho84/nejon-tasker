@@ -1,6 +1,9 @@
 import { openUpdateAvailableModal } from "@/components/CheckForUpdate";
-import { openRateAppModal } from "@/components/RateApp";
+import { MAX_SHOWS, showNotifReminderModal } from "@/components/NotifReminder";
+import { showRateAppModal } from "@/components/RateApp";
+import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useModalStore } from "@/store/modalStore";
+import { useNotifReminderStore } from "@/store/notifReminderStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useRateAppStore } from "@/store/rateAppStore";
 import { useThemeStore } from "@/store/themeStore";
@@ -186,7 +189,7 @@ export default function DebugPanel() {
     const notifSecondsBadge = <Badge label={`${notifSeconds}s`} color={theme.placeholder} bg={theme.divider} />;
     const notifSecondsKilledBadge = <Badge label={`${notifSecondsKilled}s`} color={theme.placeholder} bg={theme.divider} />;
 
-    const showRateAppModal = () => {
+    const showRateAppJsonModal = () => {
         const { rateAppDone, rateAppVersion, rateAppRemindAt } = useRateAppStore.getState();
         showJsonViewerModal("Rate App", {
             version: Constants?.expoConfig?.version,
@@ -195,12 +198,59 @@ export default function DebugPanel() {
             rateAppRemindAt: rateAppRemindAt ? new Date(rateAppRemindAt).toLocaleString("en-GB") : null,
         });
     };
-    // Clears the stored state first so the modal always shows
+    // Always shows — ignores the platform and waits; a stored choice that blocks it gets an alert with Reset
     const previewRateAppModal = () => {
-        useRateAppStore.getState().setRateAppDone(false);
-        useRateAppStore.getState().setRateAppVersion(null);
-        useRateAppStore.getState().setRateAppRemindAt(null);
-        openRateAppModal();
+        const { rateAppDone, rateAppVersion, setRateAppDone, setRateAppVersion, setRateAppRemindAt } = useRateAppStore.getState();
+        const version = Constants?.expoConfig?.version ?? null;
+        const blockedReason = rateAppDone
+            ? `"Already rated" was tapped — the real modal never shows again.`
+            : rateAppVersion === version
+                ? `"Open Store" was tapped on this version (${version}) — the real modal waits for the next version.`
+                : null;
+
+        if (blockedReason) {
+            Alert.alert("Rate App", blockedReason, [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Reset",
+                    onPress: () => {
+                        setRateAppDone(false);
+                        setRateAppVersion(null);
+                        setRateAppRemindAt(null);
+                    },
+                },
+            ]);
+            return;
+        }
+        showRateAppModal();
+    };
+
+    const showNotifReminderJsonModal = () => {
+        const { notifReminderAt, notifReminderCount } = useNotifReminderStore.getState();
+        showJsonViewerModal("Notif Reminder", {
+            notificationPermission: useDeviceSettingsStore.getState().notificationPermission,
+            notifReminderAt: notifReminderAt ? new Date(notifReminderAt).toLocaleString("en-GB") : null,
+            notifReminderCount,
+        });
+    };
+    // Always shows — ignores permission and waits; closes still count, so the 4th tap hits the limit
+    const previewNotifReminderModal = () => {
+        const { notifReminderCount, setNotifReminderAt, setNotifReminderCount } = useNotifReminderStore.getState();
+
+        if (notifReminderCount >= MAX_SHOWS) {
+            Alert.alert("Notif Reminder", `Limit reached (${notifReminderCount}/${MAX_SHOWS}) — the real reminder won't show again until notifications are granted and turned off again.`, [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Reset",
+                    onPress: () => {
+                        setNotifReminderAt(null);
+                        setNotifReminderCount(0);
+                    },
+                },
+            ]);
+            return;
+        }
+        showNotifReminderModal();
     };
 
     // Main component
@@ -245,6 +295,11 @@ export default function DebugPanel() {
                         label="Show 'Rate the App' Modal"
                         color={theme.teal}
                         onPress={previewRateAppModal}
+                    />
+                    <DebugButton
+                        label="Show 'Notif Reminder' Modal"
+                        color={theme.teal}
+                        onPress={previewNotifReminderModal}
                     />
 
                     {/* Divider */}
@@ -337,7 +392,12 @@ export default function DebugPanel() {
                     <DebugButton
                         label="Show 'Rate App - JSON' Modal"
                         color={theme.gray}
-                        onPress={showRateAppModal}
+                        onPress={showRateAppJsonModal}
+                    />
+                    <DebugButton
+                        label="Show 'Notif Reminder - JSON' Modal"
+                        color={theme.gray}
+                        onPress={showNotifReminderJsonModal}
                     />
 
                 </View>

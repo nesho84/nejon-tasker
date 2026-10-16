@@ -45,6 +45,8 @@ export const TRANSLATIONS = {
             openStore: "Open Store",
             later: "Later",
             alreadyRated: "Already rated",
+            enableNotifications: "Enable notifications",
+            notNow: "Not now",
         },
         // Form inputs
         forms: {
@@ -167,6 +169,14 @@ export const TRANSLATIONS = {
             title: "Update available",
             message: "A new version is available on the store. Update now to get the latest features and fixes.",
         },
+        // Notification-permission reminder modal
+        notifReminder: {
+            title: "Never miss a reminder",
+            message: "Turn on notifications to get reminders right on time.",
+            exactTime: "Get a reminder at the exact time you set.",
+            appClosed: "Reminders arrive even when the app is closed.",
+            openTask: "Tap a reminder to open its task right away.",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Clear Storage",
@@ -263,6 +273,8 @@ export const TRANSLATIONS = {
             openStore: "Store öffnen",
             later: "Später",
             alreadyRated: "Bereits bewertet",
+            enableNotifications: "Benachrichtigungen aktivieren",
+            notNow: "Nicht jetzt",
         },
         // Form inputs
         forms: {
@@ -385,6 +397,14 @@ export const TRANSLATIONS = {
             title: "Update verfügbar",
             message: "Eine neue Version ist im Store verfügbar. Aktualisiere jetzt für die neuesten Funktionen und Fehlerbehebungen.",
         },
+        // Notification-permission reminder modal
+        notifReminder: {
+            title: "Verpassen Sie keine Erinnerung",
+            message: "Aktivieren Sie Benachrichtigungen, um rechtzeitig erinnert zu werden.",
+            exactTime: "Erhalten Sie eine Erinnerung genau zur eingestellten Zeit.",
+            appClosed: "Erinnerungen kommen auch an, wenn die App geschlossen ist.",
+            openTask: "Tippen Sie auf eine Erinnerung, um die Aufgabe direkt zu öffnen.",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Datenbank löschen",
@@ -481,6 +501,8 @@ export const TRANSLATIONS = {
             openStore: "Hap Store",
             later: "Më vonë",
             alreadyRated: "E kam vlerësuar",
+            enableNotifications: "Aktivizo njoftimet",
+            notNow: "Jo tani",
         },
         // Form inputs
         forms: {
@@ -602,6 +624,14 @@ export const TRANSLATIONS = {
             checkError: "Update nuk u kontrollua. Provo përsëri.",
             title: "Update është në disponim",
             message: "Një version i ri është i mundshëm. Bëje Update tani për të marrë veçoritë dhe risitë më të fundit.",
+        },
+        // Notification-permission reminder modal
+        notifReminder: {
+            title: "Mos humb asnjë kujtesë",
+            message: "Aktivizo njoftimet dhe merr kujtesa në kohën e duhur.",
+            exactTime: "Merr kujtesë në kohën e caktuar.",
+            appClosed: "Kujtesat shfaqen edhe kur aplikacioni është i mbyllur.",
+            openTask: "Shtyp kujtesën për ta hapur menjëherë detyrën.",
         },
         // Settings screen specific
         settings: {
