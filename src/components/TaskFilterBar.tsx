@@ -72,53 +72,51 @@ export default function TaskFilterBar({
                 )}
             </View>
 
-            {/* Label chips — only worth showing with 2+ labels */}
-            {chipLabels.length > 1 && (
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={styles.chipRow}
+            {/* Label chips */}
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.chipRow}
+            >
+                {/* All */}
+                <Pressable
+                    style={[
+                        styles.chip,
+                        { backgroundColor: selectedLabelId === null ? theme.text : theme.iconBg2 },
+                    ]}
+                    onPress={() => onSelectLabel(null)}
                 >
-                    {/* All */}
-                    <Pressable
-                        style={[
-                            styles.chip,
-                            { backgroundColor: selectedLabelId === null ? theme.text : theme.iconBg2 },
-                        ]}
-                        onPress={() => onSelectLabel(null)}
-                    >
-                        <Text style={[styles.chipText, { color: selectedLabelId === null ? theme.bg : theme.muted }]}>
-                            {tr.labels.all}
-                        </Text>
-                    </Pressable>
+                    <Text style={[styles.chipText, { color: selectedLabelId === null ? theme.bg : theme.muted }]}>
+                        {tr.labels.all}
+                    </Text>
+                </Pressable>
 
-                    {/* One chip per label */}
-                    {chipLabels.map((label) => {
-                        const selected = selectedLabelId === label.id;
-                        return (
-                            <Pressable
-                                key={label.id}
-                                style={[
-                                    styles.chip,
-                                    selected
-                                        ? { borderColor: label.color, backgroundColor: `${label.color}33` }
-                                        : { backgroundColor: theme.iconBg2 },
-                                ]}
-                                onPress={() => onSelectLabel(selected ? null : label.id)}
+                {/* One chip per label */}
+                {chipLabels.map((label) => {
+                    const selected = selectedLabelId === label.id;
+                    return (
+                        <Pressable
+                            key={label.id}
+                            style={[
+                                styles.chip,
+                                selected
+                                    ? { borderColor: label.color, backgroundColor: `${label.color}33` }
+                                    : { backgroundColor: theme.iconBg2 },
+                            ]}
+                            onPress={() => onSelectLabel(selected ? null : label.id)}
+                        >
+                            <View style={[styles.chipDot, { backgroundColor: label.color }]} />
+                            <Text
+                                style={[styles.chipText, { color: selected ? theme.text : theme.muted }]}
+                                numberOfLines={1}
                             >
-                                <View style={[styles.chipDot, { backgroundColor: label.color }]} />
-                                <Text
-                                    style={[styles.chipText, { color: selected ? theme.text : theme.muted }]}
-                                    numberOfLines={1}
-                                >
-                                    {label.title}
-                                </Text>
-                            </Pressable>
-                        );
-                    })}
-                </ScrollView>
-            )}
+                                {label.title}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
+            </ScrollView>
         </View>
     );
 }
