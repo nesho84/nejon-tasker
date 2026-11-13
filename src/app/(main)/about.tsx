@@ -1,4 +1,4 @@
-import { GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
+import { APP_WEBSITE_URL, GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
 import { globalStyles } from '@/constants/styles';
 import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
@@ -249,6 +249,9 @@ export default function AboutScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => Linking.openURL(HELP_EMAIL)} activeOpacity={0.6}>
                         <Text style={[styles.linkText, { color: theme.info }]}>Help</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => openLink(APP_WEBSITE_URL)}>
+                        <Text style={[styles.linkText, { color: theme.info }]}>Website</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => openLink("https://nejon.net")}>
                         <Text style={[styles.linkText, { color: theme.info }]}>nejon.net</Text>
