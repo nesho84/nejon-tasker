@@ -68,6 +68,21 @@ export default function TaskItem({
         : reminderStatus === 'muted'
             ? theme.danger : theme.muted;
 
+    // Any bell shown (reminder or "no reminder" placeholder) — label tag then moves to the middle
+    const hasReminder = Boolean(task.reminderId && task.reminderDateTime);
+    const showPlaceholder = reminderStatus === 'none' && !task.checked && !task.isDeleted;
+    const centerLabel = Boolean(labelTag && label) && (hasReminder || showPlaceholder);
+
+    // Label tag — which label this task lives in
+    const labelTagView = labelTag && label && (
+        <View style={styles.labelTag}>
+            <View style={[styles.labelDot, { backgroundColor: label.color }]} />
+            <Text style={[styles.labelTagText, { color: theme.text2 }]} numberOfLines={1}>
+                {label.title}
+            </Text>
+        </View>
+    );
+
     // ------------------------------------------------------------
     // Toggle task checked/unchecked
     // ------------------------------------------------------------
@@ -338,19 +353,12 @@ export default function TaskItem({
             {/* ----- Bottom Section ----- */}
             <View style={[styles.bottomRow, { backgroundColor: theme.tint }]}>
                 {/* Reminder */}
-                <View style={{ flexShrink: 1, flexDirection: "row", alignItems: "center", gap: 6 }}>
-                    {/* Label tag — which label this task lives in */}
-                    {labelTag && label && (
-                        <View style={styles.labelTag}>
-                            <View style={[styles.labelDot, { backgroundColor: label.color }]} />
-                            <Text style={[styles.labelTagText, { color: theme.text2 }]} numberOfLines={1}>
-                                {label.title}
-                            </Text>
-                        </View>
-                    )}
+                <View style={[styles.reminderGroup, centerLabel && { flex: 1 }]}>
+                    {/* Label tag on the left when there is no bell */}
+                    {!centerLabel && labelTagView}
 
                     {/* Reminder icon — bell when it will fire, bell-off when muted (notifications off) or past */}
-                    {task.reminderId && task.reminderDateTime && (
+                    {hasReminder && (
                         <MaterialDesignIcons
                             name={reminderStatus === 'active' ? "bell" : "bell-off"}
                             color={reminderColor}
@@ -359,7 +367,7 @@ export default function TaskItem({
                     )}
 
                     {/* Reminder dateTime - show it even if passed, but with different styling */}
-                    {task.reminderId && task.reminderDateTime && (
+                    {hasReminder && task.reminderDateTime && (
                         <Text
                             style={{
                                 fontSize: 11,
@@ -372,7 +380,7 @@ export default function TaskItem({
                     )}
 
                     {/* No reminder at all — quiet placeholder */}
-                    {reminderStatus === 'none' && !task.checked && !task.isDeleted && (
+                    {showPlaceholder && (
                         <MaterialDesignIcons
                             name="bell-cancel-outline"
                             color={theme.muted}
@@ -382,8 +390,11 @@ export default function TaskItem({
                     )}
                 </View>
 
+                {/* Label tag in the middle when a bell is shown */}
+                {centerLabel && labelTagView}
+
                 {/* Task dateTime */}
-                <Text style={[{ color: theme.muted, fontSize: 11 }]}>
+                <Text style={[{ color: theme.muted, fontSize: 11 }, centerLabel && styles.rightSlot]}>
                     {dates.format(task.updatedAt)}
                 </Text>
             </View>
@@ -451,6 +462,16 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderTopWidth: 0.5,
         borderTopColor: 'rgba(0, 0, 0, 0.05)',
+    },
+    reminderGroup: {
+        flexShrink: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+    rightSlot: {
+        flex: 1,
+        textAlign: "right",
     },
     labelTag: {
         flexShrink: 0,
