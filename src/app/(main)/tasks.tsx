@@ -13,7 +13,7 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, FlatList, Keyboard, ListRenderItemInfo, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Keyboard, ListRenderItemInfo, Pressable, StyleSheet, Text, TextInput, TextInputInstance, TouchableOpacity, View } from "react-native";
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -102,7 +102,7 @@ export default function TasksScreen() {
   const uncheckedTasks = useMemo(() => tasks.filter(t => !t.checked), [tasks]);
 
   // Refs
-  const textInputRef = useRef<TextInput>(null);
+  const textInputRef = useRef<TextInputInstance>(null);
 
   // Safe area insets
   const insets = useSafeAreaInsets();

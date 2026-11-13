@@ -12,7 +12,7 @@ import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Keyboard, Pressable, StyleSheet, Text, TextInput, TextInputInstance, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 // Map the app language to a date-picker locale
@@ -33,7 +33,7 @@ export default function EditTask() {
 
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
-  const textInputRef = useRef<TextInput>(null);
+  const textInputRef = useRef<TextInputInstance>(null);
 
   // Format date time to string or return default placeholder
   const dateTimeToString = (date: string | null): string => {

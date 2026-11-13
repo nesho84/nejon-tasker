@@ -11,6 +11,7 @@ export async function setNotificationChannel() {
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
+            // eslint-disable-next-line import/namespace -- false positive: build file has no line-leading `export`
             importance: Notifications.AndroidImportance.HIGH,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: '#ffffff',

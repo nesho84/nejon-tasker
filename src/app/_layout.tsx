@@ -19,6 +19,13 @@ import { featureFlags } from "react-native-screens";
 // TEMP workaround: taps die after rotation (react-native-screens#4551) — remove once a release includes PR #4760
 featureFlags.experiment.androidResetScreenShadowStateOnOrientationChangeEnabled = false;
 
+// TEMP shim: RN 0.88 removed InteractionManager, react-native-draggable-flatlist 4.0.3 still calls it on data change.
+// Mirrors upstream PR #628 (rAF) — remove once a release includes it
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- must patch the real exports object, not an import copy
+Object.defineProperty(require("react-native"), "InteractionManager", {
+  value: { runAfterInteractions: (cb: () => void) => requestAnimationFrame(cb) },
+});
+
 const RootStack = () => {
   const isReady = useOnboardingStore((state) => state.isReady);
   const onboardingComplete = useOnboardingStore((state) => state.onboardingComplete);
@@ -33,7 +40,7 @@ const RootStack = () => {
       </Stack.Protected>
 
       {/* Main app, only after onboarding */}
-      <Stack.Protected guard={onboardingComplete}>
+      <Stack.Protected guard={onboardingComplete} redirectTo="/onboarding">
         <Stack.Screen name="(main)" />
         {/* Modal Screens */}
         <Stack.Screen

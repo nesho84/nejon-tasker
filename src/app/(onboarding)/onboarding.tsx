@@ -8,7 +8,7 @@ import { Language, LANGUAGES } from '@/types/language.types';
 import { openAlarmPermissionSettings, openBatteryOptimizationSettings, requestNotificationPermission } from '@/utils/system';
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useRef, useState } from 'react';
-import { Dimensions, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Platform, ScrollView, ScrollViewInstance, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get('window');
@@ -30,7 +30,7 @@ export default function OnboardingScreen() {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     // Refs
-    const scrollViewRef = useRef<ScrollView>(null);
+    const scrollViewRef = useRef<ScrollViewInstance>(null);
 
     // Safe area insets
     const insets = useSafeAreaInsets();

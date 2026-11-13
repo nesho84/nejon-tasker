@@ -7,7 +7,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { useRef, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, TextInputInstance, TouchableOpacity, View } from "react-native";
 
 export default function AddLabel() {
   // Stores
@@ -16,7 +16,7 @@ export default function AddLabel() {
 
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   // Local State
   const [labelTitle, setLabelTitle] = useState("");

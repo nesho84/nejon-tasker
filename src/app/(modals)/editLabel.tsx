@@ -7,7 +7,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, TextInputInstance, TouchableOpacity, View } from "react-native";
 
 export default function EditLabel() {
   // Get labelId from route params
@@ -21,7 +21,7 @@ export default function EditLabel() {
 
   // Refs
   const modalSheetRef = useRef<ModalSheetRef>(null);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   // Local State
   const [labelTitle, setLabelTitle] = useState(label?.title || "");

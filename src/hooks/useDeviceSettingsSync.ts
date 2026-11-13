@@ -9,7 +9,7 @@ import { AppState, AppStateStatus } from 'react-native';
 // ------------------------------------------------------------
 export function useDeviceSettingsSync() {
     const syncDeviceSettings = useDeviceSettingsStore((state) => state.syncDeviceSettings);
-    const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+    const appStateRef = useRef(AppState.currentState);
 
     useEffect(() => {
         // Initial sync on mount
@@ -17,7 +17,7 @@ export function useDeviceSettingsSync() {
 
         // Re-sync when the app comes back to the foreground
         const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
-            if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+            if (appStateRef.current?.match(/inactive|background/) && nextAppState === 'active') {
                 syncDeviceSettings();
             }
             appStateRef.current = nextAppState;
