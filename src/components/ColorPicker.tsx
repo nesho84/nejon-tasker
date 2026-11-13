@@ -35,11 +35,17 @@ export default function ColorPicker({ labelColor, onValueChange: onChangeColor }
             keyExtractor={(item) => item}
             numColumns={8}
             scrollEnabled={false}
+            style={styles.list}
         />
     );
 };
 
 const styles = StyleSheet.create({
+    // Caps circle size in landscape/tablet
+    list: {
+        width: "100%",
+        maxWidth: 420,
+    },
     colorCircle: {
         flex: 1,
         aspectRatio: 1,
