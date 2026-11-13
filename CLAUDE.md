@@ -69,3 +69,16 @@ under "Architecture" — read it before making cross-cutting changes. Key points
   `SafeAreaView edges={['left','right']}` + NavigationBar style). Do **not** add a `bottom` safe-area
   edge — apply the bottom inset to scroll/list content via `useSafeAreaInsets()`
   (`paddingBottom: insets.bottom + N`), matching `about.tsx` and the list screens.
+
+- **Drag-to-reorder** (tasks in `tasks.tsx`, labels in `LabelList.tsx`) uses
+  `react-native-draggable-flatlist` 4.0.3. It is poorly maintained and lags behind RN: RN 0.88 removed
+  `InteractionManager`, which it still calls, so `_layout.tsx` has a **TEMP shim** (rAF, mirrors
+  upstream PR #628). Remove the shim once a release includes that fix. Its Reanimated
+  "Dependencies should only be used on the web" dev warning is harmless.
+  **Alternative to switch to:** `react-native-reorderable-list` (actively maintained, already
+  RN 0.88-safe, FlatList-based). It supports nicer ordering: drop indicator, add/remove layout
+  animations and custom cell animations. Migration notes:
+  `drag`/`isActive` come from `useReorderableDrag()`/`useIsActive()` (needs `shouldUpdateActiveItem`),
+  so `taskCard` becomes a real component. `onDragEnd({ data })` becomes `onReorder({ from, to })` +
+  `reorderItems()`. LabelList's `activationDistance={24}` has no direct prop, so check the `panGesture`
+  prop. Test Android issue #66 (offsets after mid-list inserts).
