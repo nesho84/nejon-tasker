@@ -1,5 +1,7 @@
+import { showRateAppModal } from '@/components/RateApp';
 import { APP_WEBSITE_URL, GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
 import { globalStyles } from '@/constants/styles';
+import DebugPanel from '@/debug/DebugPanel';
 import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -38,8 +40,11 @@ export default function AboutScreen() {
         Linking.openSettings();
     };
 
+    // Taps still needed to toggle debug mode
+    const tapsLeft = DEBUG_MODE_TAP_THRESHOLD - tapCount;
+
     // ------------------------------------------------------------
-    // Tap the version number N times to toggle debug mode
+    // Tap the version number (or the debug badge) N times to toggle debug mode
     // ------------------------------------------------------------
     const handleVersionTap = () => {
         const nextCount = tapCount + 1;
@@ -122,21 +127,24 @@ export default function AboutScreen() {
                     </Text>
                 </TouchableOpacity>
 
-                {/* Debug-mode hint */}
-                {tapCount >= DEBUG_MODE_TAP_HINT_START && (
+                {/* Debug-mode hint (activating only — while on, the badge on the debug box counts down) */}
+                {!debugModeEnabled && tapCount >= DEBUG_MODE_TAP_HINT_START && (
                     <View style={[styles.debugBadge, { borderColor: 'transparent' }]}>
                         <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
-                            Tap {DEBUG_MODE_TAP_THRESHOLD - tapCount} more time{DEBUG_MODE_TAP_THRESHOLD - tapCount === 1 ? "" : "s"} to {debugModeEnabled ? "deactivate" : "activate"} debug mode.
+                            Tap {tapsLeft} more time{tapsLeft === 1 ? "" : "s"} to activate debug mode.
                         </Text>
                     </View>
                 )}
-                {/* Debug-mode status badge */}
-                {tapCount < DEBUG_MODE_TAP_HINT_START && debugModeEnabled && (
-                    <View style={[styles.debugBadge, { borderColor: theme.danger }]}>
-                        <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
-                            Debug mode activated. Tap {DEBUG_MODE_TAP_THRESHOLD} times to deactivate.
-                        </Text>
-                    </View>
+
+                {/* Debug tools box — only while debug mode is on (dev builds too). Its status badge sits on the
+                    top border; tapping it counts like tapping the version, and it counts down while you tap. */}
+                {debugModeEnabled && (
+                    <DebugPanel
+                        status={tapCount >= DEBUG_MODE_TAP_HINT_START
+                            ? `Tap ${tapsLeft} more time${tapsLeft === 1 ? "" : "s"} to deactivate debug mode.`
+                            : `Debug mode activated. Tap ${DEBUG_MODE_TAP_THRESHOLD} times to deactivate.`}
+                        onStatusPress={handleVersionTap}
+                    />
                 )}
 
                 {/* Description */}
@@ -171,7 +179,7 @@ export default function AboutScreen() {
                             backgroundColor: theme.primary + '08',
                             borderColor: theme.primary + '20'
                         }]}
-                        onPress={() => openLink(GOOGLE_PLAY_URL)}
+                        onPress={() => showRateAppModal(true)}
                         activeOpacity={0.8}
                     >
                         <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
@@ -181,7 +189,7 @@ export default function AboutScreen() {
                             <Text style={[globalStyles.rowTitle, { color: theme.muted }]}>{tr.about.rateApp}</Text>
                             <Text style={[styles.actionSubtitle, { color: theme.primary }]} numberOfLines={1}>{tr.about.rateAppDesc}</Text>
                         </View>
-                        <MaterialDesignIcons name="open-in-new" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
+                        <MaterialDesignIcons name="chevron-right" size={18} color={theme.primary} style={{ opacity: 0.5 }} />
                     </TouchableOpacity>
 
                     {/* Share with a Friend */}

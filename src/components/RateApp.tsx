@@ -4,12 +4,13 @@ import { useRateAppStore } from "@/store/rateAppStore";
 import { useThemeStore } from "@/store/themeStore";
 import { openStoreListing } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
-import Constants from "expo-constants";
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-// Wait after "Later", and after updating to a new version
+// Wait after "Later"
 const REMIND_AFTER_DAYS = 7;
+// Every open counts (except from About) — the limit marks it done
+export const RATE_APP_MAX_SHOWS = 3;
 
 // Star sizes, left to right — the middle one is the biggest
 const STAR_SIZES = [26, 34, 44, 34, 26];
@@ -22,25 +23,18 @@ export function openRateAppModal() {
         return;
     }
 
-    const { rateAppDone, rateAppVersion, rateAppRemindAt, setRateAppVersion, setRateAppRemindAt } = useRateAppStore.getState();
-    const version = Constants.expoConfig?.version ?? null;
+    const { rateAppNextShowAt, rateAppDone } = useRateAppStore.getState();
 
-    // Tapped "Already rated"
+    // Tapped "Open Store" or "Already rated", or shown the max times
     if (rateAppDone) {
         return;
     }
-    // Tapped "Later", or still waiting after a new version
-    if (rateAppRemindAt && Date.now() < rateAppRemindAt) {
+    // Tapped "Later"
+    if (rateAppNextShowAt && Date.now() < rateAppNextShowAt) {
         return;
     }
-    // Already went to the store on this version
-    if (rateAppVersion === version) {
-        return;
-    }
-    // Went to the store on an older version — wait a week on this one first
-    if (rateAppVersion) {
-        setRateAppVersion(null);
-        setRateAppRemindAt(Date.now() + REMIND_AFTER_DAYS * DAY_MS);
+    // Another modal is open (e.g. "Update available") — yield, try at a later trigger
+    if (useModalStore.getState().visible) {
         return;
     }
 
@@ -48,14 +42,22 @@ export function openRateAppModal() {
 }
 
 // ------------------------------------------------------------
-// Show the "Rate the App" modal — no checks (the Debug Panel calls this directly)
+// Show the "Rate the App" modal — no checks (the Debug Panel and About call this directly).
+// From About the open and "Later" aren't recorded; "Open Store" and "Already rated" always are.
 // ------------------------------------------------------------
-export function showRateAppModal() {
-    const { setRateAppDone, setRateAppVersion, setRateAppRemindAt } = useRateAppStore.getState();
-    const version = Constants.expoConfig?.version ?? null;
+export function showRateAppModal(fromAbout = false) {
+    const { rateAppShownCount, setRateAppNextShowAt, setRateAppShownAt, setRateAppShownCount, setRateAppDone } = useRateAppStore.getState();
     const tr = useLanguageStore.getState().tr;
     const theme = useThemeStore.getState().theme;
     const { hide } = useModalStore.getState();
+
+    if (!fromAbout) {
+        setRateAppShownAt(Date.now());
+        setRateAppShownCount(rateAppShownCount + 1);
+        if (rateAppShownCount + 1 >= RATE_APP_MAX_SHOWS) {
+            setRateAppDone(true);
+        }
+    }
 
     useModalStore.getState().show({
         type: "fullscreen",
@@ -82,7 +84,7 @@ export function showRateAppModal() {
                         style={[styles.button, { backgroundColor: theme.primary + "20", borderWidth: 1, borderColor: theme.primary + "40" }]}
                         activeOpacity={0.8}
                         onPress={() => {
-                            setRateAppVersion(version);
+                            setRateAppDone(true);
                             hide("openStore");
                             openStoreListing();
                         }}
@@ -94,7 +96,9 @@ export function showRateAppModal() {
                         style={[styles.button, { backgroundColor: theme.overlayLight }]}
                         activeOpacity={0.8}
                         onPress={() => {
-                            setRateAppRemindAt(Date.now() + REMIND_AFTER_DAYS * DAY_MS);
+                            if (!fromAbout) {
+                                setRateAppNextShowAt(Date.now() + REMIND_AFTER_DAYS * DAY_MS);
+                            }
                             hide("later");
                         }}
                     >

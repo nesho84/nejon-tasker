@@ -6,8 +6,8 @@ import { createJSONStorage, persist } from "zustand/middleware";
 // Debug-only store backing the Debug Panel. debugModeEnabled and
 // forceUpdateOnLaunch are persisted (need to survive a reload); the rest
 // reset on restart. debugModeEnabled is toggled by tapping the version
-// number on the About screen — it unlocks the Debug Tools card in
-// production builds.
+// number on the About screen — it shows the Debug Tools box there
+// (in every build, dev included).
 // ------------------------------------------------------------
 
 export type UpdatePreview = "idle" | "upToDate" | "error";
