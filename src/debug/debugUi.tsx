@@ -69,7 +69,8 @@ export const CHECK_FAILED_HINT =
     "Real: shown when a manual check runs offline, or Play can't answer (e.g. the app wasn't installed from Play).";
 export const SEED_HINT =
     "Seeding wipes existing data first, then generates a large set (~16 labels, hundreds of tasks), " +
-    "including one label with a long name and some tasks with very long text.";
+    "including one label with a long name and some tasks with very long text. " +
+    "About a quarter of the tasks come checked with today's date — so Rate App's \"3rd task today\" can't fire after seeding.";
 export const TEST_REMINDER_HINT =
     "Sets a real reminder on the open task with the longest text. Check: label as title (over 25 chars → " +
     "first 20 + ...), label color, text cut at 200 chars; it shows in Reminders › Upcoming, then moves to Past; " +
@@ -79,7 +80,8 @@ export const TEST_REMINDER_KILLED_HINT =
 
 // How the two auto modals work — shown under their ⓘ
 export const RATE_APP_HINT =
-    "First show (Android only): the first time a 3rd task gets checked in one day — can already happen on day one.\n" +
+    "First show (Android only): the first time a 3rd task gets checked in one day — can already happen on day one. " +
+    "Fires only at exactly 3: every task checked today counts (edited or seeded ones too), and past 3 it waits for the next day.\n" +
     "\"Later\" → asks again 7 days later, at the next such moment.\n" +
     "Never again: \"Open Store\", \"Already rated\", or after 3 shows.\n" +
     "Waits while another modal is open.\n" +
