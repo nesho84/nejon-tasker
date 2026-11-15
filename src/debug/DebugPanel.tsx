@@ -5,8 +5,17 @@ import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { previewNotifReminderModal, previewRateAppModal, showNotifReminderJsonModal, showRateAppJsonModal } from "./debugModals";
+import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
+import { clearAllData, seedDummyData } from "./debugSeed";
+import { UpdatePreview, useDebugStore } from "./debugStore";
 import {
+    AutoModalHead,
+    Badge,
     CHECK_FAILED_HINT,
+    DebugButton,
+    DebugSection,
+    DebugToggle,
     NOTIF_REMINDER_HINT,
     RATE_APP_HINT,
     SEED_HINT,
@@ -15,12 +24,7 @@ import {
     UP_TO_DATE_HINT,
     UPDATE_LAUNCH_HINT,
     UPDATE_MODAL_HINT,
-} from "./debugHints";
-import { previewNotifReminderModal, previewRateAppModal, showNotifReminderJsonModal, showRateAppJsonModal } from "./debugModals";
-import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
-import { clearAllData, seedDummyData } from "./debugSeed";
-import { UpdatePreview, useDebugStore } from "./debugStore";
-import { AutoModalHead, Badge, DebugButton, DebugSection, DebugToggle } from "./debugUi";
+} from "./debugUi";
 
 interface DebugPanelProps {
     status: string;
