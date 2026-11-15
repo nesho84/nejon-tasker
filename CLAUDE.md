@@ -75,6 +75,17 @@ under "Architecture" — read it before making cross-cutting changes. Key points
   `InteractionManager`, which it still calls, so `_layout.tsx` has a **TEMP shim** (rAF, mirrors
   upstream PR #628). Remove the shim once a release includes that fix. Its Reanimated
   "Dependencies should only be used on the web" dev warning is harmless.
+  **Known bug (Nov 2026, not fixed): a row gets stuck active.** Sometimes, after some drags, a long-pressed
+  row stays highlighted and can't be dragged or tapped until the app reloads. The likely cause is in the
+  library, not in our code:
+  - `reset()` (clears the active index and the finger offset) only runs when the list *order* changes
+    (`dataHasChanged` in `DraggableFlatList.tsx`).
+  - A drop that keeps the same order skips it, leaving the active index and a non-zero `touchTranslate`.
+  - The next long-press released without moving then counts as "moved", so `onDragEnd` never fires.
+    The row stays `isActive`, and our `TouchableOpacity` is `disabled` while active, so taps do nothing.
+
+  Repro: drop a task back in its own spot a few times, then long-press another and release without
+  moving. Fix: the migration below, or patch the library to call `reset()` after every drop.
   **Alternative to switch to:** `react-native-reorderable-list` (actively maintained, already
   RN 0.88-safe, FlatList-based). It supports nicer ordering: drop indicator, add/remove layout
   animations and custom cell animations. Migration notes:
