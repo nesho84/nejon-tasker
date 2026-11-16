@@ -6,7 +6,7 @@ import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-
 import { useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { previewNotifReminderModal, previewRateAppModal, showNotifReminderJsonModal, showRateAppJsonModal } from "./debugModals";
-import { debugTaskReminderN, logScheduledN } from "./debugNotifs";
+import { debugTaskReminderN, showScheduledNJsonModal } from "./debugNotifs";
 import { clearAllData, seedDummyData } from "./debugSeed";
 import { UpdatePreview, useDebugStore } from "./debugStore";
 import {
@@ -158,7 +158,7 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
                         <AutoModalHead title="Rate App" hint={RATE_APP_HINT} />
                         <DebugButton
                             label="Show 'Rate App' Modal"
-                            color={theme.teal}
+                            color={theme.violet}
                             onPress={previewRateAppModal}
                         />
                         <View style={[styles.divider, { backgroundColor: theme.border }]} />
@@ -173,7 +173,7 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
                         <AutoModalHead title="Notif Reminder" hint={NOTIF_REMINDER_HINT} />
                         <DebugButton
                             label="Show 'Notif Reminder' Modal"
-                            color={theme.teal}
+                            color={theme.violet}
                             onPress={previewNotifReminderModal}
                         />
                         <View style={[styles.divider, { backgroundColor: theme.border }]} />
@@ -206,7 +206,7 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
                     <DebugSection title="Notifications">
                         <DebugButton
                             label="Test Reminder on a Task"
-                            color={theme.secondary}
+                            color={theme.orange}
                             disabled={busy}
                             hint={TEST_REMINDER_HINT}
                             onPress={() => runAsync(() => debugTaskReminderN(notifSeconds))}
@@ -214,17 +214,18 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
                         />
                         <DebugButton
                             label="Test Reminder (kill app)"
-                            color={theme.secondary}
+                            color={theme.orange}
                             disabled={busy}
                             hint={TEST_REMINDER_KILLED_HINT}
                             onPress={() => runAsync(() => debugTaskReminderN(notifSecondsKilled))}
                             right={notifSecondsKilledBadge}
                         />
+                        <View style={[styles.divider, { backgroundColor: theme.border }]} />
                         <DebugButton
-                            label="Log Channels & Scheduled"
-                            color={theme.secondary}
+                            label="Show 'Scheduled Notifications' JSON"
+                            color={theme.gray}
                             disabled={busy}
-                            onPress={() => runAsync(logScheduledN)}
+                            onPress={() => runAsync(showScheduledNJsonModal)}
                         />
                     </DebugSection>
 

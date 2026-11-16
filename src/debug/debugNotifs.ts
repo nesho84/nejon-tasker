@@ -4,6 +4,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useTaskStore } from "@/store/taskStore";
 import * as Notifications from "expo-notifications";
 import { Alert, Platform } from "react-native";
+import { showJsonViewerModal } from "./debugUi";
 
 // ------------------------------------------------------------
 // Debug utility: set a real reminder on a random open task, firing in `seconds`.
@@ -66,22 +67,20 @@ function formatTriggerDate(trigger: Notifications.NotificationTrigger | null): s
 }
 
 // ------------------------------------------------------------
-// Debug utility: log all channels, scheduled notifications and permissions.
+// All channels + scheduled notifications + permissions, in the debug JSON viewer modal
 // ------------------------------------------------------------
-export async function logScheduledN(): Promise<void> {
-    try {
-        if (Platform.OS === "android") {
-            const channels = await Notifications.getNotificationChannelsAsync();
-            console.log("📡 Channels:", channels.map((c) => ({
-                id: c.id,
-                name: c.name,
-                importance: c.importance,
-                vibrationPattern: c.vibrationPattern,
-            })));
-        }
-
-        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-        console.log("⏰ Scheduled notifications:", JSON.stringify(scheduled.map((n) => ({
+export async function showScheduledNJsonModal(): Promise<void> {
+    const channels = Platform.OS === "android" ? await Notifications.getNotificationChannelsAsync() : [];
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    const permissions = await Notifications.getPermissionsAsync();
+    showJsonViewerModal("Scheduled Notifications", {
+        channels: channels.map((c) => ({
+            id: c.id,
+            name: c.name,
+            importance: c.importance,
+            vibrationPattern: c.vibrationPattern,
+        })),
+        scheduled: scheduled.map((n) => ({
             id: n.identifier,
             scheduledFor: formatTriggerDate(n.trigger),
             title: n.content.title,
@@ -90,11 +89,7 @@ export async function logScheduledN(): Promise<void> {
             body: n.content.body,
             data: n.content.data,
             trigger: n.trigger,
-        })), null, 2));
-
-        const permissions = await Notifications.getPermissionsAsync();
-        console.log("🔧 Notification permissions:", permissions);
-    } catch (err) {
-        console.error("❌ logScheduledN failed:", err);
-    }
+        })),
+        permissions,
+    });
 }

@@ -185,7 +185,7 @@ export function DebugSection({ title, children }: SectionProps) {
     const theme = useThemeStore((state) => state.theme);
     return (
         <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>{title}</Text>
+            <Text style={[styles.sectionTitle, { color: theme.muted }]}>{title}</Text>
             <View style={[styles.sectionCard, { backgroundColor: theme.bgAlt, borderColor: theme.border }]}>{children}</View>
         </View>
     );
@@ -261,7 +261,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         letterSpacing: 0.5,
         textTransform: "uppercase",
-        opacity: 0.8,
         paddingHorizontal: 4,
     },
     sectionCard: {
