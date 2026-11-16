@@ -190,9 +190,9 @@ export default function MainLayout() {
     const theme = useThemeStore((state) => state.theme);
     const tr = useLanguageStore((state) => state.tr);
 
-    // Integer width — a "%" width leaves a 1px sliver visible when closed
-    const { width: windowWidth } = useWindowDimensions();
-    const drawerWidth = Math.round(windowWidth * 0.77);
+    // Integer width (a "%" leaves a 1px sliver); from the shorter side so rotation doesn't flash it open
+    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+    const drawerWidth = Math.round(Math.min(windowWidth, windowHeight) * 0.77);
 
     // Local State
     const [drawerOpen, setDrawerOpen] = useState(false);
