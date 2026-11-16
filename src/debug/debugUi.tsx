@@ -254,12 +254,12 @@ export const showJsonViewerModal = (title: string, data: object) =>
 const styles = StyleSheet.create({
     // Feature section
     section: {
-        gap: 8,
+        gap: 6,
     },
     sectionTitle: {
-        fontSize: 13,
+        fontSize: 11,
         fontWeight: "600",
-        letterSpacing: 0.5,
+        letterSpacing: 0.8,
         textTransform: "uppercase",
         paddingHorizontal: 4,
     },

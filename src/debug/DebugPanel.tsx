@@ -39,9 +39,10 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
     const setUpdatePreview = useDebugStore((state) => state.setUpdatePreview);
     const forceUpdateOnLaunch = useDebugStore((state) => state.forceUpdateOnLaunch);
     const toggleUpdateOnLaunch = useDebugStore((state) => state.toggleUpdateOnLaunch);
+    const expanded = useDebugStore((state) => state.debugPanelExpanded);
+    const toggleDebugPanel = useDebugStore((state) => state.toggleDebugPanel);
 
     // Local state
-    const [expanded, setExpanded] = useState(false);
     const [busy, setBusy] = useState(false);
 
     // Toggle a check-for-update status preview on/off (back to "idle")
@@ -97,9 +98,9 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
 
             {/* Toggle header */}
             <TouchableOpacity
-                style={[styles.selector, { backgroundColor: theme.bgAlt, borderColor: theme.divider }]}
+                style={[styles.selector, { backgroundColor: theme.danger + "15" }]}
                 activeOpacity={0.7}
-                onPress={() => setExpanded((v) => !v)}
+                onPress={toggleDebugPanel}
             >
                 <Ionicons name="bug" size={20} color={theme.danger} style={styles.selectorIcon} />
                 <Text style={[styles.selectorText, { color: theme.danger }]}>
@@ -239,11 +240,13 @@ const styles = StyleSheet.create({
     // Own bordered box — paddingTop leaves room for the badge that overlaps the top border
     box: {
         marginHorizontal: 14,
-        marginTop: 14,
+        marginTop: 20,
+        marginBottom: 4,
         borderWidth: 1,
         borderRadius: 16,
         padding: 8,
-        paddingTop: 22,
+        paddingHorizontal: 10,
+        paddingTop: 24,
     },
     statusWrap: {
         position: "absolute",
@@ -266,9 +269,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 12,
-        paddingVertical: 12,
+        paddingVertical: 6,
         borderRadius: 8,
-        borderWidth: 1,
     },
     selectorIcon: {
         marginRight: 10,
@@ -281,7 +283,6 @@ const styles = StyleSheet.create({
     body: {
         gap: 16,
         marginTop: 16,
-        marginBottom: 6,
     },
 
     blockSeparator: {
