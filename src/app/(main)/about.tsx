@@ -147,11 +147,6 @@ export default function AboutScreen() {
                     />
                 )}
 
-                {/* Description */}
-                <Text style={[styles.desc, { color: theme.placeholder }]} adjustsFontSizeToFit>
-                    {tr.about.desc}
-                </Text>
-
                 {/* Action buttons */}
                 <View style={styles.actionButtonsGroup}>
                     {/* Support Button */}
@@ -324,14 +319,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "500",
         includeFontPadding: false,
-    },
-    desc: {
-        fontSize: 15,
-        fontWeight: "400",
-        textAlign: "center",
-        lineHeight: 22,
-        marginVertical: 8,
-        paddingHorizontal: 10,
     },
 
     // Action Buttons

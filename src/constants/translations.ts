@@ -189,7 +189,6 @@ export const TRANSLATIONS = {
         },
         // About screen specific
         about: {
-            desc: "Nejon Tasker is a simple and efficient task management app designed to help you organize your daily activities with ease.",
             supportDev: "Support the development",
             rateApp: "Rate the App",
             rateAppDesc: "Leave a review on Google Play",
@@ -417,7 +416,6 @@ export const TRANSLATIONS = {
         },
         // About screen specific
         about: {
-            desc: "Nejon Tasker ist eine einfache und effiziente Aufgabenverwaltungs-App, die Ihnen hilft, Ihre täglichen Aktivitäten mühelos zu organisieren.",
             supportDev: "Unterstützen Sie die Entwicklung",
             rateApp: "Bewerten Sie die App",
             rateAppDesc: "Hinterlassen Sie eine Bewertung im Google Play Store",
@@ -645,7 +643,6 @@ export const TRANSLATIONS = {
         },
         // About screen specific
         about: {
-            desc: "Nejon Tasker është një aplikacion i thjeshtë dhe efikas për menaxhimin e detyrave, i dizajnuar për t'ju ndihmuar të organizoni aktivitetet tuaja ditore me lehtësi.",
             supportDev: "Ndihmo zhvillimin e aplikacionit",
             rateApp: "Vlerëso Aplikacionin",
             rateAppDesc: "Lër një vlerësim në Google Play",
