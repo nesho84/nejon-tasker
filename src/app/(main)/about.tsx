@@ -1,4 +1,4 @@
-import { showRateAppModal } from '@/components/RateApp';
+import { showStoreReviewModal } from '@/components/StoreReviewModal';
 import { APP_WEBSITE_URL, GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
 import { globalStyles } from '@/constants/styles';
 import DebugPanel from '@/debug/DebugPanel';
@@ -114,27 +114,27 @@ export default function AboutScreen() {
                     }}
                 />
 
-                {/* Logo */}
-                <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
-
-                {/* Title */}
-                <Text style={[styles.title, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
-
-                {/* Version (5 times Press activates debug mode) */}
-                <TouchableOpacity style={styles.versionButton} onPress={handleVersionTap} activeOpacity={0.6}>
-                    <Text style={[styles.versionText, { color: theme.placeholder }]}>
-                        Version {Constants?.expoConfig?.version}
-                    </Text>
-                </TouchableOpacity>
-
-                {/* Debug-mode hint (activating only — while on, the badge on the debug box counts down) */}
-                {!debugModeEnabled && tapCount >= DEBUG_MODE_TAP_HINT_START && (
-                    <View style={[styles.debugBadge, { borderColor: 'transparent' }]}>
-                        <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
-                            Tap {tapsLeft} more time{tapsLeft === 1 ? "" : "s"} to activate debug mode.
+                {/* Logo + Title + Version */}
+                <View style={styles.logoSection}>
+                    {/* Logo */}
+                    <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
+                    {/* App Name */}
+                    <Text style={[styles.title, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
+                    {/* App Version (5 times Press activates debug mode) */}
+                    <TouchableOpacity onPress={handleVersionTap} activeOpacity={0.6}>
+                        <Text style={[styles.versionText, { color: theme.placeholder }]}>
+                            Version {Constants?.expoConfig?.version}
                         </Text>
-                    </View>
-                )}
+                    </TouchableOpacity>
+                    {/* Debug-mode hint (activating only — while on, the badge on the debug box counts down) */}
+                    {!debugModeEnabled && tapCount >= DEBUG_MODE_TAP_HINT_START && (
+                        <View style={[styles.debugBadge, { borderColor: 'transparent' }]}>
+                            <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
+                                Tap {tapsLeft} more time{tapsLeft === 1 ? "" : "s"} to activate debug mode.
+                            </Text>
+                        </View>
+                    )}
+                </View>
 
                 {/* Debug tools box — only while debug mode is on (dev builds too). Its status badge sits on the
                     top border; tapping it counts like tapping the version, and it counts down while you tap. */}
@@ -174,7 +174,7 @@ export default function AboutScreen() {
                             backgroundColor: theme.primary + '08',
                             borderColor: theme.primary + '20'
                         }]}
-                        onPress={() => showRateAppModal(true)}
+                        onPress={() => showStoreReviewModal(true)}
                         activeOpacity={0.8}
                     >
                         <View style={[globalStyles.rowIcon, { backgroundColor: theme.primary + '15' }]}>
@@ -283,21 +283,23 @@ const styles = StyleSheet.create({
         gap: 12,
     },
 
+    // Hero section — space below it is the same with or without the debug box
+    logoSection: {
+        alignItems: "center",
+        marginTop: 24,
+        marginBottom: 16,
+        gap: 6,
+    },
     logo: {
         width: 120,
         height: 120,
-        alignSelf: "center",
-        marginTop: 24,
+        marginBottom: 6,
         borderRadius: 20,
     },
     title: {
         fontSize: 26,
         fontWeight: "700",
         textAlign: "center",
-    },
-    versionButton: {
-        alignSelf: "center",
-        marginTop: -6,
     },
     versionText: {
         fontSize: 14,

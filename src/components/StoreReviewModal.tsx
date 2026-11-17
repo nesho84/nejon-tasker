@@ -1,62 +1,31 @@
+import { DAY_MS, STORE_REVIEW_MAX_SHOWS, STORE_REVIEW_WAIT_DAYS, useAutoModalsStore } from "@/store/autoModalsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useModalStore } from "@/store/modalStore";
-import { useRateAppStore } from "@/store/rateAppStore";
 import { useThemeStore } from "@/store/themeStore";
 import { openStoreListing } from "@/utils/system";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-// Wait after "Later"
-const REMIND_AFTER_DAYS = 7;
-// Every open counts (except from About) — the limit marks it done
-export const RATE_APP_MAX_SHOWS = 3;
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Star sizes, left to right — the middle one is the biggest
 const STAR_SIZES = [26, 34, 44, 34, 26];
 
 // ------------------------------------------------------------
-// Open "Rate the App" fullscreen modal (Android only)
-// ------------------------------------------------------------
-export function openRateAppModal() {
-    if (Platform.OS !== "android") {
-        return;
-    }
-
-    const { rateAppNextShowAt, rateAppDone } = useRateAppStore.getState();
-
-    // Tapped "Open Store" or "Already rated", or shown the max times
-    if (rateAppDone) {
-        return;
-    }
-    // Tapped "Later"
-    if (rateAppNextShowAt && Date.now() < rateAppNextShowAt) {
-        return;
-    }
-    // Another modal is open (e.g. "Update available") — yield, try at a later trigger
-    if (useModalStore.getState().visible) {
-        return;
-    }
-
-    showRateAppModal();
-}
-
-// ------------------------------------------------------------
-// Show the "Rate the App" modal — no checks (the Debug Panel and About call this directly).
+// Show the "Rate the App" modal — no checks (canShowStoreReview runs at the trigger).
 // From About the open and "Later" aren't recorded; "Open Store" and "Already rated" always are.
 // ------------------------------------------------------------
-export function showRateAppModal(fromAbout = false) {
-    const { rateAppShownCount, setRateAppNextShowAt, setRateAppShownAt, setRateAppShownCount, setRateAppDone } = useRateAppStore.getState();
+export function showStoreReviewModal(fromAbout = false) {
+    const { storeReviewShownCount, setAutoModals } = useAutoModalsStore.getState();
     const tr = useLanguageStore.getState().tr;
     const theme = useThemeStore.getState().theme;
     const { hide } = useModalStore.getState();
 
     if (!fromAbout) {
-        setRateAppShownAt(Date.now());
-        setRateAppShownCount(rateAppShownCount + 1);
-        if (rateAppShownCount + 1 >= RATE_APP_MAX_SHOWS) {
-            setRateAppDone(true);
-        }
+        setAutoModals({
+            storeReviewShownAt: Date.now(),
+            storeReviewShownCount: storeReviewShownCount + 1,
+            // Every open counts — the limit marks it done
+            storeReviewDone: storeReviewShownCount + 1 >= STORE_REVIEW_MAX_SHOWS,
+        });
     }
 
     useModalStore.getState().show({
@@ -84,7 +53,7 @@ export function showRateAppModal(fromAbout = false) {
                         style={[styles.button, { backgroundColor: theme.primary + "20", borderWidth: 1, borderColor: theme.primary + "40" }]}
                         activeOpacity={0.8}
                         onPress={() => {
-                            setRateAppDone(true);
+                            setAutoModals({ storeReviewDone: true });
                             hide("openStore");
                             openStoreListing();
                         }}
@@ -97,7 +66,7 @@ export function showRateAppModal(fromAbout = false) {
                         activeOpacity={0.8}
                         onPress={() => {
                             if (!fromAbout) {
-                                setRateAppNextShowAt(Date.now() + REMIND_AFTER_DAYS * DAY_MS);
+                                setAutoModals({ storeReviewNextShowAt: Date.now() + STORE_REVIEW_WAIT_DAYS * DAY_MS });
                             }
                             hide("later");
                         }}
@@ -108,7 +77,7 @@ export function showRateAppModal(fromAbout = false) {
                         style={styles.button}
                         activeOpacity={0.6}
                         onPress={() => {
-                            setRateAppDone(true);
+                            setAutoModals({ storeReviewDone: true });
                             hide("alreadyRated");
                         }}
                     >

@@ -47,11 +47,22 @@ under "Architecture" — read it before making cross-cutting changes. Key points
   repos at startup (`loadTasks` / `loadLabels` in `RootLayout`) and **write through to SQLite on
   every mutation**. Components read stores; stores call repos — never query SQLite from a component.
 
-- **Settings stores** (`themeStore`, `languageStore`, `onboardingStore`) are persisted with Zustand's
+- **Settings stores** (`themeStore`, `languageStore`, `onboardingStore`, `autoModalsStore`) are persisted with Zustand's
   `persist` middleware + **expo-sqlite's kv-store** via the `kvStorage` adapter in
   `src/store/storage.ts` (its own `ExpoSQLiteStorage` db file, separate from `tasks.db`).
+  Hydration is **async** — anything reading a persisted value at startup must wait for that store's `isReady`.
+  Writes are **sync** (`setItemSync` / `removeItemSync`) on purpose: kv-store's async writes can finish out of
+  order, so two quick `set()` calls could persist the older state. Don't switch them back to async.
 
-- **Notifications** use **expo-notifications** (not notifee). `useNotifications` (`src/hooks`) owns
+- **Sync hooks** (`src/hooks/use*Sync.ts`) are all invoked once in `RootLayout`, return nothing, and own
+  the app-wide side effects (notification taps, auto modals, OTA updates, device settings, ads). Put
+  cross-cutting reactive effects here, not in screens. Hooks used inside a screen that **return data**
+  (e.g. `useTaskFilter`) use a plain `useX` name and a named export, like every other hook.
+
+- **Auto modals** (Store update, Enable notifications, Store review) share `autoModalsStore`; the rules and the
+  startup order live in `useAutoModalsSync`. See README "Auto modals".
+
+- **Notifications** use **expo-notifications** (not notifee). `useNotificationsSync` (`src/hooks`) owns
   permission requests, the task-reminder scheduler (a `DATE` trigger so Android fires at the exact
   clock time), and the Android settings deep-links: battery-optimization (status read via
   `expo-battery.isBatteryOptimizationEnabledAsync()`, opened via `expo-intent-launcher`) and the

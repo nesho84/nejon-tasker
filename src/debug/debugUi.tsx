@@ -42,25 +42,16 @@ interface SectionProps {
     children: ReactNode;
 }
 
-interface ModalHeadProps {
-    title: string;
-    hint: string;
-}
-
 interface JsonViewerProps {
     title: string;
     json: string;
 }
 
 // How scenario-based features really trigger — shown under their ⓘ
-export const UPDATE_MODAL_HINT =
-    "Auto (release builds only): checked once on every app start. Google Play (In-App Updates) only answers " +
-    "when the app was installed from Play. A newer store version → this modal on every start until updated " +
-    "(\"Later\" isn't remembered). OTA updates download and reload silently — no modal. " +
-    "Also opens from Settings → \"Check for update\" when one is found. Here it just opens.";
-export const UPDATE_LAUNCH_HINT =
-    "When ON, the \"Update available\" modal opens on the next app start, like a real store update would. " +
-    "Stays ON across restarts until you turn it off (or debug mode is turned off).";
+export const STORE_UPDATE_LAUNCH_HINT =
+    "When ON, every app start acts as if the store reported an update (no real check, no 5 s wait) — " +
+    "so the launch order and the waits apply. Stays ON across restarts until you turn it off " +
+    "(or debug mode is turned off).";
 export const UP_TO_DATE_HINT =
     "Shows the green line under Settings → \"Check for update\" without a real check, until the app restarts. " +
     "Real: shown after a manual check finds no newer store version.";
@@ -70,7 +61,7 @@ export const CHECK_FAILED_HINT =
 export const SEED_HINT =
     "Seeding wipes existing data first, then generates a large set (~16 labels, hundreds of tasks), " +
     "including one label with a long name and some tasks with very long text. " +
-    "About a quarter of the tasks come checked with today's date — so Rate App's \"3rd task today\" can't fire after seeding.";
+    "About a quarter of the tasks come checked with today's date — so Store Review's \"3rd task today\" can't fire after seeding.";
 export const TEST_REMINDER_HINT =
     "Sets a real reminder on the open task with the longest text. Check: label as title (over 25 chars → " +
     "first 20 + ...), label color, text cut at 200 chars; it shows in Reminders › Upcoming, then moves to Past; " +
@@ -78,20 +69,28 @@ export const TEST_REMINDER_HINT =
 export const TEST_REMINDER_KILLED_HINT =
     "Same reminder, with time to swipe the app away before it fires — then tap the notification (cold start).";
 
-// How the two auto modals work — shown under their ⓘ
-export const RATE_APP_HINT =
-    "First show (Android only): the first time a 3rd task gets checked in one day — can already happen on day one. " +
-    "Fires only at exactly 3: every task checked today counts (edited or seeded ones too), and past 3 it waits for the next day.\n" +
-    "\"Later\" → asks again 7 days later, at the next such moment.\n" +
-    "Never again: \"Open Store\", \"Already rated\", or after 3 shows.\n" +
-    "Waits while another modal is open.\n" +
-    "From About: always opens; only \"Open Store\" / \"Already rated\" are recorded.\n" +
-    "Here: counts like a real show and skips the waits — when blocked, you get a Reset.";
+// How the three auto modals work — shown under their ⓘ
+export const STORE_UPDATE_HINT =
+    "Checked on every app start (release builds only, up to 5 s). Android asks Google Play (In-App Updates), " +
+    "which only works when the app was installed from Play; iOS isn't set up yet.\n" +
+    "First in the launch order: Store Update → Notif Reminder, at most one per start.\n" +
+    "Newer version → shows; the next two starts show it again, then every 3 days. Never stops.\n" +
+    "Up to date (and online) → starts over.\n" +
+    "From Settings → \"Check for update\": opens when one is found, not recorded. OTA updates reload silently.\n" +
+    "Here: counts like a real show — during the 3-day wait, you get a Reset.";
 export const NOTIF_REMINDER_HINT =
     "First show: on an app start 3+ days after the app first saw notifications turned off.\n" +
     "\"Not now\" or \"Enable\" → asks again 7 days later, then 14 days later (on an app start).\n" +
     "Never again: after 3 shows — starts over once notifications are allowed and later turned off again.\n" +
-    "Waits while another modal is open.\n" +
+    "Waits while Store Update showed on that start, or another modal is open.\n" +
+    "Here: counts like a real show and skips the waits — when blocked, you get a Reset.";
+export const STORE_REVIEW_HINT =
+    "First show (Android only): the first time a 3rd task gets checked in one day — can already happen on day one. " +
+    "Fires only at exactly 3: every task checked today counts (edited or seeded ones too), and past 3 it waits for the next day.\n" +
+    "\"Later\" → asks again 7 days later, at the next such moment.\n" +
+    "Never again: \"Open Store\", \"Already rated\", or after 3 shows.\n" +
+    "Waits while Store Update or Notif Reminder showed since the app started, or another modal is open.\n" +
+    "From About: always opens; only \"Open Store\" / \"Already rated\" are recorded.\n" +
     "Here: counts like a real show and skips the waits — when blocked, you get a Reset.";
 
 // ------------------------------------------------------------
@@ -192,23 +191,6 @@ export function DebugSection({ title, children }: SectionProps) {
 }
 
 // ------------------------------------------------------------
-// Auto-modal title with an ⓘ that shows how it works
-// ------------------------------------------------------------
-export function AutoModalHead({ title, hint }: ModalHeadProps) {
-    const theme = useThemeStore((state) => state.theme);
-    const [showHint, setShowHint] = useState(false);
-    return (
-        <>
-            <View style={styles.modalHead}>
-                <Text style={[styles.modalTitle, { color: theme.text2 }]}>{title}</Text>
-                <InfoButton active={showHint} onPress={() => setShowHint((v) => !v)} />
-            </View>
-            {showHint && <Hint text={hint} />}
-        </>
-    );
-}
-
-// ------------------------------------------------------------
 // JSON viewer for debugging: scrollable, selectable, share via the system sheet
 // ------------------------------------------------------------
 function JsonViewer({ title, json }: JsonViewerProps) {
@@ -271,18 +253,6 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
 
-    // Auto-modal block
-    modalHead: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingLeft: 6,
-        paddingRight: 2,
-    },
-    modalTitle: {
-        fontSize: 14,
-        fontWeight: "600",
-    },
     infoButton: {
         width: 28,
         height: 28,

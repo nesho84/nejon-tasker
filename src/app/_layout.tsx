@@ -2,10 +2,10 @@ import AppLoading from "@/components/AppLoading";
 import ModalProvider from "@/components/ModalProvider";
 import { setupDatabase } from "@/db/database";
 import { useAdsSync } from "@/hooks/useAdsSync";
+import { useAutoModalsSync } from "@/hooks/useAutoModalsSync";
 import { useDeviceSettingsSync } from "@/hooks/useDeviceSettingsSync";
-import useNotifications from "@/hooks/useNotifications";
-import { useNotifReminderSync } from "@/hooks/useNotifReminderSync";
-import { useUpdatesSync } from "@/hooks/useUpdatesSync";
+import { useNotificationsSync } from "@/hooks/useNotificationsSync";
+import { useOtaUpdatesSync } from "@/hooks/useOtaUpdatesSync";
 import { useLabelStore } from "@/store/labelStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -79,9 +79,9 @@ export default function RootLayout() {
 
   // Initialization and global sync hooks
   useDeviceSettingsSync();
-  useNotifications(isDbReady);
-  useUpdatesSync();
-  useNotifReminderSync();
+  useNotificationsSync(isDbReady);
+  useOtaUpdatesSync();
+  useAutoModalsSync();
   useAdsSync();
 
   // Show error if initialization failed

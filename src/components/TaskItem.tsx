@@ -1,5 +1,6 @@
-import { openRateAppModal } from "@/components/RateApp";
+import { showStoreReviewModal } from "@/components/StoreReviewModal";
 import { HIT_SLOP_6_4, HIT_SLOP_8 } from "@/constants/styles";
+import { canShowStoreReview } from "@/hooks/useAutoModalsSync";
 import { cancelScheduledNotification } from "@/services/notificationsService";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLabelStore } from "@/store/labelStore";
@@ -108,8 +109,8 @@ export default function TaskItem({
             const checkedToday = useTaskStore.getState().allTasks.filter(
                 (t) => t.checked && !t.isDeleted && dates.toDateKey(new Date(t.updatedAt)) === today
             ).length;
-            if (checkedToday === 3) {
-                openRateAppModal();
+            if (checkedToday === 3 && canShowStoreReview()) {
+                showStoreReviewModal();
             }
         }
     };

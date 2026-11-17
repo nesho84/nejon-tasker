@@ -1,29 +1,27 @@
-import { openUpdateAvailableModal } from "@/components/CheckForUpdate";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { previewNotifReminderModal, previewRateAppModal, showNotifReminderJsonModal, showRateAppJsonModal } from "./debugModals";
+import { previewNotifReminderModal, previewStoreReviewModal, previewStoreUpdateModal, showAutoModalsJsonModal } from "./debugModals";
 import { debugTaskReminderN, showScheduledNJsonModal } from "./debugNotifs";
 import { clearAllData, seedDummyData } from "./debugSeed";
-import { UpdatePreview, useDebugStore } from "./debugStore";
+import { StoreUpdatePreview, useDebugStore } from "./debugStore";
 import {
-    AutoModalHead,
     Badge,
     CHECK_FAILED_HINT,
     DebugButton,
     DebugSection,
     DebugToggle,
     NOTIF_REMINDER_HINT,
-    RATE_APP_HINT,
+    STORE_REVIEW_HINT,
     SEED_HINT,
+    STORE_UPDATE_HINT,
+    STORE_UPDATE_LAUNCH_HINT,
     TEST_REMINDER_HINT,
     TEST_REMINDER_KILLED_HINT,
     UP_TO_DATE_HINT,
-    UPDATE_LAUNCH_HINT,
-    UPDATE_MODAL_HINT,
 } from "./debugUi";
 
 interface DebugPanelProps {
@@ -35,10 +33,10 @@ interface DebugPanelProps {
 export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
     // Stores
     const theme = useThemeStore((state) => state.theme);
-    const updatePreview = useDebugStore((state) => state.updatePreview);
-    const setUpdatePreview = useDebugStore((state) => state.setUpdatePreview);
-    const forceUpdateOnLaunch = useDebugStore((state) => state.forceUpdateOnLaunch);
-    const toggleUpdateOnLaunch = useDebugStore((state) => state.toggleUpdateOnLaunch);
+    const storeUpdatePreview = useDebugStore((state) => state.storeUpdatePreview);
+    const setStoreUpdatePreview = useDebugStore((state) => state.setStoreUpdatePreview);
+    const forceStoreUpdateOnLaunch = useDebugStore((state) => state.forceStoreUpdateOnLaunch);
+    const toggleStoreUpdateOnLaunch = useDebugStore((state) => state.toggleStoreUpdateOnLaunch);
     const expanded = useDebugStore((state) => state.debugPanelExpanded);
     const toggleDebugPanel = useDebugStore((state) => state.toggleDebugPanel);
 
@@ -46,7 +44,7 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
     const [busy, setBusy] = useState(false);
 
     // Toggle a check-for-update status preview on/off (back to "idle")
-    const togglePreview = (value: UpdatePreview) => setUpdatePreview(updatePreview === value ? "idle" : value);
+    const togglePreview = (value: StoreUpdatePreview) => setStoreUpdatePreview(storeUpdatePreview === value ? "idle" : value);
 
     // ------------------------------------------------------------
     // Run an async action with a busy spinner and error handling
@@ -117,71 +115,65 @@ export default function DebugPanel({ status, onStatusPress }: DebugPanelProps) {
                 // The debug panel body
                 <View style={styles.body}>
 
-                    {/* App: onboarding + check-for-update previews (modal + the two inline status lines) */}
+                    {/* App: onboarding */}
                     <DebugSection title="App">
                         <DebugButton
                             label="Show Onboarding Screen"
                             color={theme.info}
                             onPress={() => useOnboardingStore.getState().setOnboarding(false)}
                         />
-                        <View style={[styles.divider, { backgroundColor: theme.border }]} />
-                        <DebugButton
-                            label="Show 'Update available' Modal"
-                            color={theme.green}
-                            hint={UPDATE_MODAL_HINT}
-                            onPress={openUpdateAvailableModal}
-                        />
+                    </DebugSection>
+
+                    {/* Store Update: Settings "Check for update" status lines + update on launch */}
+                    <DebugSection title="Store Update">
                         <DebugToggle
                             label="Toggle 'Up to date' line"
                             color={theme.green}
-                            value={updatePreview === "upToDate"}
+                            value={storeUpdatePreview === "upToDate"}
                             hint={UP_TO_DATE_HINT}
                             onPress={() => togglePreview("upToDate")}
                         />
                         <DebugToggle
                             label="Toggle 'Check failed' line"
                             color={theme.green}
-                            value={updatePreview === "error"}
+                            value={storeUpdatePreview === "error"}
                             hint={CHECK_FAILED_HINT}
                             onPress={() => togglePreview("error")}
                         />
                         <DebugToggle
                             label="Toggle 'Update available' On Launch"
                             color={theme.green}
-                            value={forceUpdateOnLaunch}
-                            hint={UPDATE_LAUNCH_HINT}
-                            onPress={toggleUpdateOnLaunch}
+                            value={forceStoreUpdateOnLaunch}
+                            hint={STORE_UPDATE_LAUNCH_HINT}
+                            onPress={toggleStoreUpdateOnLaunch}
                         />
                     </DebugSection>
 
-                    {/* Auto modals — one card, a block per modal */}
+                    {/* Auto modals — a preview per modal, one JSON for their shared store */}
                     <DebugSection title="Auto Modals">
-                        <AutoModalHead title="Rate App" hint={RATE_APP_HINT} />
                         <DebugButton
-                            label="Show 'Rate App' Modal"
+                            label="Show 'Store Update' Modal"
                             color={theme.violet}
-                            onPress={previewRateAppModal}
+                            hint={STORE_UPDATE_HINT}
+                            onPress={previewStoreUpdateModal}
                         />
-                        <View style={[styles.divider, { backgroundColor: theme.border }]} />
-                        <DebugButton
-                            label="Show 'Rate App' JSON"
-                            color={theme.gray}
-                            onPress={showRateAppJsonModal}
-                        />
-
-                        <View style={[styles.blockSeparator, { backgroundColor: theme.surface }]} />
-
-                        <AutoModalHead title="Notif Reminder" hint={NOTIF_REMINDER_HINT} />
                         <DebugButton
                             label="Show 'Notif Reminder' Modal"
                             color={theme.violet}
+                            hint={NOTIF_REMINDER_HINT}
                             onPress={previewNotifReminderModal}
+                        />
+                        <DebugButton
+                            label="Show 'Store Review' Modal"
+                            color={theme.violet}
+                            hint={STORE_REVIEW_HINT}
+                            onPress={previewStoreReviewModal}
                         />
                         <View style={[styles.divider, { backgroundColor: theme.border }]} />
                         <DebugButton
-                            label="Show 'Notif Reminder' JSON"
+                            label="Show 'Auto Modals' JSON"
                             color={theme.gray}
-                            onPress={showNotifReminderJsonModal}
+                            onPress={showAutoModalsJsonModal}
                         />
                     </DebugSection>
 
@@ -240,8 +232,6 @@ const styles = StyleSheet.create({
     // Own bordered box — paddingTop leaves room for the badge that overlaps the top border
     box: {
         marginHorizontal: 14,
-        marginTop: 20,
-        marginBottom: 4,
         borderWidth: 1,
         borderRadius: 16,
         padding: 8,
@@ -283,12 +273,6 @@ const styles = StyleSheet.create({
     body: {
         gap: 16,
         marginTop: 16,
-    },
-
-    blockSeparator: {
-        height: 3,
-        marginHorizontal: -8,
-        marginVertical: 6,
     },
 
     divider: {

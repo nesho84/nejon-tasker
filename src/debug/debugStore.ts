@@ -4,24 +4,24 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 // ------------------------------------------------------------
 // Debug-only store backing the Debug Panel. debugModeEnabled, debugPanelExpanded and
-// forceUpdateOnLaunch are persisted (need to survive a reload); the rest
+// forceStoreUpdateOnLaunch are persisted (need to survive a reload); the rest
 // reset on restart. debugModeEnabled is toggled by tapping the version
 // number on the About screen — it shows the Debug Tools box there
 // (in every build, dev included).
 // ------------------------------------------------------------
 
-export type UpdatePreview = "idle" | "upToDate" | "error";
+export type StoreUpdatePreview = "idle" | "upToDate" | "error";
 
 interface DebugState {
     debugModeEnabled: boolean;
     debugPanelExpanded: boolean;
-    forceUpdateOnLaunch: boolean;
-    updatePreview: UpdatePreview;
+    forceStoreUpdateOnLaunch: boolean;
+    storeUpdatePreview: StoreUpdatePreview;
     isReady: boolean;
     toggleDebugMode: () => void;
     toggleDebugPanel: () => void;
-    toggleUpdateOnLaunch: () => void;
-    setUpdatePreview: (value: UpdatePreview) => void;
+    toggleStoreUpdateOnLaunch: () => void;
+    setStoreUpdatePreview: (value: StoreUpdatePreview) => void;
 }
 
 export const useDebugStore = create<DebugState>()(
@@ -29,14 +29,14 @@ export const useDebugStore = create<DebugState>()(
         (set) => ({
             debugModeEnabled: false,
             debugPanelExpanded: false,
-            forceUpdateOnLaunch: false,
-            updatePreview: "idle",
+            forceStoreUpdateOnLaunch: false,
+            storeUpdatePreview: "idle",
             isReady: false,
 
             toggleDebugMode: () => set((state) => ({ debugModeEnabled: !state.debugModeEnabled })),
             toggleDebugPanel: () => set((state) => ({ debugPanelExpanded: !state.debugPanelExpanded })),
-            toggleUpdateOnLaunch: () => set((state) => ({ forceUpdateOnLaunch: !state.forceUpdateOnLaunch })),
-            setUpdatePreview: (value) => set({ updatePreview: value }),
+            toggleStoreUpdateOnLaunch: () => set((state) => ({ forceStoreUpdateOnLaunch: !state.forceStoreUpdateOnLaunch })),
+            setStoreUpdatePreview: (value) => set({ storeUpdatePreview: value }),
         }),
         {
             name: "debug-storage",
@@ -44,7 +44,7 @@ export const useDebugStore = create<DebugState>()(
             partialize: (state) => ({
                 debugModeEnabled: state.debugModeEnabled,
                 debugPanelExpanded: state.debugPanelExpanded,
-                forceUpdateOnLaunch: state.forceUpdateOnLaunch,
+                forceStoreUpdateOnLaunch: state.forceStoreUpdateOnLaunch,
             }),
             onRehydrateStorage: () => (state) => {
                 if (state) {

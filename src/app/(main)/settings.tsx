@@ -1,5 +1,5 @@
 import { BackupSection } from "@/components/BackupSection";
-import CheckForUpdate from "@/components/CheckForUpdate";
+import StoreUpdateCheck from "@/components/StoreUpdateCheck";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
 import { globalStyles } from "@/constants/styles";
@@ -185,7 +185,7 @@ export default function SettingsScreen() {
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
                         {tr.updates.rowLabel}
                     </Text>
-                    <CheckForUpdate />
+                    <StoreUpdateCheck />
                 </View>
 
             </ScrollView>

@@ -22,7 +22,7 @@ const OPENED_NOTIFICATION_KEY = "opened-notification-id";
 // Tapping a reminder opens its task — held until the DB is loaded and onboarding
 // is done, so cold-start taps work too. Fired reminders are kept (shown as Past).
 // ------------------------------------------------------------
-export default function useNotifications(isDbReady: boolean) {
+export function useNotificationsSync(isDbReady: boolean) {
     // A tap can only open a task once the main app is reachable (onboarding done)
     const onboardingReady = useOnboardingStore((state) => state.isReady);
     const onboardingComplete = useOnboardingStore((state) => state.onboardingComplete);

@@ -50,8 +50,8 @@ src/
 ├── components/            # Shared UI (AppScreen, TaskItem, CustomPicker, ColorPicker, BackupSection, …)
 ├── constants/             # Colors, translations.ts (i18n strings)
 ├── db/                    # SQLite: database.ts (schema/setup), task.repo.ts, label.repo.ts
-├── hooks/                 # useNotifications (handler + tap → task), useTaskFilter, useKeyboard, …
-├── services/              # backupService (JSON export/import)
+├── hooks/                 # Root use*Sync hooks (notifications, auto modals, OTA updates, …), useTaskFilter, useKeyboard
+├── services/              # backupService (JSON export/import), storeUpdateService, adsService, notificationsService
 ├── store/                 # Zustand stores
 ├── types/                 # TypeScript interfaces (task, label)
 └── utils/                 # Pure utility functions (dates, misc)
@@ -94,8 +94,7 @@ via the `kvStorage` adapter in `src/store/storage.ts`:
 | `themeStore` | Light / dark theme | SQLite kv-store |
 | `languageStore` | Active language + translation strings | SQLite kv-store |
 | `onboardingStore` | First-launch gate (`onboardingComplete`) | SQLite kv-store |
-| `rateAppStore` | "Rate the App" modal state (version the user went to the store on, remind-after time, already rated) | SQLite kv-store |
-| `notifReminderStore` | Notification-permission reminder modal state (remind-after time, close count) | SQLite kv-store |
+| `autoModalsStore` | State of the 3 auto modals (Store update, Notif reminder, Store review): next-show time, last show, show count, done | SQLite kv-store |
 
 ### Notifications & Reminders
 
@@ -106,7 +105,7 @@ Powered by **`expo-notifications`** (local notifications only — no push, no no
   the exact clock time rather than a drifting countdown. Content: label title (over 25 chars → first 20
   + "...", like the drawer), "Task Reminder" subtext, label color, task text (trimmed, cut at 200 chars —
   the tap opens the full task), `data: { taskId }`.
-- **`hooks/useNotifications.ts`** (root layout's global hooks, `useNotifications(isDbReady)`) — the foreground handler, and
+- **`hooks/useNotificationsSync.ts`** (root layout's global hooks, `useNotificationsSync(isDbReady)`) — the foreground handler, and
   notification **taps**: `useLastNotificationResponse()` opens the task (label screen + edit sheet), held
   until the DB is loaded and onboarding is done so cold-start taps work. Fired reminders are **kept** on
   the task — the Reminders screen shows them under **Past** until cleared or the task is checked.
@@ -128,26 +127,37 @@ exemption** (Doze otherwise batches/delays alarms). `USE_EXACT_ALARM` is intenti
 `expo-file-system`, shared via `expo-sharing`) and restores from a user-picked file
 (`expo-document-picker`), validating the format before importing.
 
-### Rate the App modal (Android only)
+### Auto modals
 
-`openRateAppModal()` (`src/components/RateApp.tsx`) is called when the 3rd task is checked on a day
-(`TaskItem`). It opens a fullscreen "Enjoying Nejon Tasker?" modal (stars, app icon) that only its buttons
-can close: **Open Store** (opens the Play listing via `openStoreListing()`; not asked again on this
-version, and 7 days after updating to a new one), **Later** (ask again in 7 days) and **Already rated**
-(never again). iOS shows nothing.
+Three modals open on their own. Their state lives in `autoModalsStore`; the waits are constants at the
+top of that file, and the rules (`canShowStoreUpdate`, `canShowNotifReminder`, `canShowStoreReview`)
+live in `src/hooks/useAutoModalsSync.ts`. Each `show…Modal()` in `src/components/*Modal.tsx` only shows the
+modal and records the show.
 
-### Notification reminder modal
+| Modal | First wait | After closing / "Later" | Stops for good |
+|---|---|---|---|
+| Store update | none | next launch, next launch, then every 3 days | never |
+| Enable notifications | 3 days | 7 days, then 14 | after 3 shows |
+| Store review (Android only) | none | 7 days | after 3 shows, "Open Store", or "Already rated" |
 
-`useNotifReminderSync` calls `openNotifReminderModal()` (`src/components/NotifReminder.tsx`) on launch
-and whenever the permission changes (device settings re-sync on resume). It waits for `notifReminderStore`
-to hydrate first, since the kv-store is async. While notifications are off it shows a "Never miss a
-reminder" alert that only its buttons can close: **Enable notifications** (`requestNotificationPermission()`;
-if no system dialog is possible anymore, offers system settings) and **Not now**.
-Schedule (`notifReminderStore`: remind-at time + close count): first seen off (after onboarding, after
-updating to this feature, or after re-disabling) → shows 3 days later; 1st close → 7 days; 2nd close →
-14 days; 3rd close → never again. Both buttons count as a close. Granting resets the time and count, so a
-later disable starts the cycle again. It never covers another modal — if one is open it yields until the
-next check, and if "Update available" replaces it, it comes back next launch since no close was recorded.
+No auto modal opens while another modal is open.
+
+**Launch order** (`checkAutoModalsOnStart`, once per launch after onboarding, the first device-settings
+sync, and the kv-store hydration of `autoModalsStore` and `debugStore`) — at most one of:
+1. **Store update** — if the store check (`checkForStoreUpdate` in `src/services/storeUpdateService.ts`, also used by
+   Settings → "Check for update"; 5 s timeout, release builds only) reports
+   an update and it's due. "No update" while online resets its cycle; offline, a failed check (sideloaded
+   build, iOS without an AppStoreID) or a timeout change nothing.
+2. **Enable notifications** — if due. Granting resets it; turning notifications off again starts the
+   3-day wait. **Enable notifications** calls `requestNotificationPermission()`, which offers system
+   settings when no system dialog is possible anymore.
+
+**Store review** keeps its own trigger — the 3rd task checked on a day (`TaskItem`) — and opens there when
+`canShowStoreReview()`. It also waits for a later session when Store update or Enable notifications already
+showed in this one.
+
+**Manual opens** skip the checks and aren't recorded: Store review from About (`fromAbout`), and
+Settings → "Check for update" (`showStoreUpdateModal(true)`). The debug panel previews count like a real show.
 
 ### i18n
 
