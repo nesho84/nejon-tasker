@@ -1,39 +1,51 @@
-import { BANNER_CLOSE_DELAY_MS, BANNER_UNIT_ID, CONNECTIVITY_DEBOUNCE_MS } from "@/constants/ads";
-import { HIT_SLOP_6_4 } from "@/constants/styles";
+import {
+    BANNER_CLOSE_DELAY_MS,
+    BANNER_DISMISS_RESET_MS,
+    BANNER_UNIT_ID,
+    CONNECTIVITY_DEBOUNCE_MS,
+} from "@/constants/ads";
+import { HIT_SLOP_8 } from "@/constants/styles";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { useAdsStore } from "@/store/adsStore";
+import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import NetInfo from "@react-native-community/netinfo";
 import { Ionicons } from "@react-native-vector-icons/ionicons/static";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { BannerAd, BannerAdSize, useForeground } from "react-native-google-mobile-ads";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// BannerAdSize.BANNER is a fixed 320dp wide
-const BANNER_WIDTH = 320;
-// Room the close button needs right of the ad: 4 gap + 18 button + 4 gap
-const CLOSE_SLOT = 26;
+// Space between the ad and the box's edges, the same on every side
+const PANEL_PADDING = 3;
+// Fixed tab height, so the tab can be placed exactly on the box's top line
+const TAB_HEIGHT = 19;
+// The tab rises above the banner: the main layout reserves its height plus 2dp, so bottom-anchored
+// controls (FAB, the task input bar) never sit under it, and its top hitSlop stops just short of them
+export const CLOSE_TAB_CLEARANCE = TAB_HEIGHT + 2;
+// Caps the adaptive height near the old banner's, instead of large anchored's 50–150dp
+const BANNER_MAX_HEIGHT = 60;
 
 export default function AdBanner() {
     // Stores
     const theme = useThemeStore((state) => state.theme);
+    const tr = useLanguageStore((state) => state.tr);
     const canRequestAds = useAdsStore((state) => state.canRequestAds);
 
     // Mounted outside any SafeAreaView, so the gesture-nav inset must be applied here directly
     const insets = useSafeAreaInsets();
 
-    // Narrow phones (360dp) lack room beside a centered ad, so the ad shifts left just enough
+    // The ad fills the panel's inner width
     const { width } = useWindowDimensions();
-    const closeFits = width >= BANNER_WIDTH + CLOSE_SLOT;
-    const adShift = closeFits ? Math.max(0, CLOSE_SLOT - (width - BANNER_WIDTH) / 2) : 0;
 
     // Load/dismiss state lives in the store. bannerLoaded is a one-way latch, so a failed
     // refresh never collapses a visible ad.
     const loaded = useAdsStore((state) => state.bannerLoaded);
     const dismissed = useAdsStore((state) => state.bannerDismissed);
+    const dismissedAt = useAdsStore((state) => state.bannerDismissedAt);
     const markBannerLoaded = useAdsStore((state) => state.markBannerLoaded);
     const dismissBanner = useAdsStore((state) => state.dismissBanner);
+    const restoreBanner = useAdsStore((state) => state.restoreBanner);
 
     // The keyboard covers the banner anyway, so it leaves the layout flow while open
     const { isKeyboardVisible } = useKeyboard();
@@ -106,8 +118,17 @@ export default function AdBanner() {
         if (prevOnline === false && wasMounted) bannerRef.current?.load();
     }, [online, loaded, shouldRenderBannerAd]);
 
-    // Reload on resume — the ad's WebView can be reclaimed while the app is suspended.
-    useForeground(() => bannerRef.current?.load());
+    // On resume: a dismissal older than BANNER_DISMISS_RESET_MS ends — the banner remounts and
+    // requests a fresh ad, and the close button waits its delay again. Otherwise reload, since
+    // the ad's WebView can be reclaimed while the app is suspended.
+    useForeground(() => {
+        if (dismissedAt !== null && Date.now() - dismissedAt >= BANNER_DISMISS_RESET_MS) {
+            setShowClose(false);
+            restoreBanner();
+            return;
+        }
+        bannerRef.current?.load();
+    });
 
     // Reveal the close button once the first ad has been on screen for a moment
     useEffect(() => {
@@ -120,7 +141,7 @@ export default function AdBanner() {
 
     return (
         // Collapsed to zero height until an ad has actually rendered — the native banner paints
-        // its own background at a fixed 320x50, so unstyling the wrapper is not enough to hide it.
+        // its own background, so unstyling the wrapper is not enough to hide it.
         <View
             testID="ad-banner-container"
             style={[
@@ -128,9 +149,7 @@ export default function AdBanner() {
                 {
                     backgroundColor: theme.bg,
                     borderTopColor: theme.border,
-                    paddingBottom: insets.bottom + 3,
-                    // Padding on one side moves the centered ad left by half of it
-                    paddingRight: adShift * 2,
+                    paddingBottom: insets.bottom + PANEL_PADDING,
                 },
                 !loaded && styles.collapsed,
                 // Out of flow so the screens above keep their full height and their original
@@ -138,22 +157,13 @@ export default function AdBanner() {
                 isKeyboardVisible && styles.behindKeyboard,
             ]}
         >
-            {showClose && closeFits && (
-                // Absolute, so it adds no height — sits in the gap beside the 320dp ad, never over it
-                <Pressable
-                    onPress={dismissBanner}
-                    hitSlop={HIT_SLOP_6_4}
-                    style={({ pressed }) => [styles.closeButton, pressed && { backgroundColor: theme.pressed }]}
-                >
-                    <Ionicons name="close" size={14} color={theme.placeholder} />
-                </Pressable>
-            )}
-
             {shouldRenderBannerAd && (
                 <BannerAd
                     ref={bannerRef}
                     unitId={BANNER_UNIT_ID}
-                    size={BannerAdSize.BANNER}
+                    size={BannerAdSize.INLINE_ADAPTIVE_BANNER}
+                    width={width - PANEL_PADDING * 2}
+                    maxHeight={BANNER_MAX_HEIGHT}
                     onAdLoaded={markBannerLoaded}
                     onAdFailedToLoad={(err) => {
                         // bannerLoaded is deliberately untouched — a failed refresh must not hide an
@@ -163,6 +173,25 @@ export default function AdBanner() {
                     }}
                 />
             )}
+
+            {showClose && (
+                // A tab rising from the box's top line, same colour as the box. It sits above the ad,
+                // never over it; no bottom hitSlop so it can't take taps from the ad.
+                <TouchableOpacity
+                    style={[styles.closeTab, { backgroundColor: theme.bg, borderColor: theme.border }]}
+                    onPress={dismissBanner}
+                    accessibilityRole="button"
+                    accessibilityLabel={tr.ads.closeAd}
+                    hitSlop={{ ...HIT_SLOP_8, bottom: 0 }}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons name="close" size={16} color={theme.text2} style={styles.closeIcon} />
+                    {/* Hides the box line under the tab. Sits between the side borders, so it never
+                        touches the corners; extra height falls on the box's own background.
+                        pointerEvents none keeps the tap area above the line, away from the ad. */}
+                    <View pointerEvents="none" style={[styles.lineCover, { backgroundColor: theme.bg }]} />
+                </TouchableOpacity>
+            )}
         </View>
     );
 }
@@ -170,7 +199,7 @@ export default function AdBanner() {
 const styles = StyleSheet.create({
     container: {
         alignItems: "center",
-        paddingVertical: 3,
+        paddingVertical: PANEL_PADDING,
         borderTopWidth: StyleSheet.hairlineWidth,
     },
     collapsed: {
@@ -190,12 +219,32 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
     },
-    closeButton: {
+    // Tab above the box's top-right corner, outlined top and sides only, so the box line runs
+    // up and around it
+    closeTab: {
         position: "absolute",
-        top: 2,
-        right: 4,
+        // Ends exactly on the box line, so the side borders stop flush with it
+        top: -TAB_HEIGHT,
+        right: PANEL_PADDING,
         zIndex: 1,
-        padding: 2,
-        borderRadius: 999,
+        height: TAB_HEIGHT,
+        justifyContent: "center",
+        paddingHorizontal: 10,
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderLeftWidth: StyleSheet.hairlineWidth,
+        borderRightWidth: StyleSheet.hairlineWidth,
+    },
+    lineCover: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: -2,
+        height: 2,
+    },
+    closeIcon: {
+        includeFontPadding: false,
+        paddingTop: 1,
     },
 });

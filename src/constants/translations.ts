@@ -177,6 +177,13 @@ export const TRANSLATIONS = {
             appClosed: "Reminders arrive even when the app is closed.",
             openTask: "Tap a reminder to open its task right away.",
         },
+        // Ads: banner close button + Settings privacy card
+        ads: {
+            privacyRow: "Ad privacy",
+            privacyButton: "Privacy settings",
+            privacyError: "Couldn't open the ad privacy settings. Please try again.",
+            closeAd: "Close ad",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Clear Storage",
@@ -404,6 +411,13 @@ export const TRANSLATIONS = {
             appClosed: "Erinnerungen kommen auch an, wenn die App geschlossen ist.",
             openTask: "Tippen Sie auf eine Erinnerung, um die Aufgabe direkt zu öffnen.",
         },
+        // Ads: banner close button + Settings privacy card
+        ads: {
+            privacyRow: "Werbung & Datenschutz",
+            privacyButton: "Datenschutzeinstellungen",
+            privacyError: "Die Datenschutz-Einstellungen für Werbung konnten nicht geöffnet werden. Bitte versuche es erneut.",
+            closeAd: "Werbung schließen",
+        },
         // Settings screen specific
         settings: {
             clearStorage: "Datenbank löschen",
@@ -630,6 +644,13 @@ export const TRANSLATIONS = {
             exactTime: "Merr kujtesë në kohën e caktuar.",
             appClosed: "Kujtesat shfaqen edhe kur aplikacioni është i mbyllur.",
             openTask: "Shtyp kujtesën për ta hapur menjëherë detyrën.",
+        },
+        // Ads: banner close button + Settings privacy card
+        ads: {
+            privacyRow: "Privatësia e reklamave",
+            privacyButton: "Cilësimet e privatësisë",
+            privacyError: "Cilësimet e privatësisë nuk u hapën. Provo përsëri.",
+            closeAd: "Mbyll reklamën",
         },
         // Settings screen specific
         settings: {

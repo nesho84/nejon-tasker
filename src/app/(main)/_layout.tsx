@@ -1,4 +1,4 @@
-import AdBanner from '@/components/AdBanner';
+import AdBanner, { CLOSE_TAB_CLEARANCE } from '@/components/AdBanner';
 import { globalStyles, HIT_SLOP_8 } from '@/constants/styles';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { selectBannerVisible, useAdsStore } from '@/store/adsStore';
@@ -202,13 +202,15 @@ export default function MainLayout() {
 
     // Every screen adds its own insets.bottom, so while the banner is docked over the
     // gesture-nav strip they must not reserve it a second time — that gap is the banner's.
-    // With the keyboard open the banner leaves the layout flow, so the inset comes back.
+    // They reserve the close tab instead, which rises above the banner over the bottom-anchored
+    // controls (FAB, the task input bar). With the keyboard open the banner leaves the layout
+    // flow, so the inset comes back.
     const insets = useSafeAreaInsets();
     const { isKeyboardVisible } = useKeyboard();
     const bannerVisible = useAdsStore(selectBannerVisible);
     const bannerDocked = bannerVisible && !isKeyboardVisible;
     const contentInsets = useMemo(
-        () => (bannerDocked ? { ...insets, bottom: 0 } : insets),
+        () => (bannerDocked ? { ...insets, bottom: CLOSE_TAB_CLEARANCE } : insets),
         [bannerDocked, insets]
     );
 

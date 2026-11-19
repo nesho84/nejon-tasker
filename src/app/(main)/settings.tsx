@@ -3,13 +3,14 @@ import StoreUpdateCheck from "@/components/StoreUpdateCheck";
 import CustomPicker from "@/components/CustomPicker";
 import { DARK, LIGHT } from "@/constants/colors";
 import { globalStyles } from "@/constants/styles";
+import { useAdsStore } from "@/store/adsStore";
 import { useDeviceSettingsStore } from "@/store/deviceSettingsStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Language, LANGUAGES } from "@/types/language.types";
 import { openAlarmPermissionSettings, openBatteryOptimizationSettings, openNotificationSettings, requestNotificationPermission } from "@/utils/system";
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
@@ -20,6 +21,7 @@ export default function SettingsScreen() {
     const tr = useLanguageStore((state) => state.tr);
     const notificationsEnabled = useDeviceSettingsStore((state) => state.notificationPermission);
     const batteryOptimization = useDeviceSettingsStore((state) => state.batteryOptimization);
+    const privacyOptionsRequired = useAdsStore((state) => state.privacyOptionsRequired);
 
     // Safe area insets
     const insets = useSafeAreaInsets();
@@ -48,6 +50,18 @@ export default function SettingsScreen() {
             await openNotificationSettings();
         } else {
             await requestNotificationPermission(tr);
+        }
+    };
+
+    // ------------------------------------------------------------
+    // Ad privacy — reopens Google's consent form
+    // ------------------------------------------------------------
+    const handleAdPrivacy = async () => {
+        try {
+            await useAdsStore.getState().openPrivacyOptions();
+        } catch (err) {
+            console.error("Ad privacy options error:", err);
+            Alert.alert(tr.errors.somethingWrong, tr.ads.privacyError);
         }
     };
 
@@ -180,6 +194,24 @@ export default function SettingsScreen() {
                     <BackupSection />
                 </View>
 
+                {/* Ad Privacy (only where Google requires it, e.g. EEA/UK) */}
+                {privacyOptionsRequired && (
+                    <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                        <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
+                            {tr.ads.privacyRow}
+                        </Text>
+                        <TouchableOpacity
+                            style={[styles.wideButton, { backgroundColor: theme.teal + '20' }]}
+                            onPress={handleAdPrivacy}
+                        >
+                            <MaterialDesignIcons name="shield-account-outline" size={16} color={theme.teal + '90'} />
+                            <Text style={[styles.wideButtonText, { color: theme.teal + '90' }]}>
+                                {tr.ads.privacyButton}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
                 {/* App Updates */}
                 <View style={[styles.sectionCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <Text style={[styles.sectionTitle, { color: theme.primaryAlt }]}>
@@ -229,5 +261,19 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 18,
         opacity: 0.7,
+    },
+    // Same shape as the "Check for updates" button
+    wideButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 10,
+        borderRadius: 8,
+        gap: 6,
+    },
+    wideButtonText: {
+        fontSize: 16,
+        fontWeight: "600",
+        includeFontPadding: false,
     },
 });
