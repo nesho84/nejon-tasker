@@ -90,11 +90,14 @@ const ModalSheet = forwardRef<ModalSheetRef, Props>(({
 }, ref) => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
-  const sheetMaxHeight = typeof size === 'number'
-    ? height * Math.min(Math.max(size, 0.1), 1)
-    : height * SIZES_MAP[size ?? 'full'];
+  // Landscape leaves little height, so any sheet may use all of it — content still decides how tall it gets
+  const sheetMaxHeight = width > height
+    ? height * SIZES_MAP.full
+    : typeof size === 'number'
+      ? height * Math.min(Math.max(size, 0.1), 1)
+      : height * SIZES_MAP[size ?? 'full'];
 
   const translateY = useSharedValue(0);
   const backdropOpacity = useSharedValue(0);

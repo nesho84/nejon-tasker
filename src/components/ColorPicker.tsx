@@ -1,6 +1,6 @@
 import { labelBgColors } from "@/constants/colors";
 import { MaterialIcons } from "@react-native-vector-icons/material-icons/static";
-import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface Props {
     labelColor: string;
@@ -8,49 +8,48 @@ interface Props {
 }
 
 export default function ColorPicker({ labelColor, onValueChange: onChangeColor }: Props) {
-    // Render single color item template
-    const RenderColor = ({ item: color }: { item: string }) => {
-        return (
-            <TouchableOpacity
-                style={[
-                    styles.colorCircle,
-                    { backgroundColor: color },
-                    labelColor === color && styles.selected,
-                    labelColor === color && { shadowColor: color },
-                ]}
-                onPress={() => onChangeColor(color)}
-                activeOpacity={0.8}
-            >
-                {labelColor === color && (
-                    <MaterialIcons name="check" size={26} color="white" />
-                )}
-            </TouchableOpacity>
-        );
-    };
-
     return (
-        <FlatList
-            data={labelBgColors}
-            renderItem={RenderColor}
-            keyExtractor={(item) => item}
-            numColumns={8}
-            scrollEnabled={false}
-            style={styles.list}
-        />
+        <View style={styles.grid}>
+            {labelBgColors.map((color) => (
+                <View key={color} style={styles.cell}>
+                    <TouchableOpacity
+                        style={[
+                            styles.colorCircle,
+                            { backgroundColor: color },
+                            labelColor === color && styles.selected,
+                            labelColor === color && { shadowColor: color },
+                        ]}
+                        onPress={() => onChangeColor(color)}
+                        activeOpacity={0.8}
+                    >
+                        {labelColor === color && (
+                            <MaterialIcons name="check" size={26} color="white" />
+                        )}
+                    </TouchableOpacity>
+                </View>
+            ))}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    // Caps circle size in landscape/tablet
-    list: {
+    // Wraps into rows of 8 equal columns across the full width, also in landscape
+    grid: {
         width: "100%",
-        maxWidth: 420,
+        flexDirection: "row",
+        flexWrap: "wrap",
+        rowGap: 4,
+    },
+    // 1/8 of the width; the fixed-size circle is centred in it
+    cell: {
+        width: "12.5%",
+        alignItems: "center",
+        paddingVertical: 4,
     },
     colorCircle: {
-        flex: 1,
-        aspectRatio: 1,
-        borderRadius: 100,
-        margin: 4,
+        width: 38,
+        height: 38,
+        borderRadius: 19,
         alignItems: "center",
         justifyContent: "center",
         shadowOffset: { width: 0, height: 0 },
