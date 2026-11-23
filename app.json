@@ -60,6 +60,7 @@
       "favicon": "./assets/icons/favicon.png"
     },
     "plugins": [
+      "./src/plugins/withReleaseSigning.js",
       "expo-router",
       "expo-status-bar",
       "expo-font",
