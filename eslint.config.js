@@ -8,6 +8,8 @@ module.exports = defineConfig([
     ignores: ['dist/*'],
   },
   {
+    // Same scope as expo's typescript config, which is where the plugin is registered
+    files: ['**/*.ts', '**/*.tsx'],
     rules: {
       // Allow the empty `const styles = StyleSheet.create({})` scaffold on every screen
       '@typescript-eslint/no-unused-vars': ['warn', { varsIgnorePattern: '^styles$', args: 'none' }],
