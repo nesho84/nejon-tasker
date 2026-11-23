@@ -196,27 +196,30 @@ npx expo start              # start Metro, then press 's' → 'a'
 
 Signed with the upload key from `credentials.json` (see [Local Signing](#local-signing)).
 
-**Signed APK**, installed on the device:
-
 ```bash
-npx expo prebuild --clean
-npx expo run:android --variant release
+npm run build:aab   # AAB for Play Console upload
+npm run build:apk   # APK to install on a phone or share
 ```
 
-Output: `android/app/build/outputs/apk/release/app-release.apk`
+| Command | Output | Use |
+|---|---|---|
+| `build:aab` | `android/app/build/outputs/bundle/release/app-release.aab` | Play upload (Play only accepts AABs) |
+| `build:apk` | `android/app/build/outputs/apk/release/app-release.apk` | `adb install -r <apk>` / testers |
 
-```bash
-adb install -r android/app/build/outputs/apk/release/app-release.apk
+Both run `scripts/build-release.js`: `expo prebuild --clean`, then Gradle (`bundleRelease` /
+`assembleRelease`) with `.env.local` loaded if present. Prebuild asks before continuing if there
+are uncommitted changes.
+
+Build + install on a connected phone in one step: `npx expo run:android --variant release`.
+
+Check the signature (SHA-1 must match Play's **Upload key certificate**):
+
+```powershell
+keytool -printcert -jarfile android\app\build\outputs\bundle\release\app-release.aab
+& "$env:LOCALAPPDATA\Android\Sdk\build-tools\37.0.0\apksigner.bat" verify --print-certs android\app\build\outputs\apk\release\app-release.apk
 ```
 
-**Signed AAB** for Play upload:
-
-```bash
-npx expo prebuild --clean
-cd android && ./gradlew bundleRelease
-```
-
-Output: `android/app/build/outputs/bundle/release/app-release.aab`
+APKs use the v2/v3 signature scheme, which `keytool` can't always read, so check APKs with `apksigner`.
 
 > ❌ No hot reload — ✅ Useful for testing production behavior
 
