@@ -29,9 +29,9 @@ export function showStoreUpdateModal(fromSettings = false) {
         component: (
             <View style={styles.bannerContainer}>
                 <View style={[styles.modalIconCircle, { backgroundColor: theme.primary + "20" }]}>
-                    <MaterialDesignIcons name="information-variant-circle" size={32} color={theme.primary} />
+                    <MaterialDesignIcons name="information-variant-circle" size={40} color={theme.primary} />
                 </View>
-                <Text style={[styles.bannerTitle, { color: theme.text2 }]}>{tr.updates.title}</Text>
+                <Text style={[styles.bannerTitle, { color: theme.text }]}>{tr.updates.title}</Text>
                 <Text style={[styles.bannerMessage, { color: theme.muted }]}>{tr.updates.message}</Text>
             </View>
         ),
@@ -40,14 +40,14 @@ export function showStoreUpdateModal(fromSettings = false) {
                 label: tr.buttons.later,
                 action: "later",
                 buttonStyle: { backgroundColor: theme.overlayLight },
-                labelStyle: { color: theme.text2 },
+                labelStyle: { fontSize: 16, fontWeight: "600", color: theme.text2 },
             },
             {
                 label: tr.buttons.openStore,
                 action: "openStore",
                 onPress: openStoreListing,
                 buttonStyle: { backgroundColor: theme.primary + "20", borderWidth: 1, borderColor: theme.primary + "40" },
-                labelStyle: { color: theme.primary },
+                labelStyle: { fontSize: 16, fontWeight: "600", color: theme.primary },
             },
         ],
     });
@@ -73,8 +73,8 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     modalIconCircle: {
-        width: 54,
-        height: 54,
+        width: 64,
+        height: 64,
         borderRadius: 32,
         alignItems: "center",
         justifyContent: "center",
