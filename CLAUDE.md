@@ -55,7 +55,7 @@ under "Architecture" — read it before making cross-cutting changes. Key points
   order, so two quick `set()` calls could persist the older state. Don't switch them back to async.
 
 - **Sync hooks** (`src/hooks/use*Sync.ts`) are all invoked once in `RootLayout`, return nothing, and own
-  the app-wide side effects (notification taps, auto modals, OTA updates, device settings, ads). Put
+  the app-wide side effects (notification taps, auto modals, device settings, ads). Put
   cross-cutting reactive effects here, not in screens. Hooks used inside a screen that **return data**
   (e.g. `useTaskFilter`) use a plain `useX` name and a named export, like every other hook.
 

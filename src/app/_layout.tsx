@@ -5,7 +5,6 @@ import { useAdsSync } from "@/hooks/useAdsSync";
 import { useAutoModalsSync } from "@/hooks/useAutoModalsSync";
 import { useDeviceSettingsSync } from "@/hooks/useDeviceSettingsSync";
 import { useNotificationsSync } from "@/hooks/useNotificationsSync";
-import { useOtaUpdatesSync } from "@/hooks/useOtaUpdatesSync";
 import { useLabelStore } from "@/store/labelStore";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTaskStore } from "@/store/taskStore";
@@ -78,10 +77,13 @@ export default function RootLayout() {
   }, []);
 
   // Initialization and global sync hooks
+  // Permissions, on every return
   useDeviceSettingsSync();
+  // Opens tapped reminders once the DB is ready
   useNotificationsSync(isDbReady);
-  useOtaUpdatesSync();
+  // After onboarding: one auto modal
   useAutoModalsSync();
+  // After onboarding: consent, then ads
   useAdsSync();
 
   // Show error if initialization failed

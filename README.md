@@ -50,7 +50,7 @@ src/
 ├── components/            # Shared UI (AppScreen, TaskItem, CustomPicker, ColorPicker, BackupSection, …)
 ├── constants/             # Colors, translations.ts (i18n strings)
 ├── db/                    # SQLite: database.ts (schema/setup), task.repo.ts, label.repo.ts
-├── hooks/                 # Root use*Sync hooks (notifications, auto modals, OTA updates, …), useTaskFilter, useKeyboard
+├── hooks/                 # Root use*Sync hooks (notifications, auto modals, ads, …), useTaskFilter, useKeyboard
 ├── services/              # backupService (JSON export/import), storeUpdateService, adsService, notificationsService
 ├── store/                 # Zustand stores
 ├── types/                 # TypeScript interfaces (task, label)
@@ -369,7 +369,8 @@ This app uses **EAS Update** (`expo-updates`) to ship JS/asset changes without a
 
 - `expo-updates` checks `updates.url` on launch (`runtimeVersion` policy: `appVersion`)
 - The app sends its `channel` and `runtimeVersion` to the server
-- If a matching update exists, it downloads and applies on next launch
+- If a matching update exists, it downloads and applies on next launch (`checkAutomatically: "ON_LOAD"`). There is no JS hook
+  that reloads mid-session — that would restart the app during onboarding or a modal
 - **Only JS and assets change** — native changes still require a full build
 
 ### Publishing an Update
