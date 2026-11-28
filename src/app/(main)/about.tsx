@@ -1,7 +1,6 @@
 import { showStoreReviewModal } from '@/components/StoreReviewModal';
 import { APP_WEBSITE_URL, GOOGLE_PLAY_URL, MORE_APPS_GOOGLE_PLAY_URL } from '@/constants/links';
 import { globalStyles } from '@/constants/styles';
-import DebugPanel from '@/debug/DebugPanel';
 import { useDebugStore } from '@/debug/debugStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -126,7 +125,7 @@ export default function AboutScreen() {
                             Version {Constants?.expoConfig?.version}
                         </Text>
                     </TouchableOpacity>
-                    {/* Debug-mode hint (activating only — while on, the badge on the debug box counts down) */}
+                    {/* Debug-mode hint (activating only — while on, the badge below counts down) */}
                     {!debugModeEnabled && tapCount >= DEBUG_MODE_TAP_HINT_START && (
                         <View style={[styles.debugBadge, { borderColor: 'transparent' }]}>
                             <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
@@ -134,18 +133,21 @@ export default function AboutScreen() {
                             </Text>
                         </View>
                     )}
+                    {/* Debug-mode badge — taps count like the version; the tools open from the edge tab */}
+                    {debugModeEnabled && (
+                        <TouchableOpacity
+                            style={[styles.debugBadge, { borderColor: theme.danger }]}
+                            onPress={handleVersionTap}
+                            activeOpacity={0.6}
+                        >
+                            <Text style={[styles.debugBadgeText, { color: theme.placeholder }]}>
+                                {tapCount >= DEBUG_MODE_TAP_HINT_START
+                                    ? `Tap ${tapsLeft} more time${tapsLeft === 1 ? "" : "s"} to deactivate debug mode.`
+                                    : `Debug mode activated. Tap ${DEBUG_MODE_TAP_THRESHOLD} times to deactivate.`}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
-
-                {/* Debug tools box — only while debug mode is on (dev builds too). Its status badge sits on the
-                    top border; tapping it counts like tapping the version, and it counts down while you tap. */}
-                {debugModeEnabled && (
-                    <DebugPanel
-                        status={tapCount >= DEBUG_MODE_TAP_HINT_START
-                            ? `Tap ${tapsLeft} more time${tapsLeft === 1 ? "" : "s"} to deactivate debug mode.`
-                            : `Debug mode activated. Tap ${DEBUG_MODE_TAP_THRESHOLD} times to deactivate.`}
-                        onStatusPress={handleVersionTap}
-                    />
-                )}
 
                 {/* Action buttons */}
                 <View style={styles.actionButtonsGroup}>
@@ -283,7 +285,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
 
-    // Hero section — space below it is the same with or without the debug box
+    // Hero section — space below it is the same with or without the debug badge
     logoSection: {
         alignItems: "center",
         marginTop: 24,

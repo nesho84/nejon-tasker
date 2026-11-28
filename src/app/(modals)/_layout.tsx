@@ -15,6 +15,8 @@ export default function ModalsLayout() {
       <Stack.Screen name="editLabel" />
       {/* Tasks */}
       <Stack.Screen name="editTask" />
+      {/* Debug mode only */}
+      <Stack.Screen name="debugTools" />
     </Stack>
   );
 }
