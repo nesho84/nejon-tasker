@@ -118,7 +118,7 @@ export default function AboutScreen() {
                     {/* Logo */}
                     <Image style={styles.logo} source={require("../../../assets/icons/icon.png")} />
                     {/* App Name */}
-                    <Text style={[styles.title, { color: theme.text }]}>{Constants?.expoConfig?.name}</Text>
+                    <Text style={[styles.title, { color: theme.text2 }]}>{Constants?.expoConfig?.name}</Text>
                     {/* App Version (5 times Press activates debug mode) */}
                     <TouchableOpacity onPress={handleVersionTap} activeOpacity={0.6}>
                         <Text style={[styles.versionText, { color: theme.placeholder }]}>
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         paddingBottom: 24,
         paddingHorizontal: 6,
-        gap: 12,
+        gap: 16,
     },
 
     // Hero section — space below it is the same with or without the debug badge
@@ -290,18 +290,19 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 24,
         marginBottom: 16,
-        gap: 6,
+        gap: 8,
     },
     logo: {
-        width: 120,
-        height: 120,
+        width: 96,
+        height: 96,
         marginBottom: 6,
         borderRadius: 20,
     },
     title: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: "700",
         textAlign: "center",
+        letterSpacing: -0.5,
     },
     versionText: {
         fontSize: 14,
@@ -314,7 +315,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         borderWidth: 1,
         borderRadius: 20,
-        // marginTop: 6,
+        marginTop: 6,
         paddingHorizontal: 12,
         paddingVertical: 6,
         gap: 6,
