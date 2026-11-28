@@ -345,6 +345,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "400",
         opacity: 0.6,
+        includeFontPadding: false,
     },
 
     // Links

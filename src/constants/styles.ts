@@ -43,12 +43,13 @@ export const globalStyles = StyleSheet.create({
     },
     rowText: {
         flex: 1,
-        gap: 3,
+        gap: 4.5,
     },
     rowTitle: {
         fontSize: 16,
         fontWeight: '600',
         letterSpacing: -0.3,
+        includeFontPadding: false,
     },
     hairlineDivider: {
         height: StyleSheet.hairlineWidth,

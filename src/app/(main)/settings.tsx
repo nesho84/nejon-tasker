@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 18,
         opacity: 0.7,
+        includeFontPadding: false,
     },
     // Same shape as the "Check for updates" button
     wideButton: {

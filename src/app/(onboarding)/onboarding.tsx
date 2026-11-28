@@ -483,11 +483,13 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '600',
         letterSpacing: -0.3,
+        includeFontPadding: false,
     },
     permissionSubtitle: {
         fontSize: 12,
         lineHeight: 16,
         opacity: 0.8,
+        includeFontPadding: false,
     },
 
     // Features Onboarding Styles
